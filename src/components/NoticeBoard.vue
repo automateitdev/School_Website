@@ -13,14 +13,20 @@
       </button>
     </div>
 
-    <ul>
+    <div v-if="websiteStore.isLoading" class="loading-state">
+      <div class="skeleton-list" v-for="n in 3" :key="n"></div>
+    </div>
+
+    <ul v-else-if="visibleNotices.length > 0">
       <li v-for="n in visibleNotices" :key="n.id" class="notice-item">
         <router-link :to="`/notice/${n.id}`" class="notice-title-link">
-          {{ n.title }}
+          {{ n.name || n.title }}
         </router-link>
-        <small class="notice-date">{{ formatDate(n.date) }}</small>
+        <small class="notice-date">{{ formatDate(n.created_at || n.date) }}</small>
       </li>
     </ul>
+
+    <div v-else class="empty-state">No notices available.</div>
 
     <router-link
       v-if="filteredNotices.length > limit"
@@ -34,19 +40,23 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { notices } from '@/data/notices'
+import { useWebsiteStore } from '@/stores/websiteStore'
+
+const websiteStore = useWebsiteStore()
 
 const limit = 2
 const types = ['general', 'academics', 'admission']
 const selectedType = ref('general')
 
+const allNotices = computed(() => websiteStore.getNotices)
+
 const filteredNotices = computed(() =>
-  notices.filter(n => n.type === selectedType.value)
+  allNotices.value.filter(n => n.type === selectedType.value)
 )
 
 const visibleNotices = computed(() =>
   [...filteredNotices.value]
-    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .sort((a, b) => new Date(b.created_at || b.date) - new Date(a.created_at || a.date))
     .slice(0, limit)
 )
 
@@ -158,5 +168,29 @@ const formatDate = date =>
 .see-more:hover {
   color: #0056b3;
   text-decoration: underline;
+}
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.skeleton-list {
+  height: 60px;
+  background: #f0f0f0;
+  border-radius: 10px;
+  animation: pulse 1.5s infinite;
+}
+
+.empty-state {
+  text-align: center;
+  color: #6c757d;
+  padding: 20px 0;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
 }
 </style>

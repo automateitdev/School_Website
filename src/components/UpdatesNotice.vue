@@ -18,7 +18,11 @@
           :style="{ transform: `translateX(${translateX}px)` }"
           ref="track"
         >
+          <span v-if="websiteStore.isLoading" class="loading-text">
+            Fetching latest updates...
+          </span>
           <span
+            v-else-if="repeatedNotices.length > 0"
             v-for="notice in repeatedNotices"
             :key="notice.uid"
             class="notice-item"
@@ -31,6 +35,7 @@
               <polyline points="12 5 19 12 12 19"></polyline>
             </svg>
           </span>
+          <span v-else class="loading-text">No updates available.</span>
         </div>
       </div>
     </div>
@@ -40,17 +45,20 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
-import { notices } from '@/data/notices'
+import { useWebsiteStore } from '@/stores/websiteStore'
 
 const router = useRouter()
 const track = ref(null)
+const websiteStore = useWebsiteStore()
 
 const speed = 1
 const translateX = ref(-1000)
 let animationId = null
 
 const recentNotices = computed(() =>
-  [...notices].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 3)
+  [...websiteStore.getNotices]
+    .sort((a, b) => new Date(b.created_at || b.date) - new Date(a.created_at || a.date))
+    .slice(0, 3)
 )
 
 const repeatedNotices = computed(() =>
@@ -251,6 +259,14 @@ onBeforeUnmount(pauseScroll)
     opacity: 0.6; 
     transform: scale(1.2);
   }
+}
+
+.loading-text {
+  color: white;
+  opacity: 0.8;
+  font-size: 15px;
+  font-style: italic;
+  padding: 0 20px;
 }
 
 .notice-text {

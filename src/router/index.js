@@ -10,20 +10,11 @@ import ContentPage from '../views/ContentPage.vue'
 import NewsPage from '../views/NewsPage.vue'
 import VideoGallery from '../views/VideoGallery.vue'
 import PhotoGallery from '../views/PhotoGallery.vue'
+import { ref } from 'vue'
 
-import { contents } from '@/data/contents'
-import { isLoading } from '@/data/loader'
+const isLoading = ref(false)
 
-const defaultBannerImage = new URL(
-  '../assets/images/pages-banner.jpg',
-  import.meta.url
-).href
-
-const makeBanner = (title = '', subtitle = '') => ({
-  image: defaultBannerImage,
-  title,
-  subtitle
-})
+const makeBanner = (title = '', subtitle = '') => ({ title, subtitle })
 
 const routes = [
   {
@@ -77,19 +68,22 @@ const routes = [
     meta: { banner: makeBanner('Photo Gallery') }
   },
   {
+    path: '/photogallery/:id',
+    name: 'FolderView',
+    component: () => import('../views/FolderView.vue'),
+    props: true,
+    meta: { banner: makeBanner('Photo Album') }
+  },
+  {
     path: '/about-details',
     component: AboutDetails,
-    meta: { banner: makeBanner('Cantonment English School & College') }
+    meta: { banner: makeBanner('About Us') }
   },
   {
     path: '/content/:slug',
     component: ContentPage,
     props: true,
-    meta: route => {
-      const slug = route.params.slug
-      const title = contents[slug]?.title || 'Page'
-      return { banner: makeBanner(title) }
-    }
+    meta: { banner: makeBanner('Page') }
   }
 ]
 

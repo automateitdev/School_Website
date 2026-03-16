@@ -5,7 +5,11 @@
 </template>
 
 <script setup>
-import { isLoading } from '@/data/loader'
+import { computed } from 'vue'
+import { useWebsiteStore } from '@/stores/websiteStore'
+
+const websiteStore = useWebsiteStore()
+const isLoading = computed(() => websiteStore.isLoading)
 </script>
 
 <style scoped>

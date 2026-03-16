@@ -17,12 +17,12 @@
           <td>{{ index + 1 }}</td>
 
           <td class="title-cell">
-            {{ notice.title }}
+            {{ notice.name || notice.title }}
           </td>
 
           <td>
-            <div v-if="notice.pdf" class="pdf-preview">
-              <PdfPreview :src="notice.pdf" />
+            <div v-if="notice.pdf || notice.file" class="pdf-preview">
+              <PdfPreview :src="notice.pdf || notice.file" />
             </div>
           </td>
 
@@ -33,7 +33,13 @@
           </td>
         </tr>
 
-        <tr v-if="filteredNotices.length === 0">
+        <tr v-if="websiteStore.isLoading">
+          <td colspan="4" class="loading-state">
+            <div class="skeleton-row" v-for="n in 5" :key="n"></div>
+          </td>
+        </tr>
+
+        <tr v-else-if="filteredNotices.length === 0">
           <td colspan="4" class="no-data">No notices found</td>
         </tr>
       </tbody>
@@ -44,16 +50,17 @@
 <script setup>
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { notices } from '@/data/notices'
+import { useWebsiteStore } from '@/stores/websiteStore'
 import PdfPreview from '@/components/PdfPreview.vue'
 
 const route = useRoute()
+const websiteStore = useWebsiteStore()
 const noticeType = route.params.type || 'general'
 
 const filteredNotices = computed(() =>
-  notices
+  websiteStore.getNotices
     .filter(n => n.type === noticeType)
-    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .sort((a, b) => new Date(b.created_at || b.date) - new Date(a.created_at || a.date))
 )
 </script>
 
@@ -125,5 +132,23 @@ const filteredNotices = computed(() =>
   text-align: center;
   padding: 20px;
   color: #777;
+}
+
+.loading-state {
+  padding: 20px;
+}
+
+.skeleton-row {
+  height: 40px;
+  background: #f0f0f0;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
 }
 </style>

@@ -1,6 +1,10 @@
 <template>
   <div class="news-details">
-    <div v-if="!singleNews" class="news-cards">
+    <div v-if="websiteStore.isLoading" class="loading-state">
+      <div class="skeleton-card" v-for="n in 3" :key="n"></div>
+    </div>
+
+    <div v-else-if="!singleNews" class="news-cards">
       <router-link
         v-for="(item, index) in newsItems"
         :key="item.id"
@@ -46,14 +50,27 @@
 <script setup>
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { newsData } from '@/data/newsData'
+import { useWebsiteStore } from '@/stores/websiteStore'
+import { useImageUrl } from '@/composables/useImageUrl'
 
 const route = useRoute()
-const newsItems = newsData
+const websiteStore = useWebsiteStore()
+
+const newsItems = computed(() => {
+  const notices = websiteStore.getNotices || []
+  return notices.map(n => ({
+    id: n.id,
+    title: n.title,
+    date: n.created_at ? new Date(n.created_at).toLocaleDateString() : '',
+    body: n.content || n.description || '',
+    image: n.file ? useImageUrl(n.file, 'notices') : '',
+    pdf: n.pdf || ''
+  }))
+})
 
 const singleNews = computed(() => {
   const id = Number(route.query.id)
-  return id ? newsItems.find(n => n.id === id) : null
+  return id ? newsItems.value.find(n => n.id === id) : null
 })
 </script>
 
@@ -155,5 +172,24 @@ const singleNews = computed(() => {
 
 .download-btn:hover { 
   background: #094ec6; 
-  }
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.skeleton-card {
+  height: 150px;
+  background: #f0f0f0;
+  border-radius: 10px;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
 </style>

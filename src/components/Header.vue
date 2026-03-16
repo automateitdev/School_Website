@@ -1,7 +1,6 @@
 <template>
   <header ref="headerRef">
 
-    <!-- Top Bar -->
     <div class="top-bar">
       <div class="left">
         <span class="datetime-icon">🕐</span>
@@ -42,11 +41,12 @@
       </div>
     </div>
 
-    <!-- Main Header -->
     <div class="main-header">
       <router-link to="/" class="logo-area" @click="closeMobileMenu">
-        <img :src="logo" alt="School Logo" />
-        <h1>Cantonment English School & College</h1>
+        <div v-if="websiteStore.isLoading" class="skeleton-logo"></div>
+        <img v-else-if="logoSrc" :src="logoSrc" alt="School Logo" />
+        <div v-if="websiteStore.isLoading" class="skeleton-title"></div>
+        <h1 v-else>{{ schoolName }}</h1>
       </router-link>
 
       <div class="hamburger" @click="toggleMobileMenu">
@@ -59,7 +59,7 @@
         <router-link to="/" :class="{ active: isActive('/') }" @click="closeMobileMenu">Home</router-link>
 
         <div
-          v-for="menu in menus"
+          v-for="menu in allMenus"
           :key="menu.name"
           class="dropdown"
           @mouseenter="isDesktop && openDropdown(menu.name)"
@@ -105,54 +105,22 @@
 <script setup>
 import { reactive, ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import logo from '@/assets/images/logo.png'
+import { useWebsiteStore } from '@/stores/websiteStore'
+import { useImageUrl } from '@/composables/useImageUrl'
 
 const route = useRoute()
+const websiteStore = useWebsiteStore()
 
-const menus = [
-  {
-    name: 'Management',
-    items: [
-      { name: 'Chief Patron Message', link: '/content/chief-patron-message' },
-      { name: 'Chairman Message', link: '/content/chairman-message' },
-      { name: 'Principal Message', link: '/content/principal-message' },
-      { name: 'Managing Committee', link: '/content/managing-committee' },
-      { name: 'Sub Committee', link: '/content/sub-committee' },
-      { name: 'Mission & Vision', link: '/content/mission-vision' }
-    ]
-  },
-  {
-    name: 'Academic',
-    items: [
-      { name: 'Syllabus', link: '/content/syllabus' },
-      { name: 'Dress Code', link: '/content/dress-code' }
-    ]
-  },
-  {
-    name: 'Admission',
-    items: [
-      { name: 'Tuition Fee', link: '/content/tuition-fee' },
-      { name: 'How to Apply', link: '/content/how-to-apply' },
-      { name: 'Apply Online', link: '/content/apply-online' }
-    ]
-  },
-  {
-    name: 'Careers',
-    items: [
-      { name: 'Job Vacancies', link: '/content/job-vacancies' },
-      { name: 'Submit Resume', link: '/content/submit-resume' }
-    ]
-  },
-  {
-    name: 'Payment Procedure',
-    items: [
-      { name: 'Fees Payment', link: 'https://live.academyims.com/Student_Portal', external: true },
-      { name: 'Fees Payment v2', link: 'https://pay.academyims.com/auth/login', external: true }
-    ]
-  }
-]
+const getBasic = computed(() => websiteStore.getBasic)
+const logoSrc = computed(() => getBasic.value?.logo ? useImageUrl(getBasic.value.logo) : '')
+const schoolName = computed(() => getBasic.value?.name || 'abc school')
 
-const openMenus = reactive(Object.fromEntries(menus.map(m => [m.name, false])))
+const allMenus = computed(() => websiteStore.getNavMenus)
+
+const openMenus = reactive({})
+watch(allMenus, (menus) => {
+  menus.forEach(m => { if (!(m.name in openMenus)) openMenus[m.name] = false })
+}, { immediate: true })
 const mobileMenuOpen = ref(false)
 const loginOpen = ref(false)
 const headerRef = ref(null)
@@ -173,7 +141,7 @@ const closeMobileMenu = () => {
 
 const isActive = link => route.path === link
 const isMenuRouteActive = menuName => {
-  const menu = menus.find(m => m.name === menuName)
+  const menu = allMenus.value.find(m => m.name === menuName)
   return menu?.items.some(item => !item.external && item.link === route.path)
 }
 
@@ -235,7 +203,6 @@ header {
   box-shadow: 0 2px 20px rgba(0,0,0,0.15);
 }
 
-/* ── TOP BAR ── */
 .top-bar {
   background: linear-gradient(135deg, #002d3a 0%, #004d62 100%);
   color: rgba(255,255,255,0.9);
@@ -359,7 +326,6 @@ header {
 .social-btn.youtube  { background: #ff0000; }
 .social-btn.linkedin { background: #0a66c2; }
 
-/* ── MAIN HEADER ── */
 .main-header {
   display: flex;
   justify-content: space-between;
@@ -384,6 +350,28 @@ header {
   flex-shrink: 0;
 }
 
+.skeleton-logo {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #f0f0f0;
+  animation: pulse 1.5s infinite;
+}
+
+.skeleton-title {
+  width: 200px;
+  height: 24px;
+  background: #f0f0f0;
+  border-radius: 4px;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
 .logo-area h1 {
   font-size: clamp(18px, 2.5vw, 28px);
   margin: 0;
@@ -398,7 +386,6 @@ header {
   .logo-area h1 { white-space: normal; }
 }
 
-/* ── HAMBURGER ── */
 .hamburger {
   display: none;
   flex-direction: column;
@@ -420,7 +407,6 @@ header {
 .hamburger span.open:nth-child(2) { opacity: 0; }
 .hamburger span.open:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
 
-/* ── NAV ── */
 .menu {
   display: flex;
   gap: 2px;
@@ -513,11 +499,9 @@ header {
   color: white;
 }
 
-/* ── MOBILE ── */
 @media (max-width: 768px) {
   .hamburger { display: flex; }
 
-  /* Top bar: stack and center everything */
   .top-bar {
     flex-direction: column;
     align-items: center;
@@ -541,7 +525,6 @@ header {
     gap: 12px;
   }
 
-  /* Login menu on mobile: centered below button */
   .login-dropdown {
     position: relative;
   }

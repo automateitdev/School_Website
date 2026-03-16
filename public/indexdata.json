@@ -1,0 +1,228 @@
+{
+    "basics": [
+        {
+            "name": "Academy IMS Excellence",
+            "logo": "logo.png",
+            "address": "123 Educational Block, Dhaka",
+            "phone": "+880 1234 567 890",
+            "email": "info@academyims.com"
+        }
+    ],
+    "header": {
+        "id": 91,
+        "user_id": 18,
+        "header_image": "webheader_banner1694536931.webp",
+        "created_at": "2023-09-12T16:42:11.000000Z",
+        "updated_at": "2023-09-12T16:42:11.000000Z"
+    },
+    "footer": null,
+    "categories": [],
+    "subcategories": [],
+    "sliders": [
+        {
+            "id": 68,
+            "institute_id": "1000",
+            "slider_pos": 1,
+            "slider_img": "slider_1693754509.webp",
+            "title": "Welcome to our Campus",
+            "description": "Excellence in every step",
+            "created_at": "2023-09-03T15:21:49.000000Z",
+            "updated_at": "2023-09-03T15:21:49.000000Z"
+        },
+        {
+            "id": 69,
+            "institute_id": "1000",
+            "slider_pos": 2,
+            "slider_img": "slider_1693754554.webp",
+            "title": "A place for growth",
+            "description": "Building future leaders",
+            "created_at": "2023-09-03T15:22:34.000000Z",
+            "updated_at": "2023-09-03T15:22:34.000000Z"
+        }
+    ],
+    "menulists": [
+        {
+            "menu_id": 1,
+            "name": "Management",
+            "state": 1
+        },
+        {
+            "menu_id": 2,
+            "name": "Academic",
+            "state": 1
+        },
+        {
+            "menu_id": 3,
+            "name": "Admission",
+            "state": 1
+        },
+        {
+            "menu_id": 4,
+            "name": "Careers",
+            "state": 1
+        },
+        {
+            "menu_id": 5,
+            "name": "Payment Procedure",
+            "state": 1
+        }
+    ],
+    "menumaps": {
+        "1": [
+            {
+                "id": 101,
+                "name": "Principal Message",
+                "slug": "principal-message",
+                "content": "<h2>Message from the Principal</h2><p>Welcome to our school. We are dedicated to providing excellent education...</p>"
+            },
+            {
+                "id": 102,
+                "name": "Managing Committee",
+                "slug": "managing-committee",
+                "content": "<h2>Managing Committee</h2><p>Here are the esteemed members of our managing committee...</p>"
+            }
+        ],
+        "2": [
+            {
+                "id": 201,
+                "name": "Syllabus",
+                "slug": "syllabus",
+                "content": "<h2>Download Syllabus</h2><p>Access our comprehensive syllabus materials here.</p>"
+            },
+            {
+                "id": 202,
+                "name": "Class Routine",
+                "slug": "class-routine",
+                "content": "<h2>Class Routine</h2><p>Check the daily class schedule for all grades.</p>"
+            }
+        ],
+        "3": [
+            {
+                "id": 301,
+                "name": "Tuition Fee",
+                "slug": "tuition-fee",
+                "content": "<h2>Tuition Fee Structure</h2><p>Below is our detailed tuition fee structure for the year.</p>"
+            },
+            {
+                "id": 302,
+                "name": "How to Apply",
+                "slug": "how-to-apply",
+                "content": "<h2>How to Apply</h2><p>Find step-by-step instructions on applying for admission.</p>"
+            },
+            {
+                "id": 303,
+                "name": "Apply Online",
+                "slug": "apply-online",
+                "content": "<h2>Apply Online</h2><p>Fill out our digital admission form to submit an online application.</p>"
+            }
+        ]
+    },
+    "downloads": [
+        {
+            "id": 1,
+            "title": "2024 Academic Calendar",
+            "file": "calendar-2024.pdf",
+            "created_at": "2024-01-01T10:00:00Z"
+        },
+        {
+            "id": 2,
+            "title": "Standard Admission Form",
+            "file": "admission.pdf",
+            "created_at": "2024-02-15T09:30:00Z"
+        },
+        {
+            "id": 3,
+            "title": "Scholarship Guidelines",
+            "file": "guidelines.pdf",
+            "created_at": "2024-03-05T14:45:00Z"
+        }
+    ],
+    "aboutinstitutes": {
+        "institute_id": 1,
+        "established": 1999,
+        "affiliation": "National Education Board",
+        "level": "Secondary & Higher Secondary",
+        "name": "Academy IMS Excellence",
+        "description": "<p>Academy IMS Excellence is a premier institution dedicated to continuous learning and academic brilliance. Since our founding in 1999, we have strived to build an environment where students can flourish in all areas of life, from academics to sports and critical thinking.</p>",
+        "image": "about-building.jpg"
+    },
+    "notices": [
+        {
+            "id": 1,
+            "type": "general",
+            "name": "School Reopening After Summer Vacation",
+            "title": "School Reopening After Summer Vacation",
+            "description": "Please be informed that the school will reopen on Monday following the summer vacation.",
+            "content": "Please be informed that the school will reopen on Monday following the summer vacation.",
+            "created_at": "2024-01-15T10:00:00Z",
+            "date": "2024-01-15T10:00:00Z",
+            "file": "general_notice.pdf"
+        },
+        {
+            "id": 2,
+            "type": "academics",
+            "name": "Mid-Term Examination Schedule Published",
+            "title": "Mid-Term Examination Schedule Published",
+            "description": "The schedule for upcoming mid-term exams is now available. Please download the PDF.",
+            "content": "The schedule for upcoming mid-term exams is now available. Please download the PDF.",
+            "created_at": "2024-02-20T14:30:00Z",
+            "date": "2024-02-20T14:30:00Z",
+            "file": "exam_routine.pdf",
+            "image": "exam_banner.jpg"
+        },
+        {
+            "id": 3,
+            "type": "admission",
+            "name": "Class 11 Admission Results",
+            "title": "Class 11 Admission Results",
+            "description": "The results for the Class 11 admission tests have been published on the notice board.",
+            "content": "The results for the Class 11 admission tests have been published on the notice board.",
+            "created_at": "2024-03-01T09:15:00Z",
+            "date": "2024-03-01T09:15:00Z",
+            "file": "admission_results.pdf"
+        }
+    ],
+    "galleries": [
+        {
+            "id": 1,
+            "institute_id": 1,
+            "content_type": "image",
+            "album_folder": "annual_sports_2023",
+            "title": "Annual Sports Day 2023",
+            "image": "sports1.jpg",
+            "contents": [
+                "sports1.jpg",
+                "sports2.jpg",
+                "sports3.jpg"
+            ]
+        },
+        {
+            "id": 2,
+            "institute_id": 1,
+            "content_type": "image",
+            "album_folder": "cultural_fest",
+            "title": "Spring Cultural Fest",
+            "image": "fest1.jpg",
+            "contents": [
+                "fest1.jpg",
+                "fest2.jpg"
+            ]
+        },
+        {
+            "id": 3,
+            "content_type": "video",
+            "title": "Campus Drone Tour",
+            "contents": [
+                "https://www.youtube.com/embed/dQw4w9WgXcQ"
+            ]
+        },
+        {
+            "id": 4,
+            "content_type": "video",
+            "title": "Principal's Speech",
+            "contents": [
+                "https://www.youtube.com/embed/tgbNymZ7vqY"
+            ]
+        }
+    ]
+}

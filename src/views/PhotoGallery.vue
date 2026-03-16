@@ -1,81 +1,65 @@
 <template>
   <section class="media-section-wrapper">
     <div class="media-section">
-      <h2 class="section-title">Photo Gallery</h2>
+      <h2 class="section-title">Photo Albums</h2>
 
-      <div class="photo-grid">
+      <div v-if="websiteStore.isLoading" class="loading-state">
+        <div class="skeleton-card" v-for="n in 6" :key="n"></div>
+      </div>
+      
+      <div v-else-if="websiteStore.error" class="error-msg">
+        <p>Could not load photo albums: {{ websiteStore.error }}</p>
+      </div>
+
+      <div v-else class="photo-grid">
         <div
-          v-for="photo in photos"
-          :key="photo.id"
+          v-for="folder in albums"
+          :key="folder.id"
           class="photo-item"
-          @click="openPhoto(photo)"
+          @click="goToFolder(folder.id)"
         >
-          <img :src="photo.url" :alt="photo.title" />
-          <p class="photo-title">{{ photo.title }}</p>
+          <img :src="folder.url" :alt="folder.title" loading="lazy" />
+          <div class="photo-info">
+             <p class="photo-title">{{ folder.title }}</p>
+             <button class="view-folder-btn">View Folder</button>
+          </div>
         </div>
       </div>
-    </div>
-
-    <div v-if="selectedPhoto" class="modal" @click.self="closePhoto">
-      <img class="modal-img" :src="selectedPhoto.url" :alt="selectedPhoto.title" />
-
-      <p class="modal-title">{{ selectedPhoto.title }}</p>
-
-      <button class="close-btn" @click="closePhoto">×</button>
-
-      <button class="nav-btn prev-btn" @click.stop="prevPhoto">‹</button>
-      <button class="nav-btn next-btn" @click.stop="nextPhoto">›</button>
     </div>
   </section>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, watch } from 'vue'
-import { photos } from '@/data/photos'
+import { computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { useWebsiteStore } from '@/stores/websiteStore'
 
-const selectedPhoto = ref(null)
-const currentIndex = ref(null)
+const router = useRouter()
+const websiteStore = useWebsiteStore()
 
-const openPhoto = (photo) => {
-  currentIndex.value = photos.findIndex(p => p.id === photo.id)
-  selectedPhoto.value = photo
-}
-
-const closePhoto = () => {
-  selectedPhoto.value = null
-}
-
-const prevPhoto = () => {
-  if (currentIndex.value === 0) currentIndex.value = photos.length - 1
-  else currentIndex.value--
-  selectedPhoto.value = photos[currentIndex.value]
-}
-
-const nextPhoto = () => {
-  if (currentIndex.value === photos.length - 1) currentIndex.value = 0
-  else currentIndex.value++
-  selectedPhoto.value = photos[currentIndex.value]
-}
-
-const handleKey = (e) => {
-  if (!selectedPhoto.value) return
-  if (e.key === 'ArrowRight') nextPhoto()
-  if (e.key === 'ArrowLeft') prevPhoto()
-  if (e.key === 'Escape') closePhoto()
-}
-
-onMounted(() => window.addEventListener('keydown', handleKey))
-onUnmounted(() => window.removeEventListener('keydown', handleKey))
-
-watch(selectedPhoto, (newVal) => {
-  if (newVal) document.body.style.overflow = 'hidden'
-  else document.body.style.overflow = ''
+const albums = computed(() => {
+  return websiteStore.getPhotoGalleries.map(g => ({
+    id: g.id,
+    title: g.title,
+    url: `https://web.academyims.com/storage/${g?.institute_id}/images/gallery/${g?.album_folder}/${g?.image}`
+  }))
 })
+
+const goToFolder = (id) => {
+  router.push(`/photogallery/${id}`)
+}
 </script>
 
 <style scoped>
 .media-section-wrapper {
   padding: 40px 20px;
+  background-color: #ffffff;
+  min-height: 60vh;
+}
+
+.media-section {
+  max-width: 1200px;
+  margin: auto;
 }
 
 .section-title {
@@ -88,8 +72,8 @@ watch(selectedPhoto, (newVal) => {
 
 .photo-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 25px;
 }
 
 .photo-item {
@@ -102,122 +86,83 @@ watch(selectedPhoto, (newVal) => {
 }
 
 .photo-item:hover {
-  transform: scale(1.05);
+  transform: translateY(-6px);
 }
 
 .photo-item img {
   width: 100%;
   height: 200px;
   object-fit: cover;
-  border-radius: 12px 12px 0 0;
+}
+
+.photo-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px;
+  gap: 10px;
 }
 
 .photo-title {
   text-align: center;
-  padding: 10px;
   font-weight: 500;
+  font-size: 16px;
+  color: #333;
 }
 
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0,0,0,0.95);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  z-index: 9999;
+.view-folder-btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  background-color: #f0f4ff;
+  color: #0d6efd;
+  border: 1px solid #0d6efd;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
-.modal-img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-  border-radius: 0;
-}
-
-.modal-title {
+.view-folder-btn:hover {
+  background-color: #0d6efd;
   color: #fff;
-  margin-top: 10px;
-  font-size: 18px;
-  text-align: center;
 }
-
-.close-btn {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  background: #fff;
-  border: none;
-  font-size: 28px;
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
-  cursor: pointer;
-  z-index: 10000;
-  font-weight: bold;
-}
-
-.nav-btn {
-  position: fixed;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(255,255,255,0.8);
-  border: none;
-  font-size: 36px;
-  width: 50px;
-  height: 60px;
-  border-radius: 8px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10000;
-}
-
-.nav-btn:hover {
-  background: rgba(255,255,255,1);
-}
-
-.prev-btn { left: 15px; }
-.next-btn { right: 15px; }
-
 
 @media (max-width: 768px) {
   .photo-grid { 
-    grid-template-columns: repeat(auto-fill, minmax(150px,1fr)); 
-}
-  .photo-item img { 
-    height: 150px; 
-}
-  .nav-btn { 
-    width: 40px; 
-    height: 50px; 
-    font-size: 28px; 
-}
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
+  }
 }
 
 @media (max-width: 480px) {
   .photo-grid { 
-    grid-template-columns: 1fr 1fr; 
-    gap: 10px; 
+    grid-template-columns: 1fr; 
+  }
+}
 
+.loading-state {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 25px;
 }
-  .photo-item img { 
-    height: 120px; 
+
+.skeleton-card {
+  height: 270px;
+  background: #f0f0f0;
+  border-radius: 12px;
+  animation: pulse 1.5s infinite;
 }
-  .nav-btn { 
-    width: 35px; 
-    height: 45px; 
-    font-size: 24px; 
+
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
 }
-  .close-btn { 
-    width: 36px; 
-    height: 36px; 
-    font-size: 24px; 
-}
+
+.error-msg {
+  text-align: center;
+  color: #dc3545;
+  padding: 40px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 </style>

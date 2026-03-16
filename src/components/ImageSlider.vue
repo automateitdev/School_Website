@@ -1,8 +1,11 @@
 <template>
-  <div class="slider">
-    <img :src="images[current].src" alt="Slider Image" />
+  <div class="slider" v-if="websiteStore.isLoading">
+    <div class="loading-placeholder"></div>
+  </div>
+  <div class="slider" v-else-if="slides.length > 0">
+    <img :src="slides[current].src" alt="Slider Image" />
 
-    <div class="timestamp">{{ images[current].time }}</div>
+    <div class="timestamp">{{ slides[current].time }}</div>
 
     <div class="arrow left" @click="prevImage">&#10094;</div>
     <div class="arrow right" @click="nextImage">&#10095;</div>
@@ -11,28 +14,36 @@
       <div class="scroll-arrow">▼</div>
     </div>
   </div>
+  <div class="slider slider--empty" v-else>
+    <div class="empty-placeholder">No slides available</div>
+  </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import school1 from '@/assets/images/school1.jpg'
-import school2 from '@/assets/images/school2.jpg'
-import school3 from '@/assets/images/school3.jpg'
+import { ref, computed, onMounted } from 'vue'
+import { useWebsiteStore } from '@/stores/websiteStore'
+import { useImageUrl } from '@/composables/useImageUrl'
 
-const images = [
-  { src: school1, time: 'Morning Assembly' },
-  { src: school2, time: 'Annual Program 2025' },
-  { src: school3, time: 'Independence Day' }
-]
+const websiteStore = useWebsiteStore()
+
+const slides = computed(() => {
+  const storeSliders = websiteStore.getSliders
+  return Array.isArray(storeSliders)
+    ? storeSliders.map(s => ({
+        src: useImageUrl(s.slider_img),
+        time: s.title || s.description || ''
+      }))
+    : []
+})
 
 const current = ref(0)
 
 const nextImage = () => {
-  current.value = (current.value + 1) % images.length
+  current.value = (current.value + 1) % slides.value.length
 }
 
 const prevImage = () => {
-  current.value = (current.value - 1 + images.length) % images.length
+  current.value = (current.value - 1 + slides.value.length) % slides.value.length
 }
 
 const scrollToAbout = () => {
@@ -56,6 +67,30 @@ onMounted(() => {
   aspect-ratio: 16 / 9; 
   overflow: hidden;
   cursor: pointer;
+}
+
+.loading-placeholder {
+  width: 100%;
+  height: 100%;
+  background: #f0f0f0;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+.empty-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8fafc;
+  color: #64748b;
+  font-weight: 500;
 }
 
 .slider img {

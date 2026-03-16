@@ -1,23 +1,47 @@
 <script setup>
+import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { videos } from '@/data/videos'
+import { useWebsiteStore } from '@/stores/websiteStore'
 
 const route = useRoute()
 const router = useRouter()
+const websiteStore = useWebsiteStore()
+
 const videoId = Number(route.params.id)
-const video = videos.find(v => v.id === videoId)
+
+const video = computed(() => {
+  const storeVideo = websiteStore.getGalleryById(videoId)
+  if (storeVideo) {
+    return {
+      id: storeVideo.id,
+      title: storeVideo.title,
+      url: storeVideo.contents?.[0] || ''
+    }
+  }
+  return null
+})
 </script>
 
 <template>
   <section class="media-section">
     <button @click="router.back()" class="back-btn">← Back</button>
 
-    <div class="video-container" v-if="video">
+    <div v-if="websiteStore.isLoading" class="loading-text">Loading video details...</div>
+    <div class="video-container" v-else-if="video">
       <h1 class="video-title">{{ video.title }}</h1>
+      <video 
+        v-if="video.url.endsWith('.mp4')" 
+        :src="video.url" 
+        controls 
+        class="video-preview" 
+        autoplay
+      ></video>
       <iframe 
+        v-else 
         :src="video.url" 
         frameborder="0" 
         allowfullscreen
+        class="video-preview"
       ></iframe>
     </div>
 
@@ -68,18 +92,32 @@ const video = videos.find(v => v.id === videoId)
   color: #333;
 }
 
-.video-container iframe {
+.video-preview {
   width: 100%;
   max-width: 100%;
   aspect-ratio: 16 / 9;
   border-radius: 12px;
   border: 2px solid #ddd;
   box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  background: #000;
 }
 
 .not-found {
   color: #ff4d4f;
   font-weight: 600;
   margin-top: 40px;
+}
+
+.loading-text {
+  font-size: 18px;
+  color: #666;
+  margin-top: 40px;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
 }
 </style>

@@ -2,10 +2,16 @@
   <section id="about-section" class="about-section">
     <div class="about-wrapper">
       
-      <div class="about-text" v-show="visible" :class="{ 'animate-in': visible }">
+      <div v-if="websiteStore.isLoading" class="loading-placeholder">
+        <div class="skeleton-text"></div>
+        <div class="skeleton-image"></div>
+      </div>
+
+      <template v-else>
+        <div class="about-text" v-show="visible" :class="{ 'animate-in': visible }">
         <div class="section-badge">About Us</div>
         <h2 class="institution-name">
-          Cantonment English School & College
+          {{ schoolName }}
         </h2>
         <div class="title-underline"></div>
         
@@ -25,11 +31,11 @@
 
         <div class="stats-row">
           <div class="stat-item">
-            <div class="stat-number">1998</div>
+            <div class="stat-number">{{ establishedYear }}</div>
             <div class="stat-label">Established</div>
           </div>
           <div class="stat-item">
-            <div class="stat-number">25+</div>
+            <div class="stat-number">{{ yearsLegacy }}+</div>
             <div class="stat-label">Years Legacy</div>
           </div>
           <div class="stat-item">
@@ -41,42 +47,59 @@
 
       <div class="about-image" v-show="visible" :class="{ 'animate-in': visible }">
         <div class="image-container">
-          <img src="@/assets/images/school1.jpg" alt="Cantonment English School & College" />
+          <img :src="aboutImage" :alt="schoolName" />
           <div class="image-overlay">
             <div class="overlay-content">
               <h3>Building Future Leaders</h3>
-              <p>Since 1998</p>
+              <p>Since {{ establishedYear }}</p>
             </div>
           </div>
         </div>
       </div>
 
+      </template>
+
     </div>
   </section>
 </template>
 
-<script>
-import { aboutSchool } from "@/data/aboutSchool";
+<script setup>
+import { ref, computed, onMounted } from 'vue'
+import { useWebsiteStore } from '@/stores/websiteStore'
+import { useAboutImageUrl } from '@/composables/useImageUrl'
 
-export default {
-  name: "AboutSection",
-  data() {
-    return {
-      visible: false,
-      fullText: aboutSchool.full,
-    };
-  },
-  computed: {
-    shortText() {
-      return this.fullText.substring(0, 320) + "...";
-    },
-  },
-  mounted() {
-    setTimeout(() => {
-      this.visible = true;
-    }, 150);
-  },
-};
+const websiteStore = useWebsiteStore()
+const visible = ref(false)
+
+const getAbout = computed(() => websiteStore.getAbout)
+const getBasic = computed(() => websiteStore.getBasic)
+
+const schoolName = computed(() =>
+  getBasic.value?.name || 'Our School'
+)
+
+const fullText = computed(() =>
+  getAbout.value?.description || ''
+)
+
+const shortText = computed(() =>
+  (fullText.value || '').substring(0, 320) + '...'
+)
+
+const establishedYear = computed(() =>
+  getAbout.value?.established || '1998'
+)
+
+const yearsLegacy = computed(() => {
+  const year = parseInt(establishedYear.value) || 1998
+  return new Date().getFullYear() - year
+})
+
+const aboutImage = computed(() => useAboutImageUrl(getAbout.value) || '')
+
+onMounted(() => {
+  setTimeout(() => { visible.value = true }, 150)
+})
 </script>
 
 <style scoped>
@@ -89,6 +112,7 @@ export default {
     font-family: 'Inter', sans-serif;
     position: relative;
     overflow: hidden;
+    min-height: 400px;
 }
 
 .about-section::before {
@@ -121,6 +145,35 @@ export default {
     opacity: 0; 
     transform: translateX(-40px); 
     transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); 
+}
+
+.loading-placeholder {
+    display: flex;
+    width: 100%;
+    gap: 60px;
+    opacity: 1;
+}
+
+.skeleton-text {
+    flex: 1;
+    height: 300px;
+    background: #f0f0f0;
+    border-radius: 12px;
+    animation: pulse 1.5s infinite;
+}
+
+.skeleton-image {
+    flex: 1;
+    height: 400px;
+    background: #f0f0f0;
+    border-radius: 20px;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
 }
 
 .about-text.animate-in { 

@@ -10,8 +10,26 @@
 
     <div class="institution-about-container">
       
-      <div class="about-header">
-        <div class="header-badge">Our Story</div>
+      <div v-if="websiteStore.isLoading" class="loading-state">
+        <div class="skeleton-header"></div>
+        <div class="content-grid">
+          <div class="image-column">
+            <div class="skeleton-image"></div>
+            <div class="info-cards">
+              <div class="info-card skeleton-card" v-for="n in 3" :key="n"></div>
+            </div>
+          </div>
+          <div class="text-column">
+            <div class="skeleton-text large"></div>
+            <div class="skeleton-text"></div>
+            <div class="skeleton-text"></div>
+          </div>
+        </div>
+      </div>
+
+      <template v-else>
+        <div class="about-header">
+          <div class="header-badge">Our Story</div>
         <h1 class="main-title">Cantonment English School & College</h1>
         <div class="title-decoration"></div>
         <p class="subtitle">Building excellence in education since 1998</p>
@@ -21,7 +39,7 @@
         
         <div class="image-column">
           <div class="main-image-wrapper">
-            <img src="@/assets/images/school1.jpg" alt="Cantonment English School & College Campus" />
+            <img :src="aboutImageSrc" alt="School Campus" />
             <div class="image-badge">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
@@ -127,32 +145,36 @@
             </div>
           </div>
         </div>
-
       </div>
+      </template>
+
     </div>
   </section>
 </template>
 
-<script>
-import { aboutSchool } from "@/data/aboutSchool";
+<script setup>
+import { computed } from 'vue'
+import { useWebsiteStore } from '@/stores/websiteStore'
+import { useAboutImageUrl } from '@/composables/useImageUrl'
 
-export default {
-  name: "AboutDetails",
-  data() {
-    return {
-      fullText: aboutSchool.full,
-    };
-  },
-  computed: {
-    formattedText() {
-      return this.fullText
-        .split('\n')
-        .filter(p => p.trim())
-        .map(p => `<p>${p.trim()}</p>`)
-        .join('');
-    }
-  }
-};
+const websiteStore = useWebsiteStore()
+const getAbout = computed(() => websiteStore.getAbout)
+const getBasic = computed(() => websiteStore.getBasic)
+const aboutImageSrc = computed(() => useAboutImageUrl(getAbout.value) || '')
+
+const schoolName = computed(() => getBasic.value?.name || 'Our School')
+const establishedYear = computed(() => getAbout.value?.established || '')
+const affiliation = computed(() => getAbout.value?.affiliation || 'Education Board')
+const level = computed(() => getAbout.value?.level || 'HSC')
+
+const fullText = computed(() => getAbout.value?.description || '')
+const formattedText = computed(() =>
+  (fullText.value || '')
+    .split('\n')
+    .filter(p => p.trim())
+    .map(p => `<p>${p.trim()}</p>`)
+    .join('')
+)
 </script>
 
 <style scoped>
@@ -604,5 +626,54 @@ export default {
   .text-content {
     font-size: 15px;
   }
+}
+
+.loading-state {
+  width: 100%;
+}
+
+.skeleton-header {
+  height: 100px;
+  max-width: 600px;
+  margin: 0 auto 60px;
+  background: #f0f0f0;
+  border-radius: 12px;
+  animation: pulse 1.5s infinite;
+}
+
+.skeleton-image {
+  height: 300px;
+  width: 100%;
+  background: #f0f0f0;
+  border-radius: 20px;
+  margin-bottom: 30px;
+  animation: pulse 1.5s infinite;
+}
+
+.skeleton-card {
+  height: 90px;
+  background: #f0f0f0;
+  border-radius: 15px;
+  animation: pulse 1.5s infinite;
+}
+
+.skeleton-text {
+  height: 20px;
+  width: 100%;
+  background: #f0f0f0;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  animation: pulse 1.5s infinite;
+}
+
+.skeleton-text.large {
+  height: 200px;
+  border-radius: 20px;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
 }
 </style>

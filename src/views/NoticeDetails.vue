@@ -1,17 +1,24 @@
 <template>
-  <div v-if="notice" class="notice-details">
-    <h2 class="page-title">{{ notice.title }}</h2>
+  <div v-if="websiteStore.isLoading" class="notice-details loading-state">
+    <div class="skeleton-title"></div>
+    <div class="skeleton-pdf"></div>
+  </div>
 
-    <div v-if="notice.pdf" class="pdf-embed">
-      <PdfPreview :src="notice.pdf" />
+  <div v-else-if="notice" class="notice-details">
+    <h2 class="page-title">{{ notice.name || notice.title }}</h2>
+
+    <div v-if="noticePdf" class="pdf-embed">
+      <PdfPreview :src="noticePdf" />
     </div>
 
     <div class="notice-footer">
-      <p class="notice-date"><strong>Date:</strong> {{ formatDate(notice.date) }}</p>
-      <a v-if="notice.pdf" :href="notice.pdf" download class="action-btn download-btn">
+      <p class="notice-date"><strong>Date:</strong> {{ formatDate(notice.created_at || notice.date) }}</p>
+      <a v-if="noticePdf" :href="noticePdf" download class="action-btn download-btn">
         Download PDF
       </a>
     </div>
+
+    <div v-if="notice.description" class="notice-body" v-html="notice.description"></div>
   </div>
 
   <div v-else class="no-data">
@@ -22,22 +29,22 @@
 <script setup>
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { notices } from '@/data/notices'
+import { useWebsiteStore } from '@/stores/websiteStore'
 import PdfPreview from '@/components/PdfPreview.vue'
 
 const route = useRoute()
-const noticeId = Number(route.params.id)
+const websiteStore = useWebsiteStore()
 
-const notice = computed(() =>
-  notices.find(n => n.id === noticeId)
-)
+const notice = computed(() => websiteStore.getNoticeById(route.params.id))
+
+const noticePdf = computed(() => notice.value?.pdf || notice.value?.file || null)
 
 const formatDate = (date) =>
-  new Date(date).toLocaleDateString('en-US', {
+  date ? new Date(date).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',
     day: 'numeric'
-  })
+  }) : ''
 </script>
 
 <style scoped>
@@ -83,6 +90,13 @@ const formatDate = (date) =>
   margin: 0;
 }
 
+.notice-body {
+  margin-top: 20px;
+  font-size: 16px;
+  line-height: 1.8;
+  color: #333;
+}
+
 .action-btn {
   padding: 8px 18px;
   background-color: #0d6efd;
@@ -104,5 +118,34 @@ const formatDate = (date) =>
   padding: 50px;
   font-size: 18px;
   color: #777;
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+}
+
+.skeleton-title {
+  height: 40px;
+  width: 70%;
+  background: #f0f0f0;
+  border-radius: 8px;
+  animation: pulse 1.5s infinite;
+}
+
+.skeleton-pdf {
+  height: 400px;
+  width: 100%;
+  background: #f0f0f0;
+  border-radius: 8px;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
 }
 </style>

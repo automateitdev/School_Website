@@ -1,6 +1,5 @@
 <template>
-  <section v-if="banner" class="header-banner">
-    <img :src="banner.image" alt="Header Banner" />
+  <section v-if="banner" class="header-banner" :style="bannerStyle">
     <div class="header-text">
       <h1>{{ banner.title }}</h1>
       <p v-if="banner.subtitle">{{ banner.subtitle }}</p>
@@ -11,23 +10,32 @@
 <script setup>
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { contents } from '@/data/contents'
+import { useWebsiteStore } from '@/stores/websiteStore'
+import { useImageUrl } from '@/composables/useImageUrl'
 
 const route = useRoute()
+const websiteStore = useWebsiteStore()
 
-const resolveBanner = (fileName, title, subtitle = '') => ({
-  image: new URL(`../assets/images/${fileName}`, import.meta.url).href,
-  title,
-  subtitle
+const storeBannerImg = computed(() => {
+  const header = websiteStore.getHeader
+  return header?.banner_img ? useImageUrl(header.banner_img) : ''
 })
 
 const banner = computed(() => {
   const slug = route.params.slug
-  if (slug && contents[slug]) {
-    return resolveBanner('pages-banner.jpg', contents[slug].title)
+  if (slug && /^\d+$/.test(slug)) {
+    const storeContent = websiteStore.getContentById(slug)
+    if (storeContent) return { title: storeContent.name || storeContent.title || 'Page' }
   }
+  const meta = route.meta.banner
+  return meta || null
+})
 
-  return route.meta.banner || null
+const bannerStyle = computed(() => {
+  const img = storeBannerImg.value
+  return img
+    ? { backgroundImage: `url(${img})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+    : { background: 'linear-gradient(135deg, #002d3a 0%, #0a728a 100%)' }
 })
 </script>
 
@@ -37,21 +45,17 @@ const banner = computed(() => {
   width: 100%;
   height: 150px;
   overflow: hidden;
-}
-
-.header-banner img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .header-text {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  position: relative;
+  z-index: 1;
   color: #fff;
   text-align: center;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.4);
 }
 
 .header-text h1 {
