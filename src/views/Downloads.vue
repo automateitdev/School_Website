@@ -64,14 +64,14 @@
 <script setup>
 import { computed } from 'vue'
 import { useWebsiteStore } from '@/stores/websiteStore'
-import { useImageUrl } from '@/composables/useImageUrl'
+import { useDocumentUrl } from '@/composables/useImageUrl'
 
 const websiteStore = useWebsiteStore()
 const downloads = computed(() => websiteStore.getDownloads || [])
 
 const getFileUrl = (item) => {
   if (item.file_url) return item.file_url
-  if (item.file) return useImageUrl(item.file, 'downloads')
+  if (item.file) return useDocumentUrl(item.file)
   return '#'
 }
 

@@ -11,14 +11,14 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useWebsiteStore } from '@/stores/websiteStore'
-import { useImageUrl } from '@/composables/useImageUrl'
+import { useHeaderLogoUrl } from '@/composables/useImageUrl'
 
 const route = useRoute()
 const websiteStore = useWebsiteStore()
 
 const storeBannerImg = computed(() => {
   const header = websiteStore.getHeader
-  return header?.banner_img ? useImageUrl(header.banner_img) : ''
+  return header?.banner_img ? useHeaderLogoUrl(header.banner_img) : ''
 })
 
 const banner = computed(() => {

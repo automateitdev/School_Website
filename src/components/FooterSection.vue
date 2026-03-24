@@ -91,14 +91,14 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useWebsiteStore } from '@/stores/websiteStore'
-import { useImageUrl } from '@/composables/useImageUrl'
+import { useFooterImageUrl, useHeaderLogoUrl } from '@/composables/useImageUrl'
 
 const websiteStore = useWebsiteStore()
 
 const getBasic = computed(() => websiteStore.getBasic)
 
 const logo = computed(() =>
-  getBasic.value?.logo ? useImageUrl(getBasic.value.logo) : ''
+  getBasic.value?.logo ? useFooterImageUrl(getBasic.value.logo) : ''
 )
 
 const address = computed(() => getBasic.value?.address || '')

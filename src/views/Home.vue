@@ -1,8 +1,10 @@
 <template>
-  <TopSection />
-  <UpdatesNotice />
-  <AboutSection />
-  <MediaSection />
+  <div class="home-page">
+    <TopSection />
+    <UpdatesNotice />
+    <AboutSection />
+    <MediaSection />
+  </div>
 </template>
 
 <script setup>

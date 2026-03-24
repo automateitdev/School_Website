@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_BASE = 'https://web.academyims.com/api'
+const API_BASE = 'https://web.academyims.com/api/'
 
 const instance = axios.create({
     baseURL: API_BASE,

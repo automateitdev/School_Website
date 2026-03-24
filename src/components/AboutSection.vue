@@ -82,9 +82,10 @@ const fullText = computed(() =>
   getAbout.value?.description || ''
 )
 
-const shortText = computed(() =>
-  (fullText.value || '').substring(0, 320) + '...'
-)
+const shortText = computed(() => {
+  const stripped = (fullText.value || '').replace(/<[^>]+>/g, '')
+  return stripped.substring(0, 320) + (stripped.length > 320 ? '...' : '')
+})
 
 const establishedYear = computed(() =>
   getAbout.value?.established || '1998'

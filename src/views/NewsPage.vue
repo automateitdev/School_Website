@@ -51,7 +51,7 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useWebsiteStore } from '@/stores/websiteStore'
-import { useImageUrl } from '@/composables/useImageUrl'
+import { useNoticeFileUrl } from '@/composables/useImageUrl'
 
 const route = useRoute()
 const websiteStore = useWebsiteStore()
@@ -63,7 +63,7 @@ const newsItems = computed(() => {
     title: n.title,
     date: n.created_at ? new Date(n.created_at).toLocaleDateString() : '',
     body: n.content || n.description || '',
-    image: n.file ? useImageUrl(n.file, 'notices') : '',
+    image: n.file ? useNoticeFileUrl(n.file) : '',
     pdf: n.pdf || ''
   }))
 })

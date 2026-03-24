@@ -49,7 +49,7 @@
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useWebsiteStore } from '@/stores/websiteStore'
-import { useImageUrl } from '@/composables/useImageUrl'
+import { useGalleryImageUrl } from '@/composables/useImageUrl'
 
 const route = useRoute()
 const websiteStore = useWebsiteStore()
@@ -57,10 +57,8 @@ const websiteStore = useWebsiteStore()
 const albumId = computed(() => route.params.id)
 const album = computed(() => websiteStore.getGalleryById(albumId.value))
 
-const selectedPhotoIndex = ref(null)
-
 const getImageUrl = (imageName, folder) => {
-  return useImageUrl(imageName, folder)
+  return useGalleryImageUrl(folder, imageName)
 }
 
 const openPhoto = (idx) => {

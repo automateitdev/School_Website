@@ -30,9 +30,9 @@
       <template v-else>
         <div class="about-header">
           <div class="header-badge">Our Story</div>
-        <h1 class="main-title">Cantonment English School & College</h1>
+        <h1 class="main-title">{{ schoolName }}</h1>
         <div class="title-decoration"></div>
-        <p class="subtitle">Building excellence in education since 1998</p>
+        <p class="subtitle">Building excellence in education since {{ establishedYear }}</p>
       </div>
 
       <div class="content-grid">
@@ -61,7 +61,7 @@
               </div>
               <div class="info-content">
                 <div class="info-label">Established</div>
-                <div class="info-value">1998</div>
+                <div class="info-value">{{ establishedYear || '—' }}</div>
               </div>
             </div>
 
@@ -76,7 +76,7 @@
               </div>
               <div class="info-content">
                 <div class="info-label">Affiliation</div>
-                <div class="info-value">Chittagong Board</div>
+                <div class="info-value">{{ affiliation || '—' }}</div>
               </div>
             </div>
 
@@ -88,7 +88,7 @@
               </div>
               <div class="info-content">
                 <div class="info-label">Level</div>
-                <div class="info-value">HSC</div>
+                <div class="info-value">{{ level || '—' }}</div>
               </div>
             </div>
           </div>

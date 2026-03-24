@@ -13,7 +13,7 @@ import Header from '@/components/Header.vue'
 import FooterSection from '@/components/FooterSection.vue'
 import PageLoader from '@/components/PageLoader.vue'
 import { useWebsiteStore } from '@/stores/websiteStore'
-import { useImageUrl } from '@/composables/useImageUrl'
+import { useHeaderLogoUrl } from '@/composables/useImageUrl'
 
 const websiteStore = useWebsiteStore()
 
@@ -28,7 +28,7 @@ watchEffect(() => {
     document.title = getBasic.value.name
   }
   if (getBasic.value?.logo) {
-    const faviconSrc = useImageUrl(getBasic.value.logo)
+    const faviconSrc = useHeaderLogoUrl(getBasic.value.logo)
     let link = document.querySelector("link[rel~='icon']")
     if (!link) {
       link = document.createElement('link')

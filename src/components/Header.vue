@@ -106,13 +106,13 @@
 import { reactive, ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useWebsiteStore } from '@/stores/websiteStore'
-import { useImageUrl } from '@/composables/useImageUrl'
+import { useHeaderLogoUrl } from '@/composables/useImageUrl'
 
 const route = useRoute()
 const websiteStore = useWebsiteStore()
 
 const getBasic = computed(() => websiteStore.getBasic)
-const logoSrc = computed(() => getBasic.value?.logo ? useImageUrl(getBasic.value.logo) : '')
+const logoSrc = computed(() => getBasic.value?.logo ? useHeaderLogoUrl(getBasic.value.logo) : '')
 const schoolName = computed(() => getBasic.value?.name || 'abc school')
 
 const allMenus = computed(() => websiteStore.getNavMenus)

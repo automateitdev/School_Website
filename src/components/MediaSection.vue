@@ -92,7 +92,7 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useWebsiteStore } from '@/stores/websiteStore'
-import { useImageUrl } from '@/composables/useImageUrl'
+import { useGalleryImageUrl, useNoticeFileUrl } from '@/composables/useImageUrl'
 
 const router = useRouter()
 const websiteStore = useWebsiteStore()
@@ -110,7 +110,7 @@ const photos = computed(() =>
     id: g.id,
     title: g.title,
     url: g.contents?.[0]
-      ? useImageUrl(g.contents[0], g.album_folder)
+      ? useGalleryImageUrl(g.album_folder, g.contents[0])
       : ''
   }))
 )
@@ -129,7 +129,7 @@ const latestNews = computed(() => {
     title: n.title,
     date: n.created_at ? new Date(n.created_at).toLocaleDateString() : '',
     body: n.content || '',
-    image: n.file ? useImageUrl(n.file, 'notices') : ''
+    image: n.file ? useNoticeFileUrl(n.file) : ''
   }))
 })
 </script>

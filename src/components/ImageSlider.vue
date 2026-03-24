@@ -22,7 +22,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useWebsiteStore } from '@/stores/websiteStore'
-import { useImageUrl } from '@/composables/useImageUrl'
+import { useSliderImageUrl } from '@/composables/useImageUrl'
 
 const websiteStore = useWebsiteStore()
 
@@ -30,7 +30,7 @@ const slides = computed(() => {
   const storeSliders = websiteStore.getSliders
   return Array.isArray(storeSliders)
     ? storeSliders.map(s => ({
-        src: useImageUrl(s.slider_img),
+        src: useSliderImageUrl(s.slider_img),
         time: s.title || s.description || ''
       }))
     : []

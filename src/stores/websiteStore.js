@@ -109,7 +109,7 @@ export const useWebsiteStore = defineStore('website', {
             this.isLoading = true
             this.error = null
             try {
-                const res = await axios.get('/website-data')
+                const res = await axios.get('indexdata')
                 this.data = res.data
             } catch (e) {
                 console.warn('[websiteStore] Primary API failed. Fetching fallback indexdata.json.', e.message)
