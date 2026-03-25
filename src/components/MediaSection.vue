@@ -110,7 +110,7 @@ const photos = computed(() =>
     id: g.id,
     title: g.title,
     url: g.contents?.[0]
-      ? useGalleryImageUrl(g.album_folder, g.contents[0])
+      ? useGalleryImageUrl(g.album_folder, g.contents[0], g.institute_id)
       : ''
   }))
 )

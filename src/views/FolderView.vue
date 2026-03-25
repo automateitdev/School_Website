@@ -58,7 +58,7 @@ const albumId = computed(() => route.params.id)
 const album = computed(() => websiteStore.getGalleryById(albumId.value))
 
 const getImageUrl = (imageName, folder) => {
-  return useGalleryImageUrl(folder, imageName)
+  return useGalleryImageUrl(folder, imageName, album.value?.institute_id)
 }
 
 const openPhoto = (idx) => {

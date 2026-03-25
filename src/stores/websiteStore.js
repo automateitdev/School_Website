@@ -110,7 +110,29 @@ export const useWebsiteStore = defineStore('website', {
             this.error = null
             try {
                 const res = await axios.get('indexdata')
-                this.data = res.data
+                
+                // Strictly filter the API response so that unnecessary fields (prayer, corona, etc.)
+                // are not persisted in LocalStorage or used by the app.
+                const cleanData = {
+                    basics: res.data.basics || [],
+                    header: res.data.header || null,
+                    sliders: res.data.sliders || [],
+                    notices: res.data.notices || [],
+                    aboutinstitutes: res.data.aboutinstitutes || null,
+                    galleries: res.data.galleries || [],
+                    menulists: res.data.menulists || [],
+                    menumaps: res.data.menumaps || {},
+                    downloads: res.data.downloads || []
+                }
+                
+                if (res.data.web_presets) {
+                    cleanData.web_presets = {
+                        background_img: res.data.web_presets.background_img || '',
+                        essential_links: res.data.web_presets.essential_links || []
+                    }
+                }
+                
+                this.data = cleanData
             } catch (e) {
                 console.warn('[websiteStore] Primary API failed. Fetching fallback indexdata.json.', e.message)
                 try {

@@ -21,8 +21,8 @@
           </td>
 
           <td>
-            <div v-if="notice.pdf || notice.file" class="pdf-preview">
-              <PdfPreview :src="notice.pdf || notice.file" />
+            <div v-if="getNoticeFileUrl(notice)" class="pdf-preview">
+              <PdfPreview :src="getNoticeFileUrl(notice)" />
             </div>
           </td>
 
@@ -51,6 +51,7 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useWebsiteStore } from '@/stores/websiteStore'
+import { useNoticeFileUrl } from '@/composables/useImageUrl'
 import PdfPreview from '@/components/PdfPreview.vue'
 
 const route = useRoute()
@@ -62,6 +63,14 @@ const filteredNotices = computed(() =>
     .filter(n => n.type === noticeType)
     .sort((a, b) => new Date(b.created_at || b.date) - new Date(a.created_at || a.date))
 )
+
+// Resolve the correct storage URL for a notice file
+const getNoticeFileUrl = (notice) => {
+  const file = notice.file || notice.pdf
+  if (!file) return null
+  if (file.startsWith('http')) return file
+  return useNoticeFileUrl(file, notice.institute_id)
+}
 </script>
 
 <style scoped>

@@ -1,6 +1,7 @@
 {
     "basics": [
         {
+            "institute_id": "1000",
             "name": "Academy IMS Excellence",
             "logo": "logo.png",
             "address": "123 Educational Block, Dhaka",
@@ -15,17 +16,14 @@
         "created_at": "2023-09-12T16:42:11.000000Z",
         "updated_at": "2023-09-12T16:42:11.000000Z"
     },
-    "footer": null,
-    "categories": [],
-    "subcategories": [],
     "sliders": [
         {
             "id": 68,
             "institute_id": "1000",
             "slider_pos": 1,
             "slider_img": "slider_1693754509.webp",
-            "title": "Welcome to our Campus",
-            "description": "Excellence in every step",
+            "title": "Academy-1",
+            "description": null,
             "created_at": "2023-09-03T15:21:49.000000Z",
             "updated_at": "2023-09-03T15:21:49.000000Z"
         },
@@ -34,10 +32,30 @@
             "institute_id": "1000",
             "slider_pos": 2,
             "slider_img": "slider_1693754554.webp",
-            "title": "A place for growth",
-            "description": "Building future leaders",
+            "title": "Academy-2",
+            "description": null,
             "created_at": "2023-09-03T15:22:34.000000Z",
             "updated_at": "2023-09-03T15:22:34.000000Z"
+        },
+        {
+            "id": 70,
+            "institute_id": "1000",
+            "slider_pos": 4,
+            "slider_img": "slider_1693754583.webp",
+            "title": "Academy-3",
+            "description": null,
+            "created_at": "2023-09-03T15:23:03.000000Z",
+            "updated_at": "2023-09-03T15:23:03.000000Z"
+        },
+        {
+            "id": 71,
+            "institute_id": "1000",
+            "slider_pos": 3,
+            "slider_img": "slider_1693754692.webp",
+            "title": "Class Room-1",
+            "description": null,
+            "created_at": "2023-09-03T15:24:52.000000Z",
+            "updated_at": "2023-09-03T15:24:52.000000Z"
         }
     ],
     "menulists": [
@@ -224,5 +242,26 @@
                 "https://www.youtube.com/embed/tgbNymZ7vqY"
             ]
         }
-    ]
+    ],
+    "web_presets": {
+        "background_img": "0_web_bg_1694720823.gif",
+        "essential_links": [
+            {
+                "title": "জাতীয় ওয়েব পোর্টাল",
+                "link": "https://bangladesh.gov.bd/index.php"
+            },
+            {
+                "title": "শিক্ষা মন্ত্রনালয়",
+                "link": "https://moedu.gov.bd/"
+            },
+            {
+                "title": "মাধ্যমিক ও উচ্চশিক্ষা অধিদপ্তর",
+                "link": "https://dshe.gov.bd/"
+            },
+            {
+                "title": "চট্টগ্রাম শিক্ষা বোর্ড",
+                "link": "https://bise-ctg.portal.gov.bd/"
+            }
+        ]
+    }
 }

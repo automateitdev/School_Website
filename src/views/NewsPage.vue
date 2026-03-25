@@ -63,8 +63,9 @@ const newsItems = computed(() => {
     title: n.title,
     date: n.created_at ? new Date(n.created_at).toLocaleDateString() : '',
     body: n.content || n.description || '',
-    image: n.file ? useNoticeFileUrl(n.file) : '',
-    pdf: n.pdf || ''
+    // Notice files from API are stored at storage/{institute_id}/images/notice/{file}
+    image: n.file ? useNoticeFileUrl(n.file, n.institute_id) : '',
+    pdf: n.file ? useNoticeFileUrl(n.file, n.institute_id) : ''
   }))
 })
 

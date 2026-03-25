@@ -30,6 +30,7 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useWebsiteStore } from '@/stores/websiteStore'
+import { useNoticeFileUrl } from '@/composables/useImageUrl'
 import PdfPreview from '@/components/PdfPreview.vue'
 
 const route = useRoute()
@@ -37,7 +38,15 @@ const websiteStore = useWebsiteStore()
 
 const notice = computed(() => websiteStore.getNoticeById(route.params.id))
 
-const noticePdf = computed(() => notice.value?.pdf || notice.value?.file || null)
+// Resolve the notice PDF/file using the correct storage URL
+const noticePdf = computed(() => {
+  if (!notice.value) return null
+  const file = notice.value.file || notice.value.pdf
+  if (!file) return null
+  // If it's already a full URL, use as-is  
+  if (file.startsWith('http')) return file
+  return useNoticeFileUrl(file, notice.value.institute_id)
+})
 
 const formatDate = (date) =>
   date ? new Date(date).toLocaleDateString('en-US', {
