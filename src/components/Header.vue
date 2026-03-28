@@ -83,6 +83,7 @@
               {{ menu.label || menu.name }}
             </router-link>
             <button
+              v-if="menu.items && menu.items.length"
               type="button"
               class="menu-toggle"
               @click.stop="toggleMobileDropdown(menu.label || menu.name)"
@@ -91,9 +92,9 @@
             </button>
           </div>
 
-          <div class="dropdown-bridge" v-if="isDesktop"></div>
+          <div class="dropdown-bridge" v-if="isDesktop && menu.items && menu.items.length"></div>
 
-          <ul v-show="openMenus[menu.label || menu.name]" class="dropdown-content">
+          <ul v-if="menu.items && menu.items.length" v-show="openMenus[menu.label || menu.name]" class="dropdown-content">
             <li v-for="item in menu.items" :key="item.link || item.label || item.name">
               <template v-if="item.external">
                 <a
@@ -118,9 +119,6 @@
             </li>
           </ul>
         </div>
-
-        <router-link to="/downloads" :class="{ active: isActive('/downloads') }" @click="closeMobileMenu">Downloads</router-link>
-        <router-link to="/contact" :class="{ active: isActive('/contact') }" @click="closeMobileMenu">Contact</router-link>
       </nav>
     </div>
 
@@ -189,7 +187,6 @@ const closeMobileMenu = () => {
   mobileMenuOpen.value = false
   Object.keys(openMenus).forEach(menu => (openMenus[menu] = false))
 }
-
 
 const isActive = link => route.path === link
 const isMenuRouteActive = menuName => {
