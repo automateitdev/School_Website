@@ -60,36 +60,61 @@
 
         <div
           v-for="menu in allMenus"
-          :key="menu.name"
+          :key="menu.label || menu.name"
           class="dropdown"
-          @mouseenter="isDesktop && openDropdown(menu.name)"
-          @mouseleave="isDesktop && closeDropdown(menu.name)"
+          @mouseenter="isDesktop && openDropdown(menu.label || menu.name)"
+          @mouseleave="isDesktop && closeDropdown(menu.label || menu.name)"
         >
-          <span
+          <div
             class="dropbtn"
-            :class="{ active: isMenuRouteActive(menu.name) || openMenus[menu.name] }"
-            @click="!isDesktop && toggleMobileDropdown(menu.name)"
+            :class="{ active: isMenuRouteActive(menu.label || menu.name) || openMenus[menu.label || menu.name] }"
           >
-            {{ menu.name }}
-            <span class="arrow" :class="{ rotated: openMenus[menu.name] }">▼</span>
-          </span>
+            <router-link
+              :to="menu.link || '/'"
+              class="menu-link"
+              @click="!isDesktop && closeMobileMenu()"
+            >
+              <img
+                v-if="menu.icon"
+                :src="menuIcon(menu)"
+                alt=""
+                class="menu-icon"
+              />
+              {{ menu.label || menu.name }}
+            </router-link>
+            <button
+              type="button"
+              class="menu-toggle"
+              @click.stop="toggleMobileDropdown(menu.label || menu.name)"
+            >
+              <span class="arrow" :class="{ rotated: openMenus[menu.label || menu.name] }">▼</span>
+            </button>
+          </div>
 
           <div class="dropdown-bridge" v-if="isDesktop"></div>
 
-          <ul v-show="openMenus[menu.name]" class="dropdown-content">
-            <li v-for="item in menu.items" :key="item.link || item.name">
-              <a
-                v-if="item.external"
-                :href="item.link"
-                target="_blank"
-                @click="!isDesktop && closeMobileMenu()"
-              >{{ item.name }}</a>
-              <router-link
-                v-else
-                :to="item.link"
-                :class="{ active: isActive(item.link) }"
-                @click="!isDesktop && closeMobileMenu()"
-              >{{ item.name }}</router-link>
+          <ul v-show="openMenus[menu.label || menu.name]" class="dropdown-content">
+            <li v-for="item in menu.items" :key="item.link || item.label || item.name">
+              <template v-if="item.external">
+                <a
+                  :href="item.link"
+                  target="_blank"
+                  @click="!isDesktop && closeMobileMenu()"
+                >
+                  <img v-if="submenuIcon(item)" :src="submenuIcon(item)" alt="" class="submenu-icon" />
+                  {{ item.label || item.name }}
+                </a>
+              </template>
+              <template v-else>
+                <router-link
+                  :to="item.link"
+                  :class="{ active: isActive(item.link) }"
+                  @click="!isDesktop && closeMobileMenu()"
+                >
+                  <img v-if="submenuIcon(item)" :src="submenuIcon(item)" alt="" class="submenu-icon" />
+                  {{ item.label || item.name }}
+                </router-link>
+              </template>
             </li>
           </ul>
         </div>
@@ -106,7 +131,7 @@
 import { reactive, ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useWebsiteStore } from '@/stores/websiteStore'
-import { useHeaderLogoUrl } from '@/composables/useImageUrl'
+import { useHeaderLogoUrl, useMenuIconUrl } from '@/composables/useImageUrl'
 
 const route = useRoute()
 const websiteStore = useWebsiteStore()
@@ -115,11 +140,37 @@ const getBasic = computed(() => websiteStore.getBasic)
 const logoSrc = computed(() => getBasic.value?.logo ? useHeaderLogoUrl(getBasic.value.logo) : '')
 const schoolName = computed(() => getBasic.value?.name || 'abc school')
 
-const allMenus = computed(() => websiteStore.getNavMenus)
+const dynamicMenus = computed(() => websiteStore.getMenuSubmenus)
+const legacyMenus = computed(() => websiteStore.getNavMenus)
+
+const allMenus = computed(() => {
+  if (Array.isArray(dynamicMenus.value) && dynamicMenus.value.length > 0) {
+    return dynamicMenus.value.map(menu => ({
+      label: menu.title || menu.name || '',
+      link: menu.url || menu.link || `/menus/${menu.slug || menu.id}`,
+      icon: menu?.menuassign?.menu_icon || menu?.menu_icon || '',
+      items: Array.isArray(menu.submenus)
+        ? menu.submenus.map(sub => ({
+            label: sub.title || sub.name || '',
+            link: sub.url || sub.link || `/menus/${menu.slug || menu.id}/${sub.slug || sub.id}`,
+            icon: sub?.submenuassign?.submenu_icon || sub?.mm?.submenuassign?.submenu_icon || sub?.submenu_icon || '',
+            external: sub.external || false
+          }))
+        : []
+    }))
+  }
+  return legacyMenus.value
+})
+
+const menuIcon = (menu) => menu?.icon ? useMenuIconUrl(menu.icon) : ''
+const submenuIcon = (item) => item?.icon ? useMenuIconUrl(item.icon) : ''
 
 const openMenus = reactive({})
 watch(allMenus, (menus) => {
-  menus.forEach(m => { if (!(m.name in openMenus)) openMenus[m.name] = false })
+  menus.forEach(m => {
+    const key = m.label || m.name
+    if (!(key in openMenus)) openMenus[key] = false
+  })
 }, { immediate: true })
 const mobileMenuOpen = ref(false)
 const loginOpen = ref(false)
@@ -139,15 +190,21 @@ const closeMobileMenu = () => {
   Object.keys(openMenus).forEach(menu => (openMenus[menu] = false))
 }
 
+
 const isActive = link => route.path === link
 const isMenuRouteActive = menuName => {
-  const menu = allMenus.value.find(m => m.name === menuName)
+  const menu = allMenus.value.find(m => (m.label || m.name) === menuName)
+  if (!menu) return false
+  if (route.path === menu.link) return true
+  if (menu.link && route.path.startsWith(`${menu.link}/`)) return true
   return menu?.items.some(item => !item.external && item.link === route.path)
 }
 
 const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024)
 const updateWidth = () => (windowWidth.value = window.innerWidth)
-onMounted(() => window.addEventListener('resize', updateWidth))
+onMounted(() => {
+  window.addEventListener('resize', updateWidth)
+})
 onUnmounted(() => window.removeEventListener('resize', updateWidth))
 
 const isDesktop = computed(() => windowWidth.value > 768)
@@ -414,7 +471,8 @@ header {
 }
 
 .menu > a,
-.dropbtn {
+.dropbtn,
+.menu-toggle {
   padding: 6px 8px;
   border-radius: 6px;
   font-weight: 600;
@@ -427,6 +485,32 @@ header {
   transition: background 0.3s, color 0.3s;
   cursor: pointer;
   white-space: nowrap;
+}
+
+.menu-toggle {
+  border: none;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 8px;
+  cursor: pointer;
+}
+
+.menu-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.menu-icon,
+.submenu-icon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  margin-right: 8px;
 }
 
 .menu > a:hover,

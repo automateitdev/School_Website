@@ -19,6 +19,10 @@ const websiteStore = useWebsiteStore()
 
 onMounted(async () => {
   await websiteStore.fetchAllData()
+  if (!websiteStore.getMenuSubmenus.length) {
+    await websiteStore.fetchMenuSubmenus().catch(() => {})
+  }
+  await websiteStore.fetchFooterData().catch(() => {})
 })
 
 const getBasic = computed(() => websiteStore.getBasic)

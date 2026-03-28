@@ -5,8 +5,8 @@
     <div class="footer-top">
 
       <div class="footer-left">
-        <img :src="logo" alt="School Logo" class="logo" />
-        <p class="motto">"Education is Life"</p>
+        <img v-if="logo" :src="logo" alt="School Logo" class="logo" />
+        <p class="motto">{{ footerText }}</p>
         <div class="social-icons">
           <a href="https://www.facebook.com/" target="_blank" rel="noopener" aria-label="Facebook">
             <i class="fab fa-facebook-f"></i>
@@ -27,14 +27,23 @@
 
         <div class="footer-col" :class="{ open: openSection === 'external' }">
           <h4 @click="toggleSection('external')">
-            <span>External Link</span>
+            <span>{{ hasFooterLinks ? 'Footer Links' : 'External Links' }}</span>
             <i class="fas fa-chevron-down accordion-icon"></i>
           </h4>
           <div class="accordion-body">
             <ul>
-              <li v-for="link in externalLinks" :key="link.id">
-                <router-link :to="`/content/${link.id}`">{{ link.name }}</router-link>
-              </li>
+              <template v-if="hasFooterLinks">
+                <li v-for="link in normalizedFooterLinks" :key="link.url">
+                  <a :href="link.url" :target="link.external ? '_blank' : '_self'" rel="noopener">
+                    {{ link.label }}
+                  </a>
+                </li>
+              </template>
+              <template v-else>
+                <li v-for="link in externalLinks" :key="link.id">
+                  <router-link :to="`/content/${link.id}`">{{ link.name }}</router-link>
+                </li>
+              </template>
             </ul>
           </div>
         </div>
@@ -74,6 +83,27 @@
           </div>
         </div>
 
+        <div class="footer-col footer-col--support" :class="{ open: openSection === 'support' }">
+          <h4 @click="toggleSection('support')">
+            <span>Technical Support</span>
+            <i class="fas fa-chevron-down accordion-icon"></i>
+          </h4>
+          <div class="accordion-body">
+            <div class="contact-item">
+              <i class="fas fa-building"></i>
+              <span>{{ supportCompany }}</span>
+            </div>
+            <div class="contact-item">
+              <i class="fas fa-phone-alt"></i>
+              <span>{{ supportPhone }}</span>
+            </div>
+            <div class="contact-item">
+              <i class="fas fa-globe"></i>
+              <a :href="supportWebsite" target="_blank" rel="noopener">{{ supportWebsite }}</a>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -89,26 +119,58 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useWebsiteStore } from '@/stores/websiteStore'
-import { useFooterImageUrl, useHeaderLogoUrl } from '@/composables/useImageUrl'
+import { useHeaderLogoUrl } from '@/composables/useImageUrl'
 
 const websiteStore = useWebsiteStore()
 
 const getBasic = computed(() => websiteStore.getBasic)
+const footerData = computed(() => websiteStore.getFooterData || {})
 
 const logo = computed(() =>
-  getBasic.value?.logo ? useFooterImageUrl(getBasic.value.logo) : ''
+  getBasic.value?.logo ? useHeaderLogoUrl(getBasic.value.logo) : ''
 )
 
-const address = computed(() => getBasic.value?.address || '')
-const phone = computed(() => getBasic.value?.phone || '')
-const email = computed(() => getBasic.value?.email || '')
+const footerText = computed(() => footerData.value.footer_text || 'Education is Life')
+const address = computed(() => footerData.value.footer_address || getBasic.value?.address || '')
+const phone = computed(() => footerData.value.footer_phone || getBasic.value?.phone || '')
+const email = computed(() => footerData.value.footer_email || getBasic.value?.email || '')
+
+const footerLinks = computed(() =>
+  Array.isArray(footerData.value.footer_links) ? footerData.value.footer_links : []
+)
+
+const normalizedFooterLinks = computed(() =>
+  footerLinks.value.map(link => {
+    const url = link.link || link.url || link.href || ''
+    const label = link.title || link.name || link.label || link.text || 'Link'
+    const external = link.external || /^https?:\/\//i.test(url)
+    return {
+      label,
+      url,
+      external
+    }
+  })
+)
+
+const hasFooterLinks = computed(() => normalizedFooterLinks.value.length > 0)
+
+const supportCompany = computed(() => footerData.value.support_company || 'Automate IT Ltd.')
+const supportPhone = computed(() => footerData.value.support_phone || '+880 1234 567 890')
+const supportWebsite = computed(() => footerData.value.support_website || 'https://automateit.com')
 
 const currentYear = new Date().getFullYear()
 const schoolName = computed(() => getBasic.value?.name || 'Our School')
 
 const openSection = ref(null)
+const footerOpenSection = ref(null)
+
+onMounted(async () => {
+  if (!websiteStore.getFooterData) {
+    await websiteStore.fetchFooterData().catch(() => {})
+  }
+})
 function toggleSection(name) {
   openSection.value = openSection.value === name ? null : name
 }

@@ -5,7 +5,11 @@ export const useWebsiteStore = defineStore('website', {
     state: () => ({
         data: null,
         isLoading: false,
-        error: null
+        error: null,
+        menuSubmenus: [],
+        videoGalleries: [],
+        videoGalleryDetail: null,
+        footer: null
     }),
 
     getters: {
@@ -26,13 +30,86 @@ export const useWebsiteStore = defineStore('website', {
         getPhotoGalleries: (state) =>
             (state.data?.galleries ?? []).filter(g => g.content_type === 'image'),
 
-        getVideoGalleries: (state) =>
-            (state.data?.galleries ?? []).filter(g => g.content_type === 'video'),
+        getVideoGalleries: (state) => {
+            const explicit = state.videoGalleries ?? []
+            if (explicit.length > 0) return explicit
+            return (state.data?.galleries ?? []).filter(g => g.content_type === 'video')
+        },
+
+        getVideoGalleryBySlugOrId: (state) => (identifier) => {
+            if (!identifier) return null
+            const lookup = String(identifier).toLowerCase()
+            const numericId = Number(identifier)
+            const isNumber = !Number.isNaN(numericId)
+            const galleries = (state.videoGalleries && state.videoGalleries.length > 0)
+                ? state.videoGalleries
+                : (state.data?.galleries ?? [])
+            return galleries.find(item => {
+                return (
+                    (isNumber && item.id === numericId) ||
+                    item.slug?.toLowerCase() === lookup ||
+                    item.title?.toLowerCase() === lookup ||
+                    item.link?.toLowerCase() === lookup ||
+                    item.url?.toLowerCase() === lookup
+                )
+            }) ?? null
+        },
+
+        getVideoGalleryDetail: (state) => state.videoGalleryDetail,
+
+        getFooterData: (state) => state.footer ?? state.data?.footer ?? null,
 
         getFooter: (state) =>
             state.data?.footer ?? state.data?.web_presets?.essential_links ?? [],
 
         getMenuLists: (state) => state.data?.menulists ?? [],
+
+        getMenuSubmenus: (state) => state.menuSubmenus ?? [],
+
+        getMenuBySlugOrId: (state) => (identifier) => {
+            if (!identifier) return null
+            const lookup = String(identifier).toLowerCase()
+            const numericId = Number(identifier)
+            const isNumber = !Number.isNaN(numericId)
+            return (state.menuSubmenus || []).find(menu => {
+                return (
+                    (isNumber && menu.id === numericId) ||
+                    menu.slug?.toLowerCase() === lookup ||
+                    menu.title?.toLowerCase() === lookup ||
+                    menu.url?.toLowerCase() === lookup ||
+                    menu.link?.toLowerCase() === lookup
+                )
+            }) ?? null
+        },
+
+        getSubmenuBySlugOrId: (state) => (menuIdentifier, submenuIdentifier) => {
+            if (!menuIdentifier || !submenuIdentifier) return null
+            const menuLookup = String(menuIdentifier).toLowerCase()
+            const menuNumericId = Number(menuIdentifier)
+            const menuIsNumber = !Number.isNaN(menuNumericId)
+            const menu = (state.menuSubmenus || []).find(menu => {
+                return (
+                    (menuIsNumber && menu.id === menuNumericId) ||
+                    menu.slug?.toLowerCase() === menuLookup ||
+                    menu.title?.toLowerCase() === menuLookup ||
+                    menu.url?.toLowerCase() === menuLookup ||
+                    menu.link?.toLowerCase() === menuLookup
+                )
+            })
+            if (!menu || !Array.isArray(menu.submenus)) return null
+            const subLookup = String(submenuIdentifier).toLowerCase()
+            const subNumericId = Number(submenuIdentifier)
+            const subIsNumber = !Number.isNaN(subNumericId)
+            return menu.submenus.find(sub => {
+                return (
+                    (subIsNumber && sub.id === subNumericId) ||
+                    sub.slug?.toLowerCase() === subLookup ||
+                    sub.title?.toLowerCase() === subLookup ||
+                    sub.url?.toLowerCase() === subLookup ||
+                    sub.link?.toLowerCase() === subLookup
+                )
+            }) ?? null
+        },
 
         getDownloads: (state) => state.data?.downloads ?? [],
 
@@ -93,11 +170,19 @@ export const useWebsiteStore = defineStore('website', {
                 .map(m => ({
                     name: m.name,
                     menu_id: m.menu_id,
-                    items: (maps[m.menu_id] ?? []).map(sub => ({
-                        id: sub.id,
-                        name: sub.name,
-                        link: `/content/${sub.id}`
-                    }))
+                    items: (maps[m.menu_id] ?? []).map(sub => {
+                        const link = sub.link
+                            ? sub.link
+                            : sub.slug
+                                ? `/content/${sub.slug}`
+                                : `/content/${sub.id}`
+                        return {
+                            id: sub.id,
+                            name: sub.name,
+                            link,
+                            external: sub.external || false
+                        }
+                    })
                 }))
         }
     },
@@ -122,13 +207,28 @@ export const useWebsiteStore = defineStore('website', {
                     galleries: res.data.galleries || [],
                     menulists: res.data.menulists || [],
                     menumaps: res.data.menumaps || {},
-                    downloads: res.data.downloads || []
+                    downloads: res.data.downloads || [],
+                    footer: res.data.footer || null
                 }
                 
                 if (res.data.web_presets) {
                     cleanData.web_presets = {
                         background_img: res.data.web_presets.background_img || '',
                         essential_links: res.data.web_presets.essential_links || []
+                    }
+                }
+
+                if (!cleanData.footer) {
+                    const hasFooterRoot = res.data.footer_image || res.data.footer_text || res.data.footer_links || res.data.footer_address || res.data.footer_phone || res.data.footer_email
+                    if (hasFooterRoot) {
+                        cleanData.footer = {
+                            footer_image: res.data.footer_image || '',
+                            footer_text: res.data.footer_text || '',
+                            footer_links: res.data.footer_links || [],
+                            footer_address: res.data.footer_address || '',
+                            footer_phone: res.data.footer_phone || '',
+                            footer_email: res.data.footer_email || ''
+                        }
                     }
                 }
                 
@@ -148,6 +248,198 @@ export const useWebsiteStore = defineStore('website', {
             } finally {
                 this.isLoading = false
             }
+        },
+
+        async fetchMenuSubmenus() {
+            this.error = null
+
+            const buildFallbackMenus = () => {
+                const slugify = (value) => String(value || '')
+                    .toLowerCase()
+                    .trim()
+                    .replace(/\s+/g, '-')
+                    .replace(/[^a-z0-9-]/g, '')
+
+                const lists = this.data?.menulists ?? []
+                const maps = this.data?.menumaps ?? {}
+
+                return lists
+                    .filter(m => m.state === 1)
+                    .map(m => {
+                        const menuSlug = m.slug || slugify(m.name || m.menu_id)
+                        return {
+                            id: m.menu_id,
+                            slug: menuSlug,
+                            title: m.name || `Menu ${m.menu_id}`,
+                            link: m.link || `/menus/${menuSlug}`,
+                            menuassign: { menu_icon: m.menu_icon || '' },
+                            submenus: (maps[m.menu_id] ?? []).map(sub => {
+                                const submenuSlug = sub.slug || slugify(sub.name || sub.id)
+                                return {
+                                    id: sub.id,
+                                    slug: submenuSlug,
+                                    title: sub.name || `Submenu ${sub.id}`,
+                                    link: sub.link || `/menus/${menuSlug}/${submenuSlug}`,
+                                    submenuassign: { submenu_icon: sub.submenu_icon || '' },
+                                    external: sub.external || false,
+                                    description: sub.description || sub.content || ''
+                                }
+                            })
+                        }
+                    })
+            }
+
+            const endpoints = [
+                'menu-submenus',
+                'menumsubmenus',
+                'menus',
+                'menus-submenus',
+                'menu-submenu',
+                'menu/submenus'
+            ]
+            let response = null
+            for (const endpoint of endpoints) {
+                try {
+                    response = await axios.get(endpoint)
+                    if (response?.data) break
+                } catch (innerError) {
+                    response = null
+                }
+            }
+
+            const fallbackMenus = buildFallbackMenus()
+            if (!response || !response.data) {
+                if (fallbackMenus.length) {
+                    this.menuSubmenus = fallbackMenus
+                    return this.menuSubmenus
+                }
+                this.menuSubmenus = []
+                this.error = 'Menu API did not return valid data'
+                return this.menuSubmenus
+            }
+
+            const payload = Array.isArray(response.data)
+                ? response.data
+                : response.data.data ?? response.data.menuSubmenus ?? response.data.menu_submenus ?? []
+
+            this.menuSubmenus = Array.isArray(payload) ? payload : []
+            if (!this.menuSubmenus.length && fallbackMenus.length) {
+                this.menuSubmenus = fallbackMenus
+            }
+            return this.menuSubmenus
+        },
+
+        async fetchFooterData() {
+            this.error = null
+            if (this.footer || this.data?.footer) {
+                return this.footer || this.data.footer
+            }
+
+            const endpoints = ['footer', 'footer-data', 'footerinfo', 'indexdata']
+            let response = null
+
+            for (const endpoint of endpoints) {
+                try {
+                    response = await axios.get(endpoint)
+                    if (response?.data) break
+                } catch (innerError) {
+                    response = null
+                }
+            }
+
+            if (!response || !response.data) {
+                return null
+            }
+
+            let payload = response.data
+            if (payload.data) payload = payload.data
+            if (payload.footer) payload = payload.footer
+
+            const normalized = {
+                footer_image: payload.footer_image || '',
+                footer_text: payload.footer_text || '',
+                footer_links: Array.isArray(payload.footer_links) ? payload.footer_links : [],
+                footer_address: payload.footer_address || '',
+                footer_phone: payload.footer_phone || '',
+                footer_email: payload.footer_email || ''
+            }
+
+            this.footer = normalized
+            if (!this.data) this.data = {}
+            this.data.footer = normalized
+            return normalized
+        },
+
+        async fetchVideoGalleries() {
+            this.error = null
+            const endpoints = ['video-galleries', 'videogalleries', 'galleries?type=video']
+            let response = null
+
+            for (const endpoint of endpoints) {
+                try {
+                    response = await axios.get(endpoint)
+                    if (response?.data) break
+                } catch (innerError) {
+                    response = null
+                }
+            }
+
+            const fallbackVideos = (this.data?.galleries ?? []).filter(g => g.content_type === 'video')
+            if (!response || !response.data) {
+                this.videoGalleries = fallbackVideos
+                return this.videoGalleries
+            }
+
+            const payload = Array.isArray(response.data)
+                ? response.data
+                : response.data.data ?? response.data.videoGalleries ?? response.data.videogalleries ?? response.data.galleries ?? []
+
+            this.videoGalleries = Array.isArray(payload) ? payload : []
+            if (!this.videoGalleries.length) {
+                this.videoGalleries = fallbackVideos
+            }
+            return this.videoGalleries
+        },
+
+        async fetchVideoGalleryDetail(identifier) {
+            this.error = null
+            this.videoGalleryDetail = null
+
+            const normalizedId = String(identifier ?? '').trim()
+            const isUrlLike = /^(https?:)?\/\//i.test(normalizedId)
+            const hasPathChars = normalizedId.includes('/')
+            const isSafeIdentifier = /^[a-zA-Z0-9-_]+$/.test(normalizedId)
+            const isSingleNonNumericChar = normalizedId.length === 1 && Number.isNaN(Number(normalizedId))
+
+            const fallback = this.getVideoGalleryBySlugOrId(normalizedId)
+            if (!normalizedId || isUrlLike || hasPathChars || isSingleNonNumericChar || (!isSafeIdentifier && fallback)) {
+                this.videoGalleryDetail = fallback
+                return fallback
+            }
+
+            const endpoints = [`video-galleries/${normalizedId}`, `videogalleries/${normalizedId}`]
+            let response = null
+
+            for (const endpoint of endpoints) {
+                try {
+                    response = await axios.get(endpoint)
+                    if (response?.data) break
+                } catch (innerError) {
+                    response = null
+                }
+            }
+
+            if (!response || !response.data) {
+                this.videoGalleryDetail = fallback
+                return fallback
+            }
+
+            const payload = Array.isArray(response.data)
+                ? response.data[0]
+                : response.data.data ?? response.data
+
+            this.videoGalleryDetail = payload
+            return payload
         },
 
         getNoticeById(id) {

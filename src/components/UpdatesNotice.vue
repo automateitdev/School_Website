@@ -69,7 +69,7 @@ const repeatedNotices = computed(() =>
 )
 
 const goToNotice = (notice) => {
-  router.push(`/notice/${notice.id}`)
+  router.push(`/notices/${notice.id}`)
 }
 
 const startScroll = () => {

@@ -38,9 +38,17 @@ export const useFooterImageUrl = (footerImage) => {
 // Sliders
 // pattern: storage/{institute_id}/images/slider/{file}
 // ─────────────────────────────────────────────
-export const useSliderImageUrl = (sliderImg) => {
+export const useSliderImageUrl = (slider, sliderInstituteId = null) => {
+    if (!slider) return ''
+
+    const sliderImg = typeof slider === 'object'
+        ? slider.slider_img || ''
+        : slider
+
     if (!sliderImg) return ''
-    return `${STORAGE_BASE}${getInstId()}/images/slider/${sliderImg}`
+
+    const instId = sliderInstituteId || (typeof slider === 'object' && slider.institute_id) || getInstId()
+    return `${STORAGE_BASE}${instId}/images/slider/${sliderImg}`
 }
 
 // ─────────────────────────────────────────────
@@ -65,6 +73,82 @@ export const useNoticeFileUrl = (file, noticeInstituteId = null) => {
     if (!file) return ''
     const instId = noticeInstituteId || getInstId()
     return `${STORAGE_BASE}${instId}/images/notice/${file}`
+}
+
+export const useNewsFileUrl = (file, instituteId = null) => {
+    if (!file) return ''
+    const instId = instituteId || getInstId()
+    return `${STORAGE_BASE}${instId}/images/news/${file}`
+}
+
+// ─────────────────────────────────────────────
+// Videos
+// pattern: storage/{institute_id}/videos/{file}
+// ─────────────────────────────────────────────
+export const useVideoUrl = (videoPath, videoInstituteId = null) => {
+    if (!videoPath) return ''
+
+    let path = typeof videoPath === 'object'
+        ? videoPath.url || videoPath.video || videoPath.path || ''
+        : String(videoPath || '')
+
+    path = path.trim()
+    if (!path) return ''
+
+    const addHttps = (value) => {
+        if (value.startsWith('//')) return `https:${value}`
+        if (/^www\./i.test(value)) return `https://${value}`
+        return value
+    }
+
+    const toYouTubeEmbed = (value) => {
+        const idMatch = value.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|v\/))([A-Za-z0-9_-]{11})/i)
+        if (idMatch) return `https://www.youtube.com/embed/${idMatch[1]}`
+        return value
+    }
+
+    const toVimeoEmbed = (value) => {
+        const idMatch = value.match(/vimeo\.com\/(?:video\/)?(\d+)/i)
+        if (idMatch) return `https://player.vimeo.com/video/${idMatch[1]}`
+        return value
+    }
+
+    if (/^(?:www\.|youtu\.be|youtube\.com|vimeo\.com)/i.test(path)) {
+        const absolute = addHttps(path)
+        if (/youtube\.com|youtu\.be/i.test(absolute)) return toYouTubeEmbed(absolute)
+        if (/vimeo\.com/i.test(absolute)) return toVimeoEmbed(absolute)
+        return absolute
+    }
+
+    const absolutePattern = /^(?:[a-zA-Z][a-zA-Z0-9+.-]*:)?\/\//
+    if (absolutePattern.test(path)) {
+        const absolute = addHttps(path)
+        if (/youtube\.com|youtu\.be/i.test(absolute)) return toYouTubeEmbed(absolute)
+        if (/vimeo\.com/i.test(absolute)) return toVimeoEmbed(absolute)
+        return absolute
+    }
+
+    const schemeMatch = path.match(/^([a-zA-Z][a-zA-Z0-9+.-]*):/)
+    if (schemeMatch) {
+        const scheme = schemeMatch[1].toLowerCase()
+        const allowedSchemes = ['http', 'https', 'data', 'blob', 'mailto', 'ftp', 'ftps', 'about']
+        if (allowedSchemes.includes(scheme)) return path
+        return ''
+    }
+
+    if (path.startsWith('/storage/') || path.startsWith('/videos/')) {
+        return `https://web.academyims.com${path}`
+    }
+    if (path.startsWith('storage/')) {
+        return `https://web.academyims.com/${path}`
+    }
+
+    const instId = videoInstituteId || getInstId()
+    const normalizedPath = path.replace(/^\/+/, '')
+    if (normalizedPath.startsWith('videos/')) {
+        return `${STORAGE_BASE}${instId}/${normalizedPath}`
+    }
+    return `${STORAGE_BASE}${instId}/videos/${normalizedPath}`
 }
 
 // ─────────────────────────────────────────────

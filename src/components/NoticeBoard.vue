@@ -19,7 +19,7 @@
 
     <ul v-else-if="visibleNotices.length > 0">
       <li v-for="n in visibleNotices" :key="n.id" class="notice-item">
-        <router-link :to="`/notice/${n.id}`" class="notice-title-link">
+        <router-link :to="`/notices/${n.id}`" class="notice-title-link">
           {{ n.name || n.title }}
         </router-link>
         <small class="notice-date">{{ formatDate(n.created_at || n.date) }}</small>
@@ -30,7 +30,7 @@
 
     <router-link
       v-if="filteredNotices.length > limit"
-      :to="`/notices/${selectedType}`"
+      to="/notices"
       class="see-more"
     >
       See more →
@@ -39,16 +39,30 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useWebsiteStore } from '@/stores/websiteStore'
 
 const websiteStore = useWebsiteStore()
 
 const limit = 2
-const types = ['general', 'academics', 'admission']
+const fallbackTypes = ['general', 'academics', 'admission']
 const selectedType = ref('general')
 
 const allNotices = computed(() => websiteStore.getNotices)
+
+const types = computed(() => {
+  const extracted = allNotices.value
+    .map(n => String(n.type || '').trim().toLowerCase())
+    .filter(Boolean)
+
+  return extracted.length ? [...new Set(extracted)] : fallbackTypes
+})
+
+watch(types, (typesList) => {
+  if (typesList.length && !typesList.includes(selectedType.value)) {
+    selectedType.value = typesList[0]
+  }
+}, { immediate: true })
 
 const filteredNotices = computed(() =>
   allNotices.value.filter(n => n.type === selectedType.value)

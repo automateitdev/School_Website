@@ -30,7 +30,7 @@ const slides = computed(() => {
   const storeSliders = websiteStore.getSliders
   return Array.isArray(storeSliders)
     ? storeSliders.map(s => ({
-        src: useSliderImageUrl(s.slider_img),
+        src: useSliderImageUrl(s),
         time: s.title || s.description || ''
       }))
     : []

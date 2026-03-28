@@ -10,19 +10,42 @@
       <div v-else>
         <div class="video-grid">
           <div
-            v-for="video in videos.slice(0,3)"
+            v-for="video in videos.slice(0,4)"
             :key="video.id"
             class="video-item"
-            @click="goToVideo(video.id)"
+            @click="goToVideo(video)"
             style="cursor:pointer"
           >
-            <video v-if="video.url.endsWith('.mp4')" :src="video.url" controls class="video-preview" @click.stop></video>
+            <video v-if="/\.(mp4|webm|ogg)(\?.*)?$/i.test(video.url)" :src="video.url" controls class="video-preview" @click.stop></video>
             <iframe v-else :src="video.url" frameborder="0" allowfullscreen class="video-preview"></iframe>
             <p class="video-title">{{ video.title }}</p>
           </div>
         </div>
-        <div class="see-more">
+        <div class="see-more" v-if="websiteStore.getVideoGalleries.length > 4">
           <router-link to="/videos" class="see-more-link">See More</router-link>
+        </div>
+      </div>
+
+      <div v-if="activeVideo" class="video-modal" @click.self="activeVideo = null">
+        <div class="video-modal-content" @click.stop>
+          <button class="close-button" @click="activeVideo = null">×</button>
+          <div class="video-modal-header">
+            <h2>{{ activeVideo.title }}</h2>
+          </div>
+          <div class="video-frame">
+            <iframe
+              v-if="isEmbedUrl"
+              :src="activeVideoSource"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+            ></iframe>
+            <video
+              v-else
+              :src="activeVideoSource"
+              controls
+              autoplay
+            ></video>
+          </div>
         </div>
       </div>
 
@@ -47,7 +70,7 @@
             </div>
           </div>
         </div>
-        <div class="see-more">
+        <div class="see-more" v-if="websiteStore.getPhotoGalleries.length > 5">
           <router-link to="/photogallery" class="see-more-link">See More Folders</router-link>
         </div>
       </div>
@@ -62,7 +85,7 @@
           <router-link
             v-for="item in latestNews"
             :key="item.id"
-            :to="{ path: '/news', query: { id: item.id } }"
+            :to="item.link || `/news/${item.id}`"
             class="news-card-link"
           >
             <div class="news-card">
@@ -89,47 +112,153 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import axios from '@/plugins/axios'
 import { useWebsiteStore } from '@/stores/websiteStore'
-import { useGalleryImageUrl, useNoticeFileUrl } from '@/composables/useImageUrl'
+import { useGalleryImageUrl, useNoticeFileUrl, useVideoUrl, useNewsFileUrl } from '@/composables/useImageUrl'
 
-const router = useRouter()
 const websiteStore = useWebsiteStore()
+const router = useRouter()
+const activeVideo = ref(null)
+const newsItems = ref([])
+const newsLoadError = ref('')
+
+const slugify = (value) => String(value || '')
+  .toLowerCase()
+  .trim()
+  .replace(/\s+/g, '-')
+  .replace(/[^a-z0-9-]/g, '')
+
+const getVideoRouteId = (video) => {
+  if (!video) return ''
+  if (video.id || video.slug) return String(video.id ?? video.slug)
+  if (video.title) return slugify(video.title)
+  return ''
+}
+
+const parseNewsResponse = (payload) => {
+  if (!payload) return []
+  if (Array.isArray(payload)) return payload
+  if (Array.isArray(payload.data)) return payload.data
+  if (Array.isArray(payload.news)) return payload.news
+  return []
+}
+
+const normalizeNewsItem = (item) => {
+  if (!item) return null
+  const dateValue = item.date || item.created_at || ''
+  const summaryValue = item.summary || (item.content ? item.content.replace(/<[^>]+>/g, '').slice(0, 180) : '')
+  return {
+    id: item.id,
+    title: item.title || item.name || 'Untitled News',
+    date: dateValue,
+    body: item.content || item.summary || '',
+    summary: summaryValue,
+    image: item.image ? useNewsFileUrl(item.image, item.institute_id) : '',
+    file_url: item.file ? useNewsFileUrl(item.file, item.institute_id) : '',
+    file_type: item.file_type || item.fileType || '',
+    link: `/news/${item.id}`
+  }
+}
+
+const loadLatestNews = async () => {
+  try {
+    const response = await axios.get('news')
+    const items = parseNewsResponse(response.data)
+    if (items.length === 0) {
+      throw new Error('Empty news response')
+    }
+    newsItems.value = items
+      .map(normalizeNewsItem)
+      .filter(Boolean)
+      .slice(0, 3)
+  } catch (error) {
+    newsLoadError.value = error?.message || 'Could not load news'
+    try {
+      const fallbackResponse = await axios.get('indexdata')
+      const fallbackItems = parseNewsResponse(fallbackResponse.data)
+      newsItems.value = fallbackItems
+        .map(normalizeNewsItem)
+        .filter(Boolean)
+        .slice(0, 3)
+    } catch (fallbackError) {
+      newsLoadError.value = fallbackError?.message || 'Could not load news'
+    }
+  }
+}
+
+onMounted(() => {
+  loadLatestNews()
+})
 
 const videos = computed(() =>
-  websiteStore.getVideoGalleries.slice(0, 3).map(g => ({
-    id: g.id,
-    title: g.title,
-    url: g.contents?.[0] || ''
-  }))
+  websiteStore.getVideoGalleries
+    .slice(0, 4)
+    .map(g => {
+      const source = g.contents?.[0] || g.content?.[0] || g.video_url || g.embed_url || g.media_url || g.url || g.path || ''
+      return {
+        id: getVideoRouteId(g),
+        title: g.title,
+        url: useVideoUrl(source, g.institute_id),
+        contents: g.contents || g.content || [],
+        video_url: g.video_url,
+        embed_url: g.embed_url,
+        media_url: g.media_url,
+        institute_id: g.institute_id
+      }
+    })
+    .filter(video => video.id && video.url)
 )
 
 const photos = computed(() =>
-  websiteStore.getPhotoGalleries.slice(0, 3).map(g => ({
+  websiteStore.getPhotoGalleries.slice(0, 5).map(g => ({
     id: g.id,
     title: g.title,
-    url: g.contents?.[0]
-      ? useGalleryImageUrl(g.album_folder, g.contents[0], g.institute_id)
-      : ''
+    url: useGalleryImageUrl(g.album_folder, g.image || g.contents?.[0], g.institute_id)
   }))
 )
 
-const goToVideo = (id) => {
-  router.push({ name: 'VideoDetail', params: { id } })
+const goToVideo = (video) => {
+  if (!video) return
+  activeVideo.value = video
 }
 
 const goToFolder = (id) => {
+  if (!id) return
   router.push(`/photogallery/${id}`)
 }
+
+const getNoticeImage = (notice) => {
+  if (!notice) return ''
+  if (notice.image) return useNoticeFileUrl(notice.image, notice.institute_id)
+  if (notice.file && /\.(jpe?g|png|gif|webp|bmp|svg)$/i.test(notice.file)) {
+    return useNoticeFileUrl(notice.file, notice.institute_id)
+  }
+  return ''
+}
+
+const activeVideoSource = computed(() => {
+  if (!activeVideo.value) return ''
+  const source = activeVideo.value.contents?.[0] || activeVideo.value.content?.[0] || activeVideo.value.video_url || activeVideo.value.embed_url || activeVideo.value.media_url || activeVideo.value.url || activeVideo.value.path || ''
+  return useVideoUrl(source, activeVideo.value.institute_id)
+})
+
+const isEmbedUrl = computed(() => {
+  const url = activeVideoSource.value || ''
+  return /embed|youtube|vimeo|\/video\//i.test(url)
+})
+
 const latestNews = computed(() => {
+  if (newsItems.value.length > 0) return newsItems.value
   const notices = websiteStore.getNotices || []
   return notices.slice(0, 3).map(n => ({
     id: n.id,
     title: n.title,
     date: n.created_at ? new Date(n.created_at).toLocaleDateString() : '',
-    body: n.content || '',
-    image: n.file ? useNoticeFileUrl(n.file) : ''
+    body: n.content || n.description || '',
+    image: getNoticeImage(n),
+    link: `/notices/${n.id}`
   }))
 })
 </script>
@@ -173,9 +302,21 @@ const latestNews = computed(() => {
 
 .video-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-template-columns: repeat(4, minmax(220px, 1fr));
   gap: 20px;
   margin-bottom: 40px;
+}
+
+@media (max-width: 1100px) {
+  .video-grid {
+    grid-template-columns: repeat(2, minmax(220px, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .video-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .video-item {
@@ -188,6 +329,75 @@ const latestNews = computed(() => {
 
 .video-item:hover {
   transform: translateY(-6px);
+}
+
+.video-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+}
+
+.video-modal-content {
+  width: 100%;
+  max-width: 1200px;
+  height: 100%;
+  max-height: 100%;
+  background: #111;
+  border-radius: 16px;
+  padding: 24px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.video-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.video-modal-header h2 {
+  color: #fff;
+  font-size: 1.4rem;
+  margin: 0;
+}
+
+.close-button {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.18);
+  color: #fff;
+  font-size: 1.8rem;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.video-frame {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.video-frame iframe,
+.video-frame video {
+  width: 100%;
+  height: 100%;
+  border: 0;
 }
 
 .video-title {

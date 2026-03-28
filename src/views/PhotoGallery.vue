@@ -11,19 +11,18 @@
         <p>Could not load photo albums: {{ websiteStore.error }}</p>
       </div>
 
-      <div v-else class="photo-grid">
-        <div
+      <div v-else class="photo-row">
+        <router-link
           v-for="folder in albums"
           :key="folder.id"
+          :to="`/photogallery/${folder.id}`"
           class="photo-item"
-          @click="goToFolder(folder.id)"
         >
           <img :src="folder.url" :alt="folder.title" loading="lazy" />
           <div class="photo-info">
              <p class="photo-title">{{ folder.title }}</p>
-             <button class="view-folder-btn">View Folder</button>
           </div>
-        </div>
+        </router-link>
       </div>
     </div>
   </section>
@@ -31,23 +30,25 @@
 
 <script setup>
 import { computed } from 'vue'
-import { useRouter } from 'vue-router'
 import { useWebsiteStore } from '@/stores/websiteStore'
+import { useGalleryImageUrl } from '@/composables/useImageUrl'
 
-const router = useRouter()
 const websiteStore = useWebsiteStore()
 
 const albums = computed(() => {
-  return websiteStore.getPhotoGalleries.map(g => ({
-    id: g.id,
-    title: g.title,
-    url: `https://web.academyims.com/storage/${g?.institute_id}/images/gallery/${g?.album_folder}/${g?.image}`
-  }))
-})
+  return websiteStore.getPhotoGalleries.map(g => {
+    const source = g.media_url || g.image || g.contents?.[0] || ''
+    const url = typeof source === 'string' && /^(https?:)?\/\//.test(source)
+      ? source
+      : useGalleryImageUrl(g.album_folder, source, g.institute_id)
 
-const goToFolder = (id) => {
-  router.push(`/photogallery/${id}`)
-}
+    return {
+      id: g.id,
+      title: g.title,
+      url
+    }
+  })
+})
 </script>
 
 <style scoped>
@@ -70,19 +71,23 @@ const goToFolder = (id) => {
   color: #0d6efd;
 }
 
-.photo-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 25px;
+.photo-row {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding-bottom: 10px;
 }
 
 .photo-item {
+  flex: 0 0 280px;
   background: #fff;
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
   cursor: pointer;
   transition: transform 0.3s;
+  text-decoration: none;
+  color: inherit;
 }
 
 .photo-item:hover {
@@ -110,31 +115,16 @@ const goToFolder = (id) => {
   color: #333;
 }
 
-.view-folder-btn {
-  padding: 8px 16px;
-  border-radius: 6px;
-  background-color: #f0f4ff;
-  color: #0d6efd;
-  border: 1px solid #0d6efd;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.view-folder-btn:hover {
-  background-color: #0d6efd;
-  color: #fff;
-}
 
 @media (max-width: 768px) {
-  .photo-grid { 
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
+  .photo-row {
+    gap: 16px;
   }
 }
 
 @media (max-width: 480px) {
-  .photo-grid { 
-    grid-template-columns: 1fr; 
+  .photo-item {
+    flex: 0 0 240px;
   }
 }
 

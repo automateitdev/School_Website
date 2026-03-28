@@ -3,11 +3,12 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 import Downloads from '../views/Downloads.vue'
 import Contact from '../views/Contact.vue'
-import NoticesPage from '../views/NoticesPage.vue'
-import NoticeDetails from '../views/NoticeDetails.vue'
+import NoticesPage from '../views/notices/index.vue'
+import NoticeDetails from '../views/notices/[id].vue'
 import AboutDetails from '../views/AboutDetails.vue'
 import ContentPage from '../views/ContentPage.vue'
-import NewsPage from '../views/NewsPage.vue'
+import NewsList from '../views/news/index.vue'
+import NewsDetail from '../views/news/[id].vue'
 import VideoGallery from '../views/VideoGallery.vue'
 import PhotoGallery from '../views/PhotoGallery.vue'
 import { ref } from 'vue'
@@ -33,33 +34,53 @@ const routes = [
     meta: { banner: makeBanner('Contact Us', 'We would love to hear from you') }
   },
   {
-    path: '/notices/:type',
-    component: NoticesPage,
-    props: true,
-    meta: { banner: makeBanner('Notices') }
+    path: '/menus',
+    component: () => import('../views/Menus.vue'),
+    meta: { banner: makeBanner('Menus') }
   },
   {
-    path: '/notice/:id',
+    path: '/menus/:menuSlug/:submenuSlug',
+    name: 'MenuSubmenuDetail',
+    component: () => import('../views/MenuDetail.vue'),
+    props: true,
+    meta: { banner: makeBanner('Menu Details') }
+  },
+  {
+    path: '/menus/:menuSlug',
+    name: 'MenuDetail',
+    component: () => import('../views/MenuDetail.vue'),
+    props: true,
+    meta: { banner: makeBanner('Menu Details') }
+  },
+  {
+    path: '/notices',
+    component: NoticesPage,
+    meta: { banner: makeBanner('All Notices') }
+  },
+  {
+    path: '/notices/:id',
+    name: 'NoticeDetails',
     component: NoticeDetails,
     props: true,
+    alias: '/notice/:id',
     meta: { banner: makeBanner('Notice Details') }
   },
   {
     path: '/news',
-    component: NewsPage,
-    meta: { banner: makeBanner('News & Events') }
+    component: NewsList,
+    meta: { banner: makeBanner('News') }
+  },
+  {
+    path: '/news/:id',
+    name: 'NewsDetail',
+    component: NewsDetail,
+    props: true,
+    meta: { banner: makeBanner('News') }
   },
   {
     path: '/videos',
     component: VideoGallery,
     meta: { banner: makeBanner('Video Gallery') }
-  },
-  {
-    path: '/videos/:id',
-    name: 'VideoDetail',
-    component: () => import('../views/VideoDetail.vue'),
-    props: true,
-    meta: { banner: makeBanner('Video Details') }
   },
 
   {
@@ -69,8 +90,8 @@ const routes = [
   },
   {
     path: '/photogallery/:id',
-    name: 'FolderView',
-    component: () => import('../views/FolderView.vue'),
+    name: 'PhotoAlbum',
+    component: () => import('../views/photogallery/[id].vue'),
     props: true,
     meta: { banner: makeBanner('Photo Album') }
   },
@@ -106,14 +127,6 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   isLoading.value = true
-
-  if (to.path.startsWith('/notices/')) {
-    const validTypes = ['general', 'academics', 'admission']
-    if (!validTypes.includes(to.params.type)) {
-      return next('/notices/general')
-    }
-  }
-
   next()
 })
 

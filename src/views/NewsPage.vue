@@ -56,6 +56,22 @@ import { useNoticeFileUrl } from '@/composables/useImageUrl'
 const route = useRoute()
 const websiteStore = useWebsiteStore()
 
+const getNoticeImage = (notice) => {
+  if (!notice) return ''
+  if (notice.image) return useNoticeFileUrl(notice.image, notice.institute_id)
+  if (notice.file && /\.(jpe?g|png|gif|webp|bmp|svg)$/i.test(notice.file)) {
+    return useNoticeFileUrl(notice.file, notice.institute_id)
+  }
+  return ''
+}
+
+const getNoticePdf = (notice) => {
+  if (!notice || !notice.file) return ''
+  return /\.(pdf)$/i.test(notice.file)
+    ? useNoticeFileUrl(notice.file, notice.institute_id)
+    : ''
+}
+
 const newsItems = computed(() => {
   const notices = websiteStore.getNotices || []
   return notices.map(n => ({
@@ -63,9 +79,8 @@ const newsItems = computed(() => {
     title: n.title,
     date: n.created_at ? new Date(n.created_at).toLocaleDateString() : '',
     body: n.content || n.description || '',
-    // Notice files from API are stored at storage/{institute_id}/images/notice/{file}
-    image: n.file ? useNoticeFileUrl(n.file, n.institute_id) : '',
-    pdf: n.file ? useNoticeFileUrl(n.file, n.institute_id) : ''
+    image: getNoticeImage(n),
+    pdf: getNoticePdf(n)
   }))
 })
 
