@@ -42,7 +42,7 @@
             <a
               v-if="noticeFileUrl(notice)"
               :href="noticeFileUrl(notice)"
-              target="_blank"
+              :download="getDownloadFilename(noticeFileUrl(notice))"
               rel="noopener noreferrer"
               class="action-btn download-btn"
             >
@@ -88,6 +88,12 @@ const noticeFileUrl = (notice) => {
   if (!file) return ''
   if (file.startsWith('http')) return file
   return useNoticeFileUrl(file, notice.institute_id)
+}
+
+const getDownloadFilename = (url) => {
+  if (!url) return 'download'
+  const parts = String(url).split('/').pop()?.split('?')[0] || 'download'
+  return parts || 'download'
 }
 
 const formatDate = (date) =>

@@ -22,7 +22,7 @@
         <a
           v-if="noticeFileUrl"
           :href="noticeFileUrl"
-          target="_blank"
+          :download="getDownloadFilename(noticeFileUrl)"
           rel="noopener noreferrer"
           class="action-btn download-btn"
         >
@@ -58,6 +58,12 @@ const formatDate = (date) =>
         day: 'numeric'
       })
     : ''
+
+const getDownloadFilename = (url) => {
+  if (!url) return 'download'
+  const parts = String(url).split('/').pop()?.split('?')[0] || 'download'
+  return parts || 'download'
+}
 
 const loadNotice = async (id) => {
   loading.value = true

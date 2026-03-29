@@ -30,8 +30,7 @@
           <a
             v-if="item.file_url && item.file_type.toLowerCase() === 'pdf'"
             :href="item.file_url"
-            target="_blank"
-            download
+            :download="getDownloadFilename(item.file_url)"
             rel="noreferrer noopener"
             class="btn download-btn"
           >
@@ -81,6 +80,12 @@ const parseResponse = (payload) => {
   return []
 }
 
+const getDownloadFilename = (url) => {
+  if (!url) return 'download'
+  const parts = String(url).split('/').pop()?.split('?')[0] || 'download'
+  return parts || 'download'
+}
+
 const fetchNews = async () => {
   isLoading.value = true
   error.value = ''
@@ -98,8 +103,11 @@ const fetchNews = async () => {
   }
 
   try {
-    const fallbackResponse = await axios.get('indexdata')
-    const fallbackData = parseResponse(fallbackResponse.data)
+    const fallbackResponse = await fetch('/indexdata.json')
+    if (!fallbackResponse.ok) {
+      throw new Error('Fallback news source unavailable')
+    }
+    const fallbackData = parseResponse(await fallbackResponse.json())
     newsItems.value = fallbackData.map(normalizeNews)
   } catch (fallbackError) {
     error.value = fallbackError?.message || 'Could not load news.'

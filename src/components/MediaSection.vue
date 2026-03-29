@@ -195,18 +195,25 @@ const loadLatestNews = async () => {
       .map(normalizeNewsItem)
       .filter(Boolean)
       .slice(0, 3)
+    newsLoadError.value = ''
+    return
   } catch (error) {
-    newsLoadError.value = error?.message || 'Could not load news'
-    try {
-      const fallbackResponse = await axios.get('indexdata')
-      const fallbackItems = parseNewsResponse(fallbackResponse.data)
-      newsItems.value = fallbackItems
-        .map(normalizeNewsItem)
-        .filter(Boolean)
-        .slice(0, 3)
-    } catch (fallbackError) {
-      newsLoadError.value = fallbackError?.message || 'Could not load news'
+    // Try the static fallback when /news is unavailable.
+  }
+
+  try {
+    const fallbackResponse = await fetch('/indexdata.json')
+    if (!fallbackResponse.ok) {
+      throw new Error('Fallback news source unavailable')
     }
+    const fallbackItems = parseNewsResponse(await fallbackResponse.json())
+    newsItems.value = fallbackItems
+      .map(normalizeNewsItem)
+      .filter(Boolean)
+      .slice(0, 3)
+    newsLoadError.value = ''
+  } catch (fallbackError) {
+    newsLoadError.value = fallbackError?.message || 'Could not load news'
   }
 }
 

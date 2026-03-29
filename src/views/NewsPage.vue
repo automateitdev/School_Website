@@ -38,7 +38,7 @@
           </div>
           <p v-if="singleNews.date" class="news-date">{{ singleNews.date }}</p>
           <div v-if="singleNews.body" class="news-body" v-html="singleNews.body"></div>
-          <a v-if="singleNews.pdf" :href="singleNews.pdf" target="_blank" class="download-btn">
+          <a v-if="singleNews.pdf" :href="singleNews.pdf" :download="getDownloadFilename(singleNews.pdf)" class="download-btn">
             Download PDF
           </a>
         </div>
@@ -70,6 +70,12 @@ const getNoticePdf = (notice) => {
   return /\.(pdf)$/i.test(notice.file)
     ? useNoticeFileUrl(notice.file, notice.institute_id)
     : ''
+}
+
+const getDownloadFilename = (url) => {
+  if (!url) return 'download'
+  const parts = String(url).split('/').pop()?.split('?')[0] || 'download'
+  return parts || 'download'
 }
 
 const newsItems = computed(() => {

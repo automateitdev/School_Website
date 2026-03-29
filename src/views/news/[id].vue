@@ -31,8 +31,7 @@
         <a
           v-if="newsItem.file_url && isPdfFile"
           :href="newsItem.file_url"
-          target="_blank"
-          download
+          :download="getDownloadFilename(newsItem.file_url)"
           rel="noreferrer noopener"
           class="btn download-btn"
         >
@@ -82,6 +81,12 @@ const parseResponse = (payload) => {
   return []
 }
 
+const getDownloadFilename = (url) => {
+  if (!url) return 'download'
+  const parts = String(url).split('/').pop()?.split('?')[0] || 'download'
+  return parts || 'download'
+}
+
 const loadNewsItem = async (identifier) => {
   if (!identifier) return
   isLoading.value = true
@@ -102,8 +107,11 @@ const loadNewsItem = async (identifier) => {
   }
 
   try {
-    const fallbackResponse = await axios.get('indexdata')
-    const fallbackData = parseResponse(fallbackResponse.data)
+    const fallbackResponse = await fetch('/indexdata.json')
+    if (!fallbackResponse.ok) {
+      throw new Error('Fallback news source unavailable')
+    }
+    const fallbackData = parseResponse(await fallbackResponse.json())
     const item = fallbackData.find((entry) => String(entry.id) === String(identifier)) || null
     if (!item) {
       throw new Error('News item not found.')
