@@ -29,11 +29,6 @@ export const useHeaderLogoUrl = (headerImage) => {
     return `${STORAGE_BASE}${getInstId()}/images/webheader/${headerImage}`
 }
 
-export const useFooterImageUrl = (footerImage) => {
-    if (!footerImage) return ''
-    return `${STORAGE_BASE}${getInstId()}/images/webfooter/${footerImage}`
-}
-
 // ─────────────────────────────────────────────
 // Sliders
 // pattern: storage/{institute_id}/images/slider/{file}
@@ -96,6 +91,22 @@ export const useNoticeFileUrl = (file, noticeInstituteId = null, noticeType = ''
     const typeSegment = String(noticeType || '').trim().toLowerCase()
     const typePath = typeSegment ? `${typeSegment}/` : ''
     return `${STORAGE_BASE}${instId}/images/notice/${typePath}${filepath}`
+}
+
+export const useFooterImageUrl = (footerImage) => {
+    if (!footerImage) return ''
+    const image = typeof footerImage === 'object'
+        ? footerImage.url || footerImage.path || ''
+        : String(footerImage || '').trim()
+
+    if (!image) return ''
+    if (/^\/\//.test(image)) return `https:${image}`
+    if (/^www\./i.test(image)) return `https://${image}`
+    if (/^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//.test(image)) return image
+    if (image.startsWith('/storage/')) return `https://web.academyims.com${image}`
+    if (image.startsWith('storage/')) return `https://web.academyims.com/${image}`
+
+    return `${STORAGE_BASE}${getInstId()}/images/webfooter/${image}`
 }
 
 export const useNewsFileUrl = (file, instituteId = null) => {

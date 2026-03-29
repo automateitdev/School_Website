@@ -2,6 +2,10 @@
   <footer class="footer">
     <div class="footer-glow"></div>
 
+    <div v-if="footerImage" class="footer-banner">
+      <img :src="footerImage" alt="Footer Image" />
+    </div>
+
     <div class="footer-top">
 
       <div class="footer-left">
@@ -25,43 +29,7 @@
 
       <div class="footer-cols-group">
 
-        <div class="footer-col" :class="{ open: openSection === 'external' }">
-          <h4 @click="toggleSection('external')">
-            <span>{{ hasFooterLinks ? 'Footer Links' : 'External Links' }}</span>
-            <i class="fas fa-chevron-down accordion-icon"></i>
-          </h4>
-          <div class="accordion-body">
-            <ul>
-              <template v-if="hasFooterLinks">
-                <li v-for="link in normalizedFooterLinks" :key="link.url">
-                  <a :href="link.url" :target="link.external ? '_blank' : '_self'" rel="noopener">
-                    {{ link.label }}
-                  </a>
-                </li>
-              </template>
-              <template v-else>
-                <li v-for="link in externalLinks" :key="link.id">
-                  <router-link :to="`/content/${link.id}`">{{ link.name }}</router-link>
-                </li>
-              </template>
-            </ul>
-          </div>
-        </div>
-
-        <div class="footer-col" :class="{ open: openSection === 'result' }">
-          <h4 @click="toggleSection('result')">
-            <span>Result</span>
-            <i class="fas fa-chevron-down accordion-icon"></i>
-          </h4>
-          <div class="accordion-body">
-            <ul>
-              <li v-for="link in resultLinks" :key="link.id">
-                <router-link :to="`/content/${link.id}`">{{ link.name }}</router-link>
-              </li>
-            </ul>
-          </div>
-        </div>
-
+  
         <div class="footer-col footer-col--contact" :class="{ open: openSection === 'contact' }">
           <h4 @click="toggleSection('contact')">
             <span>Contact</span>
@@ -121,21 +89,34 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useWebsiteStore } from '@/stores/websiteStore'
-import { useHeaderLogoUrl } from '@/composables/useImageUrl'
+import { useHeaderLogoUrl, useFooterImageUrl } from '@/composables/useImageUrl'
 
 const websiteStore = useWebsiteStore()
 
 const getBasic = computed(() => websiteStore.getBasic)
+const getUser = computed(() => websiteStore.getUser)
 const footerData = computed(() => websiteStore.getFooterData || {})
 
 const logo = computed(() =>
   getBasic.value?.logo ? useHeaderLogoUrl(getBasic.value.logo) : ''
 )
 
-const footerText = computed(() => footerData.value.footer_text || 'Education is Life')
-const address = computed(() => footerData.value.footer_address || getBasic.value?.address || '')
-const phone = computed(() => footerData.value.footer_phone || getBasic.value?.phone || '')
-const email = computed(() => footerData.value.footer_email || getBasic.value?.email || '')
+const footerImage = computed(() =>
+  footerData.value.footer_image ? useFooterImageUrl(footerData.value.footer_image) : ''
+)
+
+const footerText = computed(() =>
+  footerData.value.footer_text || getUser.value?.institute_name || 'Education is Life'
+)
+const address = computed(() =>
+  footerData.value.footer_address || getBasic.value?.address || getUser.value?.address || ''
+)
+const phone = computed(() =>
+  footerData.value.footer_phone || getBasic.value?.phone || getUser.value?.contact_no || ''
+)
+const email = computed(() =>
+  footerData.value.footer_email || getBasic.value?.email || getUser.value?.email || ''
+)
 
 const footerLinks = computed(() =>
   Array.isArray(footerData.value.footer_links) ? footerData.value.footer_links : []
@@ -161,7 +142,7 @@ const supportPhone = computed(() => footerData.value.support_phone || '+880 1234
 const supportWebsite = computed(() => footerData.value.support_website || 'https://automateit.com')
 
 const currentYear = new Date().getFullYear()
-const schoolName = computed(() => getBasic.value?.name || 'Our School')
+const schoolName = computed(() => getBasic.value?.name || getUser.value?.institute_name || 'Our School')
 
 const openSection = ref(null)
 const footerOpenSection = ref(null)
@@ -179,9 +160,6 @@ function scrollToTop() {
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 const navMenus = computed(() => websiteStore.getNavMenus)
-
-const externalLinks = computed(() => navMenus.value[0]?.items ?? [])
-const resultLinks = computed(() => navMenus.value[1]?.items ?? [])
 </script>
 
 <style scoped>
@@ -203,6 +181,20 @@ const resultLinks = computed(() => navMenus.value[1]?.items ?? [])
   height: 200px;
   background: radial-gradient(ellipse, rgba(255,221,87,0.08) 0%, transparent 70%);
   pointer-events: none;
+}
+
+.footer-banner {
+  width: 100%;
+  margin-bottom: 24px;
+  border-radius: 24px;
+  overflow: hidden;
+}
+
+.footer-banner img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
 }
 
 .footer-top {

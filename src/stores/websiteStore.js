@@ -25,6 +25,8 @@ export const useWebsiteStore = defineStore('website', {
 
         getAbout: (state) => state.data?.aboutinstitutes ?? null,
 
+        getUser: (state) => state.data?.users ?? null,
+
         getSpeech: (state) => state.data?.speeches ?? [],
 
         getPhotoGalleries: (state) =>
@@ -199,6 +201,7 @@ export const useWebsiteStore = defineStore('website', {
                 // Strictly filter the API response so that unnecessary fields (prayer, corona, etc.)
                 // are not persisted in LocalStorage or used by the app.
                 const cleanData = {
+                    users: res.data.users || null,
                     basics: res.data.basics || [],
                     header: res.data.header || null,
                     sliders: res.data.sliders || [],

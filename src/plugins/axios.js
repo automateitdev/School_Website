@@ -7,8 +7,22 @@ const instance = axios.create({
     headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
-    }
+    },
+    withCredentials: false
 })
+
+instance.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem('token')
+        if (token) {
+            config.headers = config.headers || {}
+            config.headers.Authorization = `Bearer ${token}`
+        }
+        config.withCredentials = false
+        return config
+    },
+    (error) => Promise.reject(error)
+)
 
 // Optional interceptors
 instance.interceptors.response.use(
