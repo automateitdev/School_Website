@@ -67,12 +67,35 @@ export const useAboutImageUrl = (aboutOrImage) => {
 
 // ─────────────────────────────────────────────
 // Notice files / images
-// pattern: storage/{institute_id}/images/notice/{file}
+// pattern: storage/{institute_id}/images/notice/{type}/{file}
 // ─────────────────────────────────────────────
-export const useNoticeFileUrl = (file, noticeInstituteId = null) => {
+export const useNoticeFileUrl = (file, noticeInstituteId = null, noticeType = '') => {
     if (!file) return ''
+
+    const resolveFile = (value) => {
+        if (Array.isArray(value)) return value.find(Boolean) || ''
+        if (typeof value === 'object' && value !== null) return value.url || value.path || ''
+        return String(value || '').trim()
+    }
+
+    const filepath = resolveFile(file)
+    if (!filepath) return ''
+
+    if (/^\/\//.test(filepath)) return `https:${filepath}`
+    if (/^www\./i.test(filepath)) return `https://${filepath}`
+    if (/^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//.test(filepath)) return filepath
+
+    if (filepath.startsWith('/storage/') || filepath.startsWith('/videos/')) {
+        return `https://web.academyims.com${filepath}`
+    }
+    if (filepath.startsWith('storage/')) {
+        return `https://web.academyims.com/${filepath}`
+    }
+
     const instId = noticeInstituteId || getInstId()
-    return `${STORAGE_BASE}${instId}/images/notice/${file}`
+    const typeSegment = String(noticeType || '').trim().toLowerCase()
+    const typePath = typeSegment ? `${typeSegment}/` : ''
+    return `${STORAGE_BASE}${instId}/images/notice/${typePath}${filepath}`
 }
 
 export const useNewsFileUrl = (file, instituteId = null) => {

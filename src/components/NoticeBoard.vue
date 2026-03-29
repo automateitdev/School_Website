@@ -65,7 +65,9 @@ watch(types, (typesList) => {
 }, { immediate: true })
 
 const filteredNotices = computed(() =>
-  allNotices.value.filter(n => n.type === selectedType.value)
+  allNotices.value.filter(n =>
+    String(n.type || '').trim().toLowerCase() === selectedType.value
+  )
 )
 
 const visibleNotices = computed(() =>

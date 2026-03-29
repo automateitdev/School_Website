@@ -58,9 +58,9 @@ const websiteStore = useWebsiteStore()
 
 const getNoticeImage = (notice) => {
   if (!notice) return ''
-  if (notice.image) return useNoticeFileUrl(notice.image, notice.institute_id)
+  if (notice.image) return useNoticeFileUrl(notice.image, notice.institute_id, notice.type)
   if (notice.file && /\.(jpe?g|png|gif|webp|bmp|svg)$/i.test(notice.file)) {
-    return useNoticeFileUrl(notice.file, notice.institute_id)
+    return useNoticeFileUrl(notice.file, notice.institute_id, notice.type)
   }
   return ''
 }
@@ -68,7 +68,7 @@ const getNoticeImage = (notice) => {
 const getNoticePdf = (notice) => {
   if (!notice || !notice.file) return ''
   return /\.(pdf)$/i.test(notice.file)
-    ? useNoticeFileUrl(notice.file, notice.institute_id)
+    ? useNoticeFileUrl(notice.file, notice.institute_id, notice.type)
     : ''
 }
 

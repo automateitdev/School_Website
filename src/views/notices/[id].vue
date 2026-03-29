@@ -98,7 +98,7 @@ const noticeFileUrl = computed(() => {
   const file = notice.value.file || notice.value.pdf
   if (!file) return ''
   if (file.startsWith('http')) return file
-  return useNoticeFileUrl(file, notice.value.institute_id)
+  return useNoticeFileUrl(file, notice.value.institute_id, notice.value.type)
 })
 </script>
 

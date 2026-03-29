@@ -87,7 +87,7 @@ const noticeFileUrl = (notice) => {
   const file = notice?.file || notice?.pdf
   if (!file) return ''
   if (file.startsWith('http')) return file
-  return useNoticeFileUrl(file, notice.institute_id)
+  return useNoticeFileUrl(file, notice.institute_id, notice.type)
 }
 
 const getDownloadFilename = (url) => {
