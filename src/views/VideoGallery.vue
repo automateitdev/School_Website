@@ -24,7 +24,11 @@ const normalizeVideoItem = (item) => {
           : [item.content]
         : []
 
-  const rawUrl = item.video_url || item.embed_url || item.media_url || item.url || contents[0] || ''
+  const rawContent = Array.isArray(contents)
+    ? contents.find(Boolean) || ''
+    : contents || ''
+
+  const rawUrl = item.video_url || item.embed_url || item.media_url || item.url || rawContent || ''
 
   return {
     id: item.id || slugify(item.slug || item.title) || 'unknown',
@@ -74,7 +78,9 @@ const closeVideo = () => {
 
 const activeVideoSource = computed(() => {
   if (!activeVideo.value) return ''
-  const rawSource = activeVideo.value.contents?.[0] || activeVideo.value.video_url || ''
+  const rawSource = Array.isArray(activeVideo.value.contents)
+    ? activeVideo.value.contents.find(Boolean) || activeVideo.value.video_url || activeVideo.value.content?.[0] || activeVideo.value.embed_url || activeVideo.value.media_url || activeVideo.value.url || activeVideo.value.path || ''
+    : activeVideo.value.contents || activeVideo.value.content?.[0] || activeVideo.value.video_url || activeVideo.value.embed_url || activeVideo.value.media_url || activeVideo.value.url || activeVideo.value.path || ''
   return useVideoUrl(rawSource, activeVideo.value.institute_id)
 })
 

@@ -17,7 +17,14 @@
             style="cursor:pointer"
           >
             <video v-if="/\.(mp4|webm|ogg)(\?.*)?$/i.test(video.url)" :src="video.url" controls class="video-preview" @click.stop></video>
-            <iframe v-else :src="video.url" frameborder="0" allowfullscreen class="video-preview"></iframe>
+            <iframe
+              v-else
+              :src="video.url"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+              class="video-preview"
+            ></iframe>
             <p class="video-title">{{ video.title }}</p>
           </div>
         </div>
@@ -145,6 +152,21 @@ const parseNewsResponse = (payload) => {
   return []
 }
 
+const getVideoSource = (video) => {
+  if (!video) return ''
+
+  const resolveField = (field) => {
+    if (Array.isArray(field)) return field.find(Boolean) || ''
+    if (typeof field === 'string') return field.trim()
+    if (field && typeof field === 'object') return field.url || field.video || field.path || ''
+    return ''
+  }
+
+  return resolveField(video.contents)
+    || resolveField(video.content)
+    || video.video_url || video.embed_url || video.media_url || video.url || video.path || ''
+}
+
 const normalizeNewsItem = (item) => {
   if (!item) return null
   const dateValue = item.date || item.created_at || ''
@@ -196,7 +218,7 @@ const videos = computed(() =>
   websiteStore.getVideoGalleries
     .slice(0, 4)
     .map(g => {
-      const source = g.contents?.[0] || g.content?.[0] || g.video_url || g.embed_url || g.media_url || g.url || g.path || ''
+      const source = getVideoSource(g)
       return {
         id: getVideoRouteId(g),
         title: g.title,
@@ -240,8 +262,7 @@ const getNoticeImage = (notice) => {
 
 const activeVideoSource = computed(() => {
   if (!activeVideo.value) return ''
-  const source = activeVideo.value.contents?.[0] || activeVideo.value.content?.[0] || activeVideo.value.video_url || activeVideo.value.embed_url || activeVideo.value.media_url || activeVideo.value.url || activeVideo.value.path || ''
-  return useVideoUrl(source, activeVideo.value.institute_id)
+  return useVideoUrl(getVideoSource(activeVideo.value), activeVideo.value.institute_id)
 })
 
 const isEmbedUrl = computed(() => {
