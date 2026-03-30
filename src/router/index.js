@@ -34,6 +34,16 @@ const routes = [
     meta: { banner: makeBanner('Contact Us', 'We would love to hear from you') }
   },
   {
+    path: '/studentlist',
+    component: () => import('../views/StudentList.vue'),
+    meta: { banner: makeBanner('Student List') }
+  },
+  {
+    path: '/teacherlist',
+    component: () => import('../views/TeacherList.vue'),
+    meta: { banner: makeBanner('Teacher List') }
+  },
+  {
     path: '/menus',
     component: () => import('../views/Menus.vue'),
     meta: { banner: makeBanner('Menus') }

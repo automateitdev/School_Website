@@ -1,6 +1,23 @@
 import { defineStore } from 'pinia'
 import axios from '@/plugins/axios.js'
 
+const extractApiPayload = (response) => {
+    if (!response) return null
+    let payload = response.data !== undefined ? response.data : response
+    if (payload && payload.data !== undefined) payload = payload.data
+    return payload
+}
+
+const normalizeArrayResult = (payload, fallback = []) => {
+    if (Array.isArray(payload)) return payload
+    if (!payload) return fallback
+    if (Array.isArray(payload.students)) return payload.students
+    if (Array.isArray(payload.teachers)) return payload.teachers
+    if (Array.isArray(payload.items)) return payload.items
+    if (Array.isArray(payload.list)) return payload.list
+    return fallback
+}
+
 export const useWebsiteStore = defineStore('website', {
     state: () => ({
         data: null,
@@ -9,7 +26,10 @@ export const useWebsiteStore = defineStore('website', {
         menuSubmenus: [],
         videoGalleries: [],
         videoGalleryDetail: null,
-        footer: null
+        footer: null,
+        teacherList: [],
+        studentList: [],
+        classInfo: null
     }),
 
     getters: {
@@ -371,6 +391,68 @@ export const useWebsiteStore = defineStore('website', {
             if (!this.data) this.data = {}
             this.data.footer = normalized
             return normalized
+        },
+
+        async fetchTeacherList() {
+            this.error = null
+            this.isLoading = true
+
+            try {
+                const res = await axios.get('teacherlist')
+                const payload = extractApiPayload(res)
+                this.teacherList = normalizeArrayResult(payload)
+                return this.teacherList
+            } catch (error) {
+                this.error = error?.message || 'Failed to load teacher list'
+                this.teacherList = []
+                return []
+            } finally {
+                this.isLoading = false
+            }
+        },
+
+        async fetchClassInfo() {
+            this.error = null
+            this.isLoading = true
+
+            try {
+                const res = await axios.get('classinfo')
+                const payload = extractApiPayload(res)
+                this.classInfo = payload
+                return payload
+            } catch (error) {
+                this.error = error?.message || 'Failed to load class info'
+                this.classInfo = null
+                return null
+            } finally {
+                this.isLoading = false
+            }
+        },
+
+        async fetchStudentList(academic_year_id, class_id) {
+            this.error = null
+            this.isLoading = true
+
+            try {
+                const params = {}
+                if (academic_year_id !== undefined && academic_year_id !== null && academic_year_id !== '') {
+                    params.academic_year_id = academic_year_id
+                }
+                if (class_id !== undefined && class_id !== null && class_id !== '') {
+                    params.class_id = class_id
+                }
+
+                const res = await axios.get('studentlist', { params })
+                const payload = extractApiPayload(res)
+                this.studentList = normalizeArrayResult(payload)
+                return this.studentList
+            } catch (error) {
+                this.error = error?.message || 'Failed to load student list'
+                this.studentList = []
+                return []
+            } finally {
+                this.isLoading = false
+            }
         },
 
         async fetchVideoGalleries() {
