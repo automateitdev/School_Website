@@ -35,12 +35,12 @@
             <div class="stat-label">Established</div>
           </div>
           <div class="stat-item">
-            <div class="stat-number">{{ yearsLegacy }}+</div>
-            <div class="stat-label">Years Legacy</div>
+            <div class="stat-number">{{ eiinNumber }}</div>
+            <div class="stat-label">EIIN</div>
           </div>
           <div class="stat-item">
-            <div class="stat-number">100%</div>
-            <div class="stat-label">Excellence</div>
+            <div class="stat-number">{{ userAddress }}</div>
+            <div class="stat-label">Address</div>
           </div>
         </div>
       </div>
@@ -73,14 +73,41 @@ const visible = ref(false)
 
 const getAbout = computed(() => websiteStore.getAbout)
 const getBasic = computed(() => websiteStore.getBasic)
+const getUser = computed(() => websiteStore.getUser)
 
 const schoolName = computed(() =>
-  getBasic.value?.name || 'Our School'
+  getBasic.value?.name || getUser.value?.institute_name || 'Our School'
 )
 
 const fullText = computed(() =>
   getAbout.value?.description || ''
 )
+
+const affiliation = computed(() =>
+  getAbout.value?.affiliation || 'National Education Board'
+)
+
+const boardName = computed(() =>
+  getUser.value?.edu_board || getAbout.value?.board || getAbout.value?.affiliation || 'National Education Board'
+)
+
+const eiinNumber = computed(() =>
+  getUser.value?.EIIN_number || getUser.value?.eiin_number || '—'
+)
+const instituteType = computed(() =>
+  getUser.value?.institute_type || getUser.value?.type || '—'
+)
+const eduBoard = computed(() =>
+  getUser.value?.edu_board || getUser.value?.education_board || '—'
+)
+const userAddress = computed(() =>
+  getUser.value?.address || getBasic.value?.address || '—'
+)
+
+const excellenceValue = computed(() => {
+  const raw = getAbout.value?.excellence ?? getAbout.value?.rating ?? '100%'
+  return typeof raw === 'number' ? `${raw}%` : String(raw)
+})
 
 const shortText = computed(() => {
   const stripped = (fullText.value || '').replace(/<[^>]+>/g, '')
@@ -272,6 +299,7 @@ onMounted(() => {
 
 .stats-row {
     display: flex;
+    flex-wrap: wrap;
     gap: 40px;
     margin-top: 30px;
 }

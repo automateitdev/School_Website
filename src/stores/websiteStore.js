@@ -47,6 +47,12 @@ export const useWebsiteStore = defineStore('website', {
 
         getUser: (state) => state.data?.users ?? null,
 
+        getInstituteEiin: (state) => state.data?.users?.EIIN_number || state.data?.users?.eiin_number || '',
+        getInstituteType: (state) => state.data?.users?.institute_type || state.data?.users?.type || '',
+        getInstituteBoard: (state) => state.data?.users?.edu_board || state.data?.users?.education_board || '',
+        getInstituteAddress: (state) => state.data?.users?.address || state.data?.basics?.[0]?.address || '',
+        getEstablishedYear: (state) => state.data?.aboutinstitutes?.established || '',
+
         getSpeech: (state) => state.data?.speeches ?? [],
 
         getPhotoGalleries: (state) =>
@@ -217,45 +223,46 @@ export const useWebsiteStore = defineStore('website', {
             this.error = null
             try {
                 const res = await axios.get('indexdata')
+            const payload = extractApiPayload(res) || {}
                 
-                // Strictly filter the API response so that unnecessary fields (prayer, corona, etc.)
-                // are not persisted in LocalStorage or used by the app.
-                const cleanData = {
-                    users: res.data.users || null,
-                    basics: res.data.basics || [],
-                    header: res.data.header || null,
-                    sliders: res.data.sliders || [],
-                    notices: res.data.notices || [],
-                    aboutinstitutes: res.data.aboutinstitutes || null,
-                    galleries: res.data.galleries || [],
-                    menulists: res.data.menulists || [],
-                    menumaps: res.data.menumaps || {},
-                    downloads: res.data.downloads || [],
-                    footer: res.data.footer || null
-                }
+            // Strictly filter the API response so that unnecessary fields (prayer, corona, etc.)
+            // are not persisted in LocalStorage or used by the app.
+            const cleanData = {
+                users: payload.users || payload.user || null,
+                basics: payload.basics || [],
+                header: payload.header || null,
+                sliders: payload.sliders || [],
+                notices: payload.notices || [],
+                aboutinstitutes: payload.aboutinstitutes || null,
+                galleries: payload.galleries || [],
+                menulists: payload.menulists || [],
+                menumaps: payload.menumaps || {},
+                downloads: payload.downloads || [],
+                footer: payload.footer || null
+            }
                 
-                if (res.data.web_presets) {
-                    cleanData.web_presets = {
-                        background_img: res.data.web_presets.background_img || '',
-                        essential_links: res.data.web_presets.essential_links || []
-                    }
+            if (payload.web_presets) {
+                cleanData.web_presets = {
+                    background_img: payload.web_presets.background_img || '',
+                    essential_links: payload.web_presets.essential_links || []
                 }
+            }
 
-                if (!cleanData.footer) {
-                    const hasFooterRoot = res.data.footer_image || res.data.footer_text || res.data.footer_links || res.data.footer_address || res.data.footer_phone || res.data.footer_email
-                    if (hasFooterRoot) {
-                        cleanData.footer = {
-                            footer_image: res.data.footer_image || '',
-                            footer_text: res.data.footer_text || '',
-                            footer_links: res.data.footer_links || [],
-                            footer_address: res.data.footer_address || '',
-                            footer_phone: res.data.footer_phone || '',
-                            footer_email: res.data.footer_email || ''
-                        }
+            if (!cleanData.footer) {
+                const hasFooterRoot = payload.footer_image || payload.footer_text || payload.footer_links || payload.footer_address || payload.footer_phone || payload.footer_email
+                if (hasFooterRoot) {
+                    cleanData.footer = {
+                        footer_image: payload.footer_image || '',
+                        footer_text: payload.footer_text || '',
+                        footer_links: payload.footer_links || [],
+                        footer_address: payload.footer_address || '',
+                        footer_phone: payload.footer_phone || '',
+                        footer_email: payload.footer_email || ''
                     }
                 }
+            }
                 
-                this.data = cleanData
+            this.data = cleanData
             } catch (e) {
                 console.warn('[websiteStore] Primary API failed. Fetching fallback indexdata.json.', e.message)
                 try {

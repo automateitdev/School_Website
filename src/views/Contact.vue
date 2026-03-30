@@ -82,7 +82,7 @@
               </div>
               <div class="info-content">
                 <div class="info-label">Address</div>
-                <div class="info-value">{{ getBasic?.address || '123 Main Street, City, Country' }}</div>
+                <div class="info-value">{{ address }}</div>
               </div>
             </div>
 
@@ -94,7 +94,7 @@
               </div>
               <div class="info-content">
                 <div class="info-label">Telephone</div>
-                <div class="info-value">{{ getBasic?.phone || '+1 234 567 890' }}</div>
+                <div class="info-value">{{ phone }}</div>
               </div>
             </div>
 
@@ -107,7 +107,7 @@
               </div>
               <div class="info-content">
                 <div class="info-label">Email</div>
-                <div class="info-value">{{ getBasic?.email || 'contact@example.com' }}</div>
+                <div class="info-value">{{ email }}</div>
               </div>
             </div>
           </div>
@@ -120,11 +120,14 @@
 <script setup>
 import { reactive, computed } from 'vue'
 import { useWebsiteStore } from '@/stores/websiteStore'
+import axios from '@/plugins/axios.js'
 
 const websiteStore = useWebsiteStore()
-const getBasic = computed(() => websiteStore.getBasic)
+const getBasic = computed(() => websiteStore.getBasic || {})
 
-import axios from '@/plugins/axios.js'
+const address = computed(() => getBasic.value?.address || '123 Main Street, City, Country')
+const phone = computed(() => getBasic.value?.phone || '+1 234 567 890')
+const email = computed(() => getBasic.value?.email || 'contact@example.com')
 
 const form = reactive({
   firstName: '',

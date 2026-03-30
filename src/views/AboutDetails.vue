@@ -91,6 +91,55 @@
                 <div class="info-value">{{ level || '—' }}</div>
               </div>
             </div>
+
+            <div class="info-card">
+              <div class="info-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 20c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8z"></path>
+                  <path d="M12 8v4l2 2"></path>
+                </svg>
+              </div>
+              <div class="info-content">
+                <div class="info-label">EIIN</div>
+                <div class="info-value">{{ eiinNumber }}</div>
+              </div>
+            </div>
+
+            <div class="info-card">
+              <div class="info-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2l3 6 6 .5-4.5 4.5L17 20l-5-2.5L7 20l.5-6.5L3 8.5 9 8z"></path>
+                </svg>
+              </div>
+              <div class="info-content">
+                <div class="info-label">Institute Type</div>
+                <div class="info-value">{{ instituteType }}</div>
+              </div>
+            </div>
+
+            <div class="info-card">
+              <div class="info-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                </svg>
+              </div>
+              <div class="info-content">
+                <div class="info-label">Board</div>
+                <div class="info-value">{{ eduBoard }}</div>
+              </div>
+            </div>
+
+            <div class="info-card">
+              <div class="info-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2l3 6 6 .5-4.5 4.5L17 20l-5-2.5L7 20l.5-6.5L3 8.5 9 8z"></path>
+                </svg>
+              </div>
+              <div class="info-content">
+                <div class="info-label">Address</div>
+                <div class="info-value">{{ userAddress }}</div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -99,45 +148,11 @@
             <div class="text-content" v-html="formattedText"></div>
           </div>
 
-          <div class="timeline-section">
-            <h3 class="timeline-title">Our Journey</h3>
-            <div class="timeline">
-              <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-content">
-                  <div class="timeline-year">1998</div>
-                  <div class="timeline-text">Started as Cantonment International School</div>
-                </div>
-              </div>
-              <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-content">
-                  <div class="timeline-year">2005</div>
-                  <div class="timeline-text">Renamed to Cantonment English School (CES)</div>
-                </div>
-              </div>
-              <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-content">
-                  <div class="timeline-year">2010</div>
-                  <div class="timeline-text">Upgraded to HSC level as Cantonment English School & College (CESC)</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
           <div class="cta-section">
             <div class="cta-card">
               <h3>Ready to Join Us?</h3>
               <p>Discover a world-class education experience</p>
               <div class="cta-buttons">
-                <router-link to="/admissions" class="cta-btn primary">
-                  <span>Apply Now</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                    <polyline points="12 5 19 12 12 19"></polyline>
-                  </svg>
-                </router-link>
                 <router-link to="/contact" class="cta-btn secondary">
                   Contact Us
                 </router-link>
@@ -160,11 +175,21 @@ import { useAboutImageUrl } from '@/composables/useImageUrl'
 const websiteStore = useWebsiteStore()
 const getAbout = computed(() => websiteStore.getAbout)
 const getBasic = computed(() => websiteStore.getBasic)
+const getUser = computed(() => websiteStore.getUser)
 const aboutImageSrc = computed(() => useAboutImageUrl(getAbout.value) || '')
 
-const schoolName = computed(() => getBasic.value?.name || 'Our School')
+const schoolName = computed(() => getBasic.value?.name || getUser.value?.institute_name || 'Our School')
 const establishedYear = computed(() => getAbout.value?.established || '')
 const affiliation = computed(() => getAbout.value?.affiliation || 'Education Board')
+const boardName = computed(() => getUser.value?.edu_board || getAbout.value?.board || getAbout.value?.affiliation || 'National Education Board')
+const eiinNumber = computed(() => getUser.value?.EIIN_number || getUser.value?.eiin_number || '—')
+const instituteType = computed(() => getUser.value?.institute_type || getUser.value?.type || '—')
+const eduBoard = computed(() => getUser.value?.edu_board || getUser.value?.education_board || '—')
+const userAddress = computed(() => getUser.value?.address || getBasic.value?.address || '—')
+const excellenceValue = computed(() => {
+  const raw = getAbout.value?.excellence ?? getAbout.value?.rating ?? '100%'
+  return typeof raw === 'number' ? `${raw}%` : String(raw)
+})
 const level = computed(() => getAbout.value?.level || 'HSC')
 
 const fullText = computed(() => getAbout.value?.description || '')

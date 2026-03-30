@@ -9,6 +9,15 @@
             "email": "info@academyims.com"
         }
     ],
+    "users": {
+        "id": 18,
+        "institute_id": "1000",
+        "institute_name": "Academy-Institute Management System",
+        "EIIN_number": "1000",
+        "institute_type": "College",
+        "edu_board": "Dhaka",
+        "address": "373, D.I.T Road, East Rampura, Dhaka"
+    },
     "header": {
         "id": 91,
         "user_id": 18,
