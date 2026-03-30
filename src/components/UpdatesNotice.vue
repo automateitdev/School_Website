@@ -98,8 +98,7 @@ onBeforeUnmount(pauseScroll)
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap');
 
 .updates-notice {
-  width: 100vw;
-  margin-left: calc(-50vw + 50%);
+  width: 100%;
   background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
   padding: 0;
   overflow: hidden;

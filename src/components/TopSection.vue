@@ -18,7 +18,7 @@ import NoticeBoard from './NoticeBoard.vue'
 <style scoped>
 .top-section {
   display: flex;
-  width: 100vw;
+  width: 100%;
   gap: 20px;
   box-sizing: border-box;
   align-items: flex-start;

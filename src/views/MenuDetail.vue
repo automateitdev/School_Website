@@ -78,6 +78,7 @@ const submenu = computed(() => (
 const currentItem = computed(() => submenu.value || menu.value || {})
 const currentTitle = computed(() => currentItem.value?.title || 'Menu Detail')
 const currentLink = computed(() => currentItem.value?.link || currentItem.value?.url || '')
+const currentDescription = computed(() => currentItem.value?.description || currentItem.value?.summary || '')
 const currentDocument = computed(() => {
   return (
     currentItem.value?.content ||
