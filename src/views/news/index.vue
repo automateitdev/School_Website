@@ -99,7 +99,6 @@ const fetchNews = async () => {
     newsItems.value = data.map(normalizeNews)
     return
   } catch (err) {
-    // Fallback to indexdata if /news is unavailable or empty.
   }
 
   try {

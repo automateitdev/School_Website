@@ -103,7 +103,6 @@ const loadNewsItem = async (identifier) => {
     newsItem.value = normalizeNewsItem(item)
     return
   } catch (err) {
-    // Fallback to indexdata if /news/{id} fails
   }
 
   try {

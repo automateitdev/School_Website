@@ -6,33 +6,41 @@
     </div>
 
     <div v-else-if="notice" class="notice-detail-card">
-      <h1>{{ notice.name || notice.title }}</h1>
+      <div class="notice-detail-header">
+        <div>
+          <span class="notice-badge">Notice</span>
+          <h1>{{ notice.name || notice.title }}</h1>
+          <p class="notice-meta">Published {{ formatDate(notice.created_at || notice.date) }}</p>
+        </div>
 
-      <p class="notice-meta">
-        <strong>Date:</strong> {{ formatDate(notice.created_at || notice.date) }}
-      </p>
-
-      <div v-if="notice.description" class="notice-description" v-html="notice.description"></div>
-
-      <div v-if="noticeFileUrl" class="notice-preview">
-        <iframe :src="noticeFileUrl" frameborder="0" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
+        <div class="notice-actions-top">
+          <a
+            v-if="noticeFileUrl"
+            :href="noticeFileUrl"
+            :download="getDownloadFilename(noticeFileUrl)"
+            rel="noopener noreferrer"
+            class="action-btn download-btn"
+          >
+            Download
+          </a>
+          <router-link to="/notices" class="action-btn back-btn">Back to all notices</router-link>
+        </div>
       </div>
 
-      <div class="notice-actions">
-        <a
-          v-if="noticeFileUrl"
-          :href="noticeFileUrl"
-          :download="getDownloadFilename(noticeFileUrl)"
-          rel="noopener noreferrer"
-          class="action-btn download-btn"
-        >
-          Download
-        </a>
-        <router-link to="/notices" class="action-btn back-btn">Back</router-link>
+      <div class="notice-body">
+        <div class="notice-description" v-html="notice.description || notice.content || notice.details || '<p>No details available.</p>'"></div>
+
+        <div v-if="noticeFileUrl" class="notice-preview">
+          <iframe :src="noticeFileUrl" frameborder="0" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
+        </div>
+      </div>
+
+      <div class="notice-song-widget">
+        <WidgetSong />
       </div>
     </div>
 
-    <div v-else class="no-data">No Notice Found</div>
+    <div v-else class="no-data">No notice found.</div>
   </section>
 </template>
 
@@ -42,6 +50,7 @@ import { useRoute } from 'vue-router'
 import axios from '@/plugins/axios.js'
 import { useWebsiteStore } from '@/stores/websiteStore'
 import { useNoticeFileUrl } from '@/composables/useImageUrl'
+import WidgetSong from '@/components/widgets/WidgetSong.vue'
 
 const route = useRoute()
 const websiteStore = useWebsiteStore()
@@ -146,19 +155,72 @@ const noticeFileUrl = computed(() => {
   min-height: 420px;
 }
 
-.notice-actions {
+.notice-detail-header {
   display: flex;
+  justify-content: space-between;
+  gap: 20px;
   flex-wrap: wrap;
-  gap: 14px;
-  margin-top: 24px;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.notice-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #e0f2fe;
+  color: #0369a1;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  border-radius: 999px;
+  padding: 8px 14px;
+  margin-bottom: 14px;
+}
+
+.notice-detail-header h1 {
+  margin: 0;
+  font-size: 2.1rem;
+  line-height: 1.1;
+  color: #0f4d5f;
+}
+
+.notice-actions-top {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.notice-body {
+  display: grid;
+  gap: 28px;
+}
+
+.notice-description {
+  color: #334155;
+  line-height: 1.85;
+  font-size: 1rem;
+}
+
+.notice-preview {
+  border: 1px solid #d8e2ec;
+  border-radius: 20px;
+  overflow: hidden;
+  min-height: 420px;
+}
+
+.notice-preview iframe {
+  width: 100%;
+  min-height: 420px;
 }
 
 .action-btn {
   padding: 12px 22px;
-  border-radius: 10px;
+  border-radius: 12px;
   color: #fff;
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 700;
+  transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
 .download-btn {
@@ -167,6 +229,15 @@ const noticeFileUrl = computed(() => {
 
 .back-btn {
   background: #0d6efd;
+}
+
+.action-btn:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+.notice-song-widget {
+  margin-top: 32px;
 }
 
 .no-data {

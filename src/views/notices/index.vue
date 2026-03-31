@@ -22,23 +22,15 @@
       <div class="skeleton-row" v-for="i in 4" :key="i"></div>
     </div>
 
-    <table v-else class="notice-table">
-      <thead>
-        <tr>
-          <th>Title</th>
-          <th>Date</th>
-          <th>View</th>
-          <th>Download</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="notice in filteredNotices" :key="notice.id">
-          <td>{{ notice.name || notice.title }}</td>
-          <td>{{ formatDate(notice.date || notice.created_at) }}</td>
-          <td>
+    <div v-else class="notice-cards">
+      <article v-for="notice in filteredNotices" :key="notice.id" class="notice-card">
+        <div class="card-header">
+          <div>
+            <h2>{{ notice.name || notice.title }}</h2>
+            <p class="notice-date">{{ formatDate(notice.date || notice.created_at) }}</p>
+          </div>
+          <div class="card-actions">
             <router-link :to="`/notices/${notice.id}`" class="action-btn view-btn">View</router-link>
-          </td>
-          <td>
             <a
               v-if="noticeFileUrl(notice)"
               :href="noticeFileUrl(notice)"
@@ -48,15 +40,13 @@
             >
               Download
             </a>
-            <span v-else class="no-file">—</span>
-          </td>
-        </tr>
+          </div>
+        </div>
+        <p class="notice-summary">{{ stripHtml(notice.description || notice.content || '') }}</p>
+      </article>
 
-        <tr v-if="!websiteStore.isLoading && filteredNotices.length === 0">
-          <td colspan="4" class="no-data">No Notice Found</td>
-        </tr>
-      </tbody>
-    </table>
+      <div v-if="filteredNotices.length === 0" class="no-data">No notices found.</div>
+    </div>
   </section>
 </template>
 
@@ -94,6 +84,11 @@ const getDownloadFilename = (url) => {
   if (!url) return 'download'
   const parts = String(url).split('/').pop()?.split('?')[0] || 'download'
   return parts || 'download'
+}
+
+const stripHtml = (value) => {
+  if (!value) return ''
+  return String(value).replace(/<[^>]+>/g, '').trim()
 }
 
 const formatDate = (date) =>
@@ -163,6 +158,80 @@ onMounted(loadNotices)
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+}
+
+.notice-cards {
+  display: grid;
+  gap: 20px;
+}
+
+.notice-card {
+  background: #ffffff;
+  border: 1px solid #e8edf2;
+  border-radius: 20px;
+  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.08);
+  padding: 24px;
+  display: grid;
+  gap: 18px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.card-header h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  color: #0f4d5f;
+}
+
+.notice-date {
+  color: #64748b;
+  font-size: 0.95rem;
+  margin-top: 6px;
+}
+
+.notice-summary {
+  margin: 0;
+  color: #475569;
+  line-height: 1.8;
+  max-width: 100%;
+}
+
+.card-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 18px;
+  border-radius: 999px;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.view-btn {
+  background: #0d6efd;
+}
+
+.download-btn {
+  background: #198754;
+}
+
+.no-data {
+  text-align: center;
+  padding: 32px 0;
+  color: #525f7f;
+  font-size: 1rem;
 }
 
 .notice-table th,
