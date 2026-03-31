@@ -1,6 +1,7 @@
 import { useWebsiteStore } from '@/stores/websiteStore'
 
-export const STORAGE_BASE = 'https://web.academyims.com/storage/'
+export const STORAGE_HOST = 'https://web.academyims.com'
+export const STORAGE_BASE = `${STORAGE_HOST}/storage/`
 
 /**
  * Resolves the institute_id from the Pinia store.
@@ -81,10 +82,10 @@ export const useNoticeFileUrl = (file, noticeInstituteId = null, noticeType = ''
     if (/^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//.test(filepath)) return filepath
 
     if (filepath.startsWith('/storage/') || filepath.startsWith('/videos/')) {
-        return `https://web.academyims.com${filepath}`
+        return `${STORAGE_HOST}${filepath}`
     }
     if (filepath.startsWith('storage/')) {
-        return `https://web.academyims.com/${filepath}`
+        return `${STORAGE_HOST}/${filepath}`
     }
 
     const instId = noticeInstituteId || getInstId()
@@ -103,8 +104,8 @@ export const useFooterImageUrl = (footerImage) => {
     if (/^\/\//.test(image)) return `https:${image}`
     if (/^www\./i.test(image)) return `https://${image}`
     if (/^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//.test(image)) return image
-    if (image.startsWith('/storage/')) return `https://web.academyims.com${image}`
-    if (image.startsWith('storage/')) return `https://web.academyims.com/${image}`
+    if (image.startsWith('/storage/')) return `${STORAGE_HOST}${image}`
+    if (image.startsWith('storage/')) return `${STORAGE_HOST}/${image}`
 
     return `${STORAGE_BASE}${getInstId()}/images/webfooter/${image}`
 }
@@ -171,10 +172,10 @@ export const useVideoUrl = (videoPath, videoInstituteId = null) => {
     }
 
     if (path.startsWith('/storage/') || path.startsWith('/videos/')) {
-        return `https://web.academyims.com${path}`
+        return `${STORAGE_HOST}${path}`
     }
     if (path.startsWith('storage/')) {
-        return `https://web.academyims.com/${path}`
+        return `${STORAGE_HOST}/${path}`
     }
 
     const instId = videoInstituteId || getInstId()
