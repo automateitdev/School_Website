@@ -18,6 +18,69 @@ const normalizeArrayResult = (payload, fallback = []) => {
     return fallback
 }
 
+const slugify = (value) => String(value || '')
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9-]/g, '')
+
+const resolveMenuLabel = (menu) => {
+    return menu?.menuassign?.menu_title_bangla ||
+        menu?.menuassign?.menu_title ||
+        menu?.menu_title_bangla ||
+        menu?.menu_title ||
+        menu?.menu_name_bangla ||
+        menu?.menu_name ||
+        menu?.name_bn ||
+        menu?.title_bn ||
+        menu?.name ||
+        menu?.title ||
+        ''
+}
+
+const resolveSubmenuLabel = (sub) => {
+    return sub?.mm?.submenuassign?.submenu_title_bangla ||
+        sub?.mm?.submenuassign?.submenu_title ||
+        sub?.submenuassign?.submenu_title_bangla ||
+        sub?.submenuassign?.submenu_title ||
+        sub?.submenu_title_bangla ||
+        sub?.submenu_title ||
+        sub?.submenu_name_bangla ||
+        sub?.submenu_name ||
+        sub?.name_bn ||
+        sub?.title_bn ||
+        sub?.name ||
+        sub?.title ||
+        ''
+}
+
+const normalizeSubmenu = (sub, parentSlug) => {
+    const title = resolveSubmenuLabel(sub) || `Submenu ${sub?.id || ''}`
+    const slug = sub.slug || slugify(title) || String(sub?.id || '')
+    const link = sub.link || sub.url || `/menus/${parentSlug}/${slug}`
+    return {
+        ...sub,
+        title,
+        slug,
+        link
+    }
+}
+
+const normalizeMenu = (menu) => {
+    const title = resolveMenuLabel(menu) || `Menu ${menu?.menu_id || menu?.id || ''}`
+    const slug = menu.slug || slugify(title) || String(menu?.menu_id || menu?.id || '')
+    const link = menu.link || menu.url || `/menus/${slug}`
+    return {
+        ...menu,
+        title,
+        slug,
+        link,
+        submenus: Array.isArray(menu.submenus)
+            ? menu.submenus.map(sub => normalizeSubmenu(sub, slug))
+            : []
+    }
+}
+
 export const useWebsiteStore = defineStore('website', {
     state: () => ({
         data: null,
@@ -94,6 +157,27 @@ export const useWebsiteStore = defineStore('website', {
 
         getMenuSubmenus: (state) => state.menuSubmenus ?? [],
 
+        getMenuWithSubItems: (state) => {
+            const lists = state.data?.menulists ?? []
+            const maps = state.data?.menumaps ?? {}
+            const keys = Object.keys(maps)
+            const items = []
+            lists.forEach(menu => {
+                if (menu.state == 1) {
+                    const subItems = []
+                    keys.forEach(key => {
+                        ;(maps[key] || []).forEach(mm => {
+                            if (menu.menu_id == mm.menuassign_id) {
+                                subItems.push({ mm })
+                            }
+                        })
+                    })
+                    items.push({ menu, subItems })
+                }
+            })
+            return items
+        },
+
         getMenuBySlugOrId: (state) => (identifier) => {
             if (!identifier) return null
             const lookup = String(identifier).toLowerCase()
@@ -148,7 +232,6 @@ export const useWebsiteStore = defineStore('website', {
             const maps = state.data?.menumaps ?? {}
 
             if (lists.length === 0) {
-                // Return static fallback if API has no menus yet
                 return [
                     {
                         name: 'Management',
@@ -223,10 +306,7 @@ export const useWebsiteStore = defineStore('website', {
             this.error = null
             try {
                 const res = await axios.get('indexdata')
-            const payload = extractApiPayload(res) || {}
-                
-            // Strictly filter the API response so that unnecessary fields (prayer, corona, etc.)
-            // are not persisted in LocalStorage or used by the app.
+                const payload = extractApiPayload(res) || {}
             const cleanData = {
                 users: payload.users || payload.user || null,
                 basics: payload.basics || [],
@@ -261,7 +341,11 @@ export const useWebsiteStore = defineStore('website', {
                     }
                 }
             }
-                
+
+            cleanData.speeches = Array.isArray(payload.speeches)
+                ? payload.speeches
+                : []
+
             this.data = cleanData
             } catch (e) {
                 console.warn('[websiteStore] Primary API failed. Fetching fallback indexdata.json.', e.message)
@@ -284,39 +368,46 @@ export const useWebsiteStore = defineStore('website', {
             this.error = null
 
             const buildFallbackMenus = () => {
-                const slugify = (value) => String(value || '')
-                    .toLowerCase()
-                    .trim()
-                    .replace(/\s+/g, '-')
-                    .replace(/[^a-z0-9-]/g, '')
-
                 const lists = this.data?.menulists ?? []
                 const maps = this.data?.menumaps ?? {}
 
                 return lists
                     .filter(m => m.state === 1)
-                    .map(m => {
-                        const menuSlug = m.slug || slugify(m.name || m.menu_id)
-                        return {
-                            id: m.menu_id,
-                            slug: menuSlug,
-                            title: m.name || `Menu ${m.menu_id}`,
-                            link: m.link || `/menus/${menuSlug}`,
-                            menuassign: { menu_icon: m.menu_icon || '' },
-                            submenus: (maps[m.menu_id] ?? []).map(sub => {
-                                const submenuSlug = sub.slug || slugify(sub.name || sub.id)
-                                return {
-                                    id: sub.id,
-                                    slug: submenuSlug,
-                                    title: sub.name || `Submenu ${sub.id}`,
-                                    link: sub.link || `/menus/${menuSlug}/${submenuSlug}`,
-                                    submenuassign: { submenu_icon: sub.submenu_icon || '' },
-                                    external: sub.external || false,
-                                    description: sub.description || sub.content || ''
-                                }
-                            })
-                        }
-                    })
+                    .map(m => normalizeMenu({
+                        id: m.menu_id,
+                        slug: m.slug,
+                        title: m.name,
+                        link: m.link,
+                        menuassign: {
+                            menu_icon: m.menu_icon || '',
+                            menu_title: m.menu_title || '',
+                            menu_title_bangla: m.menu_title_bangla || ''
+                        },
+                        menu_title: m.menu_title || '',
+                        menu_title_bangla: m.menu_title_bangla || '',
+                        menu_name: m.menu_name || '',
+                        menu_name_bangla: m.menu_name_bangla || '',
+                        name: m.name || '',
+                        submenus: (maps[m.menu_id] ?? []).map(sub => ({
+                            id: sub.id,
+                            slug: sub.slug,
+                            title: sub.name,
+                            link: sub.link,
+                            submenuassign: {
+                                submenu_icon: sub.submenu_icon || '',
+                                submenu_title: sub.submenu_title || '',
+                                submenu_title_bangla: sub.submenu_title_bangla || ''
+                            },
+                            submenu_title: sub.submenu_title || '',
+                            submenu_title_bangla: sub.submenu_title_bangla || '',
+                            submenu_name: sub.submenu_name || '',
+                            submenu_name_bangla: sub.submenu_name_bangla || '',
+                            name: sub.name || '',
+                            title_bn: sub.title_bn || '',
+                            description: sub.description || sub.content || '',
+                            external: sub.external || false
+                        }))
+                    }))
             }
 
             const endpoints = [
@@ -348,11 +439,12 @@ export const useWebsiteStore = defineStore('website', {
                 return this.menuSubmenus
             }
 
-            const payload = Array.isArray(response.data)
+            const rawPayload = Array.isArray(response.data)
                 ? response.data
                 : response.data.data ?? response.data.menuSubmenus ?? response.data.menu_submenus ?? []
+            const payload = Array.isArray(rawPayload) ? rawPayload : []
 
-            this.menuSubmenus = Array.isArray(payload) ? payload : []
+            this.menuSubmenus = payload.map(menu => normalizeMenu(menu))
             if (!this.menuSubmenus.length && fallbackMenus.length) {
                 this.menuSubmenus = fallbackMenus
             }
@@ -534,22 +626,81 @@ export const useWebsiteStore = defineStore('website', {
             return payload
         },
 
+        async fetchSpeeches() {
+            this.error = null
+            this.isLoading = true
+
+            try {
+                if (Array.isArray(this.data?.speeches) && this.data.speeches.length > 0) {
+                    return this.data.speeches
+                }
+
+                const endpoints = ['speeches', 'speech', 'indexdata']
+                let response = null
+
+                for (const endpoint of endpoints) {
+                    try {
+                        response = await axios.get(endpoint)
+                        if (response?.data) break
+                    } catch (innerError) {
+                        response = null
+                    }
+                }
+
+                if (!response || !response.data) {
+                    this.data = this.data || {}
+                    this.data.speeches = []
+                    return []
+                }
+
+                let payload = response.data
+                if (payload.data) payload = payload.data
+
+                const speeches = Array.isArray(payload.speeches)
+                    ? payload.speeches
+                    : Array.isArray(payload)
+                        ? payload
+                        : Array.isArray(payload.data)
+                            ? payload.data
+                            : Array.isArray(payload.items)
+                                ? payload.items
+                                : []
+
+                this.data = this.data || {}
+                this.data.speeches = speeches
+                return speeches
+            } catch (error) {
+                this.error = error?.message || 'Failed to load speeches'
+                this.data = this.data || {}
+                this.data.speeches = []
+                return []
+            } finally {
+                this.isLoading = false
+            }
+        },
+
         getNoticeById(id) {
             const numId = Number(id)
             return (this.data?.notices ?? []).find(n => n.id === numId) ?? null
         },
 
+        // Returns { subItems: [{ mm }] } format used by SubMenuContent page
         getContentById(id) {
             const numId = Number(id)
             const maps = this.data?.menumaps ?? {}
             for (const menuId in maps) {
                 const found = maps[menuId].find(item => item.id === numId)
                 if (found) {
-                    const menu = (this.data?.menulists ?? []).find(m => m.menu_id === Number(menuId))
-                    return { ...found, menuName: menu?.name ?? '' }
+                    return { subItems: [{ mm: found }] }
                 }
             }
             return null
+        },
+
+        // Returns a menulist item by its id — used by SingleMenuContent page
+        getSingleNavContentId(id) {
+            const numId = Number(id)
+            return (this.data?.menulists ?? []).find(m => Number(m.id || m.menu_id) === numId) ?? null
         },
 
         getContentBySlug(slug) {

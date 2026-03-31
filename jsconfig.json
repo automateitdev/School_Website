@@ -3,12 +3,18 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "types": ["vite/client"],
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "moduleResolution": "Node",
+    "esModuleInterop": true
   },
   "include": ["src/**/*", "public/**/*"],
   "exclude": [
     "node_modules",
     "dist",
+    "src/components/LayoutRightbar.vue",
     "**/NoticesPage.vue",
     "**/NoticeDetails.vue",
     "**/PdfPreview.vue"
