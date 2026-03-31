@@ -35,9 +35,6 @@
         </div>
       </div>
 
-      <div class="notice-song-widget">
-        <WidgetSong />
-      </div>
     </div>
 
     <div v-else class="no-data">No notice found.</div>
@@ -50,8 +47,6 @@ import { useRoute } from 'vue-router'
 import axios from '@/plugins/axios.js'
 import { useWebsiteStore } from '@/stores/websiteStore'
 import { useNoticeFileUrl } from '@/composables/useImageUrl'
-import WidgetSong from '@/components/widgets/WidgetSong.vue'
-
 const route = useRoute()
 const websiteStore = useWebsiteStore()
 const notice = ref(null)
