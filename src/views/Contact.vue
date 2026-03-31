@@ -139,7 +139,6 @@ const form = reactive({
 const submitForm = async () => {
   try {
     const payload = { ...form }
-    // Dynamic submission to API using axios plugin
     const response = await axios.post('/contact-message', payload)
     
     if (response.status === 200 || response.status === 201) {
