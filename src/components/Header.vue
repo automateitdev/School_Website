@@ -1,12 +1,16 @@
 <template>
   <header ref="headerRef">
 
-    <div class="top-bar">
-      <div class="left">
-        <span class="datetime-icon">🕐</span>
-        {{ currentDateTime }}
+    <div class="top-bar top-bar--brand">
+      <div class="left left--brand">
+        <router-link to="/" class="top-logo-area" @click="closeMobileMenu">
+          <img v-if="logoSrc" :src="logoSrc" alt="School Logo" />
+          <div class="title-wrap">
+            <h1>{{ schoolName }}</h1>
+          </div>
+        </router-link>
       </div>
-      <div class="right">
+      <div class="right right--top">
         <div class="login-dropdown" @mouseenter="isDesktop && (loginOpen = true)" @mouseleave="isDesktop && (loginOpen = false)">
           <span class="login-btn" @click="!isDesktop && (loginOpen = !loginOpen)">
             <span class="login-icon">👤</span>
@@ -26,28 +30,14 @@
             </li>
           </ul>
         </div>
-
-        <div class="social-links">
-          <a href="#" target="_blank" class="social-btn facebook" title="Facebook">
-            <i class="fab fa-facebook-f"></i>
-          </a>
-          <a href="#" target="_blank" class="social-btn youtube" title="YouTube">
-            <i class="fab fa-youtube"></i>
-          </a>
-          <a href="#" target="_blank" class="social-btn linkedin" title="LinkedIn">
-            <i class="fab fa-linkedin-in"></i>
-          </a>
+        <div class="datetime-box">
+          <span class="datetime-icon">🕐</span>
+          <span>{{ currentDateTime }}</span>
         </div>
       </div>
     </div>
 
     <div class="main-header">
-      <router-link to="/" class="logo-area" @click="closeMobileMenu">
-        <div v-if="websiteStore.isLoading" class="skeleton-logo"></div>
-        <img v-else-if="logoSrc" :src="logoSrc" alt="School Logo" />
-        <div v-if="websiteStore.isLoading" class="skeleton-title"></div>
-        <h1 v-else>{{ schoolName }}</h1>
-      </router-link>
 
       <div class="hamburger" @click="toggleMobileMenu">
         <span :class="{ open: mobileMenuOpen }"></span>
@@ -56,69 +46,96 @@
       </div>
 
       <nav class="menu" :class="{ 'mobile-open': mobileMenuOpen }">
-        <router-link to="/" :class="{ active: isActive('/') }" @click="closeMobileMenu">Home</router-link>
 
         <div
-          v-for="menu in allMenus"
-          :key="menu.label || menu.name"
+          v-for="(item, idx) in menuWithSubItems"
+          :key="item.menu.menu_id"
           class="dropdown"
-          @mouseenter="isDesktop && openDropdown(menu.label || menu.name)"
-          @mouseleave="isDesktop && closeDropdown(menu.label || menu.name)"
+          @mouseenter="isDesktop && openDropdown(item.menu.menu_id)"
+          @mouseleave="isDesktop && closeDropdown(item.menu.menu_id)"
         >
           <div
             class="dropbtn"
-            :class="{ active: isMenuRouteActive(menu.label || menu.name) || openMenus[menu.label || menu.name] }"
+            :class="{ active: openMenus[item.menu.menu_id] || isMenuActive(item) }"
           >
+            <span
+              v-if="hasSubItems(item)"
+              class="menu-link menu-link--text"
+            >
+              <img
+                v-if="item.menu.menuassign?.menu_icon"
+                :src="menuIconUrl(item.menu.menuassign.menu_icon)"
+                alt=""
+                class="menu-icon"
+              />
+              {{ getMenuLabel(item.menu) }}
+            </span>
+
             <router-link
-              :to="menu.link || '/'"
+              v-else
+              :to="menuDirectLink(item)"
               class="menu-link"
               @click="!isDesktop && closeMobileMenu()"
             >
               <img
-                v-if="menu.icon"
-                :src="menuIcon(menu)"
+                v-if="item.menu.menuassign?.menu_icon"
+                :src="menuIconUrl(item.menu.menuassign.menu_icon)"
                 alt=""
                 class="menu-icon"
               />
-              {{ menu.label || menu.name }}
+              {{ getMenuLabel(item.menu) }}
             </router-link>
             <button
-              v-if="menu.items && menu.items.length"
+              v-if="hasSubItems(item)"
               type="button"
               class="menu-toggle"
-              @click.stop="toggleMobileDropdown(menu.label || menu.name)"
+              @click.stop="toggleMobileDropdown(item.menu.menu_id)"
             >
-              <span class="arrow" :class="{ rotated: openMenus[menu.label || menu.name] }">▼</span>
+              <span class="arrow" :class="{ rotated: openMenus[item.menu.menu_id] }">▼</span>
             </button>
           </div>
 
-          <div class="dropdown-bridge" v-if="isDesktop && menu.items && menu.items.length"></div>
+          <div class="dropdown-bridge" v-if="isDesktop && hasSubItems(item)"></div>
 
-          <ul v-if="menu.items && menu.items.length" v-show="openMenus[menu.label || menu.name]" class="dropdown-content">
-            <li v-for="item in menu.items" :key="item.link || item.label || item.name">
-              <template v-if="item.external">
-                <a
-                  :href="item.link"
-                  target="_blank"
-                  @click="!isDesktop && closeMobileMenu()"
-                >
-                  <img v-if="submenuIcon(item)" :src="submenuIcon(item)" alt="" class="submenu-icon" />
-                  {{ item.label || item.name }}
-                </a>
-              </template>
-              <template v-else>
-                <router-link
-                  :to="item.link"
-                  :class="{ active: isActive(item.link) }"
-                  @click="!isDesktop && closeMobileMenu()"
-                >
-                  <img v-if="submenuIcon(item)" :src="submenuIcon(item)" alt="" class="submenu-icon" />
-                  {{ item.label || item.name }}
-                </router-link>
-              </template>
+          <ul
+            v-if="hasSubItems(item)"
+            v-show="openMenus[item.menu.menu_id]"
+            class="dropdown-content"
+          >
+            <li v-for="sub in item.subItems" :key="sub.mm.id">
+              <router-link
+                :to="`/menus/${sub.mm.id}`"
+                :class="{ active: isActive(`/menus/${sub.mm.id}`) }"
+                @click="!isDesktop && closeMobileMenu()"
+              >
+                {{ sub.mm.submenuassign?.submenu_title_bangla
+                  || sub.mm.submenuassign?.submenu_title
+                  || '—' }}
+              </router-link>
+            </li>
+
+            <li v-if="item.menu.menuassign?.menu_title === 'Academic Info'">
+              <router-link
+                to="/studentlist"
+                :class="{ active: isActive('/studentlist') }"
+                @click="!isDesktop && closeMobileMenu()"
+              >
+                Student List
+              </router-link>
+            </li>
+
+            <li v-if="item.menu.menuassign?.menu_title === 'Management Info'">
+              <router-link
+                to="/teacherlist"
+                :class="{ active: isActive('/teacherlist') }"
+                @click="!isDesktop && closeMobileMenu()"
+              >
+                Our Teachers
+              </router-link>
             </li>
           </ul>
         </div>
+
       </nav>
     </div>
 
@@ -136,80 +153,72 @@ const websiteStore = useWebsiteStore()
 
 const getBasic = computed(() => websiteStore.getBasic)
 const logoSrc = computed(() => getBasic.value?.logo ? useHeaderLogoUrl(getBasic.value.logo) : '')
-const schoolName = computed(() => getBasic.value?.name || 'abc school')
+const schoolName = computed(() => getBasic.value?.name || 'Our School')
 
-const dynamicMenus = computed(() => websiteStore.getMenuSubmenus)
-const legacyMenus = computed(() => websiteStore.getNavMenus)
+const menuWithSubItems = computed(() => websiteStore.getMenuWithSubItems || [])
 
-const allMenus = computed(() => {
-  if (Array.isArray(dynamicMenus.value) && dynamicMenus.value.length > 0) {
-    return dynamicMenus.value.map(menu => ({
-      label: menu.title || menu.name || '',
-      link: menu.url || menu.link || `/menus/${menu.slug || menu.id}`,
-      icon: menu?.menuassign?.menu_icon || menu?.menu_icon || '',
-      items: Array.isArray(menu.submenus)
-        ? menu.submenus.map(sub => ({
-            label: sub.title || sub.name || '',
-            link: sub.url || sub.link || `/menus/${menu.slug || menu.id}/${sub.slug || sub.id}`,
-            icon: sub?.submenuassign?.submenu_icon || sub?.mm?.submenuassign?.submenu_icon || sub?.submenu_icon || '',
-            external: sub.external || false
-          }))
-        : []
-    }))
-  }
-  return legacyMenus.value
-})
+const getMenuLabel = (menu) =>
+  menu?.menuassign?.menu_title_bangla ||
+  menu?.menuassign?.menu_title ||
+  ''
 
-const menuIcon = (menu) => menu?.icon ? useMenuIconUrl(menu.icon) : ''
-const submenuIcon = (item) => item?.icon ? useMenuIconUrl(item.icon) : ''
+const hasSubItems = (item) => item.subItems && item.subItems.length > 0
+
+const menuDirectLink = (item) => {
+  const menu = item.menu
+  if (menu.menu_content) return `/menus/single/${menu.id}`
+  const title = (menu.menuassign?.menu_title || '').toLowerCase()
+  if (title === 'home' || title === 'হোম' || title === 'হোম পেজ') return '/'
+  return '/'
+}
+
+const menuIconUrl = (icon) => icon ? useMenuIconUrl(icon) : ''
 
 const openMenus = reactive({})
-watch(allMenus, (menus) => {
-  menus.forEach(m => {
-    const key = m.label || m.name
+
+watch(menuWithSubItems, (items) => {
+  items.forEach(item => {
+    const key = item.menu.menu_id
     if (!(key in openMenus)) openMenus[key] = false
   })
 }, { immediate: true })
+
+const openDropdown  = (id) => { openMenus[id] = true }
+const closeDropdown = (id) => { openMenus[id] = false }
+
+const toggleMobileDropdown = (id) => {
+  Object.keys(openMenus).forEach(k => {
+    openMenus[k] = String(k) === String(id) ? !openMenus[k] : false
+  })
+}
+
 const mobileMenuOpen = ref(false)
 const loginOpen = ref(false)
 const headerRef = ref(null)
 
 const toggleMobileMenu = () => (mobileMenuOpen.value = !mobileMenuOpen.value)
-const toggleMobileDropdown = name => {
-  Object.keys(openMenus).forEach(menu => {
-    openMenus[menu] = menu === name ? !openMenus[menu] : false
-  })
-}
-
-const openDropdown = name => (openMenus[name] = true)
-const closeDropdown = name => (openMenus[name] = false)
 const closeMobileMenu = () => {
   mobileMenuOpen.value = false
-  Object.keys(openMenus).forEach(menu => (openMenus[menu] = false))
+  Object.keys(openMenus).forEach(k => (openMenus[k] = false))
 }
 
-const isActive = link => route.path === link
-const isMenuRouteActive = menuName => {
-  const menu = allMenus.value.find(m => (m.label || m.name) === menuName)
-  if (!menu) return false
-  if (route.path === menu.link) return true
-  if (menu.link && route.path.startsWith(`${menu.link}/`)) return true
-  return menu?.items.some(item => !item.external && item.link === route.path)
+const isActive = (link) => route.path === link
+
+const isMenuActive = (item) => {
+  if (!hasSubItems(item)) return isActive(menuDirectLink(item))
+  return item.subItems.some(sub => isActive(`/menus/${sub.mm.id}`))
+    || isActive(`/menus/single/${item.menu.id}`)
+    || isActive('/studentlist') && item.menu.menuassign?.menu_title === 'Academic Info'
+    || isActive('/teacherlist') && item.menu.menuassign?.menu_title === 'Management Info'
 }
 
 const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024)
 const updateWidth = () => (windowWidth.value = window.innerWidth)
-onMounted(() => {
-  window.addEventListener('resize', updateWidth)
-})
+onMounted(() => window.addEventListener('resize', updateWidth))
 onUnmounted(() => window.removeEventListener('resize', updateWidth))
-
 const isDesktop = computed(() => windowWidth.value > 768)
 
-watch(() => route.path, () => {
-  closeMobileMenu()
-  loginOpen.value = false
-})
+watch(() => route.path, () => { closeMobileMenu(); loginOpen.value = false })
 watch(isDesktop, val => { if (val) closeMobileMenu() })
 
 const currentDateTime = ref('')
@@ -217,13 +226,8 @@ let timer = null
 const updateDateTime = () => {
   const now = new Date()
   currentDateTime.value = now.toLocaleString('en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit'
+    weekday: 'long', year: 'numeric', month: 'long',
+    day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit'
   })
 }
 
@@ -259,21 +263,61 @@ header {
 
 .top-bar {
   background: linear-gradient(135deg, #002d3a 0%, #004d62 100%);
-  color: rgba(255,255,255,0.9);
+  color: rgba(255,255,255,0.95);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 24px;
-  font-size: 13px;
+  padding: 18px 30px;
+  gap: 16px;
+  font-size: 15px;
   letter-spacing: 0.2px;
 }
 
-.top-bar .left {
+.top-bar .left,
+.top-bar .right {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 14px;
+}
+
+.left--brand {
+  gap: 18px;
+}
+
+.top-logo-area {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.top-logo-area img {
+  width: 60px;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.18);
+}
+
+.title-wrap h1 {
+  font-size: clamp(18px, 2.4vw, 28px);
+  margin: 0;
+  font-weight: 700;
+  line-height: 1.15;
+  color: #ffffff;
+}
+
+.datetime-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
   font-weight: 500;
-  opacity: 0.9;
+  opacity: 0.92;
+}
+
+.datetime-icon {
+  font-size: 16px;
 }
 
 .datetime-icon {
@@ -389,21 +433,6 @@ header {
   border-bottom: 1px solid #ddd;
 }
 
-.logo-area {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  text-decoration: none;
-  flex-wrap: nowrap;
-  flex-shrink: 0;
-}
-
-.logo-area img {
-  width: 100px;
-  margin-bottom: -50px;
-  flex-shrink: 0;
-}
-
 .skeleton-logo {
   width: 60px;
   height: 60px;
@@ -424,20 +453,6 @@ header {
   0% { opacity: 0.6; }
   50% { opacity: 1; }
   100% { opacity: 0.6; }
-}
-
-.logo-area h1 {
-  font-size: clamp(18px, 2.5vw, 28px);
-  margin: 0;
-  font-weight: 700;
-  color: #003f4f;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-@media (min-width: 1200px) {
-  .logo-area h1 { white-space: normal; }
 }
 
 .hamburger {
@@ -463,17 +478,18 @@ header {
 
 .menu {
   display: flex;
-  gap: 2px;
+  gap: 1px;
   align-items: center;
+  flex-wrap: nowrap;
 }
 
 .menu > a,
 .dropbtn,
 .menu-toggle {
-  padding: 6px 8px;
-  border-radius: 6px;
+  padding: 5px 7px;
+  border-radius: 5px;
   font-weight: 600;
-  font-size: 16px;
+  font-size: 13px;
   color: #333;
   text-decoration: none;
   display: inline-flex;
@@ -494,12 +510,14 @@ header {
   cursor: pointer;
 }
 
-.menu-link {
+.menu-link,
+.menu-link--text {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   text-decoration: none;
   color: inherit;
+  cursor: pointer;
 }
 
 .menu-icon,

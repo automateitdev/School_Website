@@ -198,7 +198,6 @@ const loadLatestNews = async () => {
     newsLoadError.value = ''
     return
   } catch (error) {
-    // Try the static fallback when /news is unavailable.
   }
 
   try {
@@ -294,10 +293,13 @@ const latestNews = computed(() => {
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
-* {
+.media-section-wrapper {
   font-family: 'Poppins', sans-serif;
-  margin: 0;
-  padding: 0;
+}
+
+.media-section-wrapper *,
+.media-section-wrapper *::before,
+.media-section-wrapper *::after {
   box-sizing: border-box;
 }
 

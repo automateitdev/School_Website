@@ -72,6 +72,22 @@
           </div>
         </div>
 
+        <div v-if="hasFooterLinks" class="footer-col footer-col--links" :class="{ open: openSection === 'links' }">
+          <h4 @click="toggleSection('links')">
+            <span>Essential Links</span>
+            <i class="fas fa-chevron-down accordion-icon"></i>
+          </h4>
+          <div class="accordion-body footer-links-container">
+            <ul class="footer-links">
+              <li v-for="link in normalizedFooterLinks" :key="link.url">
+                <a :href="link.url" :target="link.external ? '_blank' : '_self'" rel="noopener noreferrer">
+                  {{ link.label }}
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -122,8 +138,16 @@ const footerLinks = computed(() =>
   Array.isArray(footerData.value.footer_links) ? footerData.value.footer_links : []
 )
 
+const webLinks = computed(() =>
+  Array.isArray(websiteStore.getWeb?.essential_links) ? websiteStore.getWeb.essential_links : []
+)
+
+const footerLinkSource = computed(() =>
+  footerLinks.value.length ? footerLinks.value : webLinks.value
+)
+
 const normalizedFooterLinks = computed(() =>
-  footerLinks.value.map(link => {
+  footerLinkSource.value.map(link => {
     const url = link.link || link.url || link.href || ''
     const label = link.title || link.name || link.label || link.text || 'Link'
     const external = link.external || /^https?:\/\//i.test(url)
@@ -269,6 +293,10 @@ const navMenus = computed(() => websiteStore.getNavMenus)
   flex: 0 0 auto;
 }
 
+.footer-col--links {
+  max-width: 360px;
+}
+
 .footer-col h4 {
   font-size: 11px;
   font-weight: 700;
@@ -279,6 +307,29 @@ const navMenus = computed(() => websiteStore.getNavMenus)
   padding-bottom: 6px;
   border-bottom: 1px solid rgba(255,255,255,0.15);
   white-space: nowrap;
+}
+
+.footer-links-container {
+  padding-top: 10px;
+}
+
+.footer-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.footer-links li a {
+  color: rgba(255,255,255,0.78);
+  text-decoration: none;
+  font-size: 13px;
+  transition: color 0.2s ease;
+}
+
+.footer-links li a:hover {
+  color: #ffdd57;
 }
 
 .accordion-icon { display: none; }

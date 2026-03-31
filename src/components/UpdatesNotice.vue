@@ -18,7 +18,7 @@
           :style="{ transform: `translateX(${translateX}px)` }"
           ref="track"
         >
-          <span v-if="websiteStore.isLoading" class="loading-text">
+          <span v-if="isLoading" class="loading-text">
             Fetching latest updates...
           </span>
           <span
@@ -29,7 +29,7 @@
             @click="goToNotice(notice)"
           >
             <span class="notice-dot"></span>
-            <span class="notice-text">{{ notice.title }}</span>
+            <span class="notice-text">{{ notice.name || notice.title || 'Notice update' }}</span>
             <svg class="notice-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <line x1="5" y1="12" x2="19" y2="12"></line>
               <polyline points="12 5 19 12 12 19"></polyline>
@@ -52,33 +52,47 @@ const track = ref(null)
 const websiteStore = useWebsiteStore()
 
 const speed = 1
-const translateX = ref(-1000)
+const translateX = ref(0)
 let animationId = null
+const noticeLoading = ref(false)
 
-const recentNotices = computed(() =>
-  [...websiteStore.getNotices]
-    .sort((a, b) => new Date(b.created_at || b.date) - new Date(a.created_at || a.date))
-    .slice(0, 3)
+const sortedNotices = computed(() =>
+  [...(websiteStore.getNotices || [])]
+    .sort((a, b) => {
+      const aTime = Date.parse(a?.created_at || a?.date) || 0
+      const bTime = Date.parse(b?.created_at || b?.date) || 0
+      return bTime - aTime
+    })
 )
+
+const recentNotices = computed(() => sortedNotices.value.slice(0, 5))
 
 const repeatedNotices = computed(() =>
   [...recentNotices.value, ...recentNotices.value].map((n, i) => ({
     ...n,
-    uid: `${n.id}-${i}`
+    uid: `${n.id || 'notice'}-${i}`
   }))
 )
 
 const goToNotice = (notice) => {
-  router.push(`/notices/${notice.id}`)
+  if (notice?.id) {
+    router.push(`/notices/${notice.id}`)
+  }
 }
 
+const isLoading = computed(() => websiteStore.isLoading || noticeLoading.value)
+
 const startScroll = () => {
-  if (animationId) return
+  if (animationId || repeatedNotices.value.length === 0) return
+
+  const trackWidth = track.value?.offsetWidth / 2 || 0
+  translateX.value = -trackWidth
 
   const animate = () => {
     translateX.value += speed
-    const trackWidth = track.value.offsetWidth / 2
-    if (translateX.value >= 0) translateX.value = -trackWidth
+    if (translateX.value >= 0) {
+      translateX.value = -trackWidth
+    }
     animationId = requestAnimationFrame(animate)
   }
 
@@ -86,11 +100,29 @@ const startScroll = () => {
 }
 
 const pauseScroll = () => {
-  cancelAnimationFrame(animationId)
-  animationId = null
+  if (animationId) {
+    cancelAnimationFrame(animationId)
+    animationId = null
+  }
 }
 
-onMounted(startScroll)
+const loadNotices = async () => {
+  if (!websiteStore.getNotices.length && !websiteStore.isLoading) {
+    noticeLoading.value = true
+    try {
+      await websiteStore.fetchAllData()
+    } catch (e) {
+      console.warn('[UpdatesNotice] fetchAllData failed', e)
+    } finally {
+      noticeLoading.value = false
+    }
+  }
+}
+
+onMounted(async () => {
+  await loadNotices()
+  startScroll()
+})
 onBeforeUnmount(pauseScroll)
 </script>
 
