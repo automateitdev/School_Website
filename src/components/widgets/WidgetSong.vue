@@ -213,33 +213,21 @@ const fmtTime = (s) => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  justify-content: center;
+  gap: 4px;
+  width: 70px;
+  min-width: 70px;
   background: none;
   border: none;
   color: rgba(255,255,255,0.6);
   cursor: pointer;
   transition: color 0.2s, transform 0.2s;
-  padding: 6px;
+  padding: 8px 0;
   border-radius: 50%;
 }
 
-.ctrl-btn:hover { color: #fff; transform: scale(1.1); }
-.ctrl-btn svg { width: 18px; height: 18px; }
-.ctrl-btn span { font-size: 0.55rem; font-weight: 700; line-height: 1; }
-
-.ctrl-btn--play {
-  width: 48px;
-  height: 48px;
-  background: linear-gradient(135deg, #0ea5e9, #0284c7);
-  border-radius: 50%;
-  box-shadow: 0 4px 16px rgba(14,165,233,0.4);
-  color: #fff;
-  flex-direction: row;
-  gap: 0;
-}
-
-.ctrl-btn--play svg { width: 22px; height: 22px; }
-.ctrl-btn--play:hover { transform: scale(1.08); box-shadow: 0 6px 20px rgba(14,165,233,0.55); }
+.ctrl-btn:hover { color: #fff; transform: scale(1.05); }
+.ctrl-btn svg { width: 18px; height: 18px; display: block; }
 
 .icon-fade-enter-active,
 .icon-fade-leave-active { transition: opacity 0.15s; }
