@@ -1,141 +1,253 @@
 <template>
-  <section class="media-section-wrapper">
-    <div class="media-section">
+  <section class="media-wrapper">
 
-      <h2 class="section-title">Video Gallery</h2>
-      <div v-if="websiteStore.isLoading" class="loading-state">
-        <div class="skeleton-card" v-for="n in 3" :key="'vid'+n"></div>
-      </div>
-      <div v-else-if="videos.length === 0" class="empty-state">No videos available.</div>
-      <div v-else>
-        <div class="video-grid">
+    <!-- ══════════════════════════════════════════════
+         VIDEO GALLERY
+    ══════════════════════════════════════════════ -->
+    <div class="ms-section video-section">
+      <div class="ms-section-inner">
+        <div class="ms-heading">
+          <div class="ms-label-row">
+            <span class="ms-eyebrow">Video</span>
+            <span class="ms-eyebrow-line"></span>
+          </div>
+          <h2 class="ms-title">Video Gallery</h2>
+          <p class="ms-subtitle">Watch, explore, and relive our finest moments in motion.</p>
+        </div>
+
+        <div v-if="websiteStore.isLoading" class="ms-skeleton-grid">
+          <div class="ms-skeleton" v-for="n in 4" :key="'vs'+n"></div>
+        </div>
+
+        <div v-else-if="videos.length === 0" class="ms-empty">
+          <span class="ms-empty-icon">▷</span>
+          <p>No videos available yet.</p>
+        </div>
+
+        <div v-else class="video-grid">
           <div
-            v-for="video in videos.slice(0,4)"
+            v-for="(video, idx) in videos.slice(0, 4)"
             :key="video.id"
-            class="video-item"
+            class="video-card"
+            :class="{ 'video-card--featured': idx === 0 }"
             @click="goToVideo(video)"
-            style="cursor:pointer"
           >
-            <video v-if="/\.(mp4|webm|ogg)(\?.*)?$/i.test(video.url)" :src="video.url" controls class="video-preview" @click.stop></video>
-            <iframe
-              v-else
-              :src="video.url"
-              frameborder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowfullscreen
-              class="video-preview"
-            ></iframe>
-            <p class="video-title">{{ video.title }}</p>
+            <div class="video-card__thumb">
+              <video
+                v-if="/\.(mp4|webm|ogg)(\?.*)?$/i.test(video.url)"
+                :src="video.url"
+                class="video-card__media"
+                @click.stop
+                muted
+                preload="metadata"
+              ></video>
+              <iframe
+                v-else
+                :src="video.url"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+                class="video-card__media"
+              ></iframe>
+              <div class="video-card__play-overlay" @click.stop="goToVideo(video)">
+                <div class="video-card__play-btn">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                </div>
+              </div>
+              <span class="video-card__badge" v-if="idx === 0">Featured</span>
+            </div>
+            <div class="video-card__info">
+              <p class="video-card__title">{{ video.title }}</p>
+              <span class="video-card__cta">Watch Now →</span>
+            </div>
           </div>
         </div>
-        <div class="see-more" v-if="websiteStore.getVideoGalleries.length > 4">
-          <router-link to="/videos" class="see-more-link">See More</router-link>
+
+        <div class="ms-see-more" v-if="websiteStore.getVideoGalleries.length > 4">
+          <router-link to="/videos" class="ms-btn">See All Videos</router-link>
         </div>
       </div>
+    </div>
 
+    <!-- Video Modal -->
+    <transition name="modal-fade">
       <div v-if="activeVideo" class="video-modal" @click.self="activeVideo = null">
-        <div class="video-modal-content" @click.stop>
-          <button class="close-button" @click="activeVideo = null">×</button>
-          <div class="video-modal-header">
-            <h2>{{ activeVideo.title }}</h2>
+        <div class="video-modal__box">
+          <button class="video-modal__close" @click="activeVideo = null" aria-label="Close">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 6L6 18M6 6l12 12"/>
+            </svg>
+          </button>
+          <div class="video-modal__header">
+            <h3>{{ activeVideo.title }}</h3>
           </div>
-          <div class="video-frame">
+          <div class="video-modal__player">
             <iframe
               v-if="isEmbedUrl"
               :src="activeVideoSource"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowfullscreen
             ></iframe>
-            <video
-              v-else
-              :src="activeVideoSource"
-              controls
-              autoplay
-            ></video>
+            <video v-else :src="activeVideoSource" controls autoplay></video>
           </div>
         </div>
       </div>
+    </transition>
 
-      <h2 class="section-title">Photo Gallery</h2>
-      <div v-if="websiteStore.isLoading" class="loading-state">
-        <div class="skeleton-card" v-for="n in 3" :key="'img'+n"></div>
-      </div>
-      <div v-else-if="photos.length === 0" class="empty-state">No photos available.</div>
-      <div v-else>
-        <div class="photo-grid">
+    <!-- ══════════════════════════════════════════════
+         PHOTO GALLERY
+    ══════════════════════════════════════════════ -->
+    <div class="ms-section photo-section">
+      <div class="ms-section-inner">
+        <div class="ms-heading ms-heading--right">
+          <div class="ms-label-row ms-label-row--right">
+            <span class="ms-eyebrow-line"></span>
+            <span class="ms-eyebrow ms-eyebrow--coral">Photos</span>
+          </div>
+          <h2 class="ms-title ms-title--right">Photo Gallery</h2>
+          <p class="ms-subtitle ms-subtitle--right">Captured stories, curated collections, timeless memories.</p>
+        </div>
+
+        <div v-if="websiteStore.isLoading" class="ms-skeleton-grid ms-skeleton-grid--masonry">
+          <div class="ms-skeleton ms-skeleton--tall" v-for="n in 5" :key="'ps'+n"></div>
+        </div>
+
+        <div v-else-if="photos.length === 0" class="ms-empty">
+          <span class="ms-empty-icon">⬛</span>
+          <p>No photos available yet.</p>
+        </div>
+
+        <div v-else class="photo-grid">
           <div
-            v-for="photo in photos"
+            v-for="(photo, idx) in photos"
             :key="photo.id"
-            class="photo-item"
+            class="photo-card"
+            :class="{ 'photo-card--wide': idx === 0 || idx === 3 }"
+            @mouseenter="startSlide(photo.id)"
             @click="goToFolder(photo.id)"
-            style="cursor:pointer"
           >
-            <img :src="photo.url" :alt="photo.title" />
-            <div class="photo-info">
-               <p class="photo-title">{{ photo.title }}</p>
-               <button class="view-folder-btn">View Folder</button>
+            <div class="photo-card__slider">
+              <div
+                v-for="(imgUrl, sIdx) in getSlides(photo)"
+                :key="sIdx"
+                class="photo-card__slide"
+                :class="{ 'photo-card__slide--active': getActiveSlide(photo.id) === sIdx }"
+              >
+                <img :src="imgUrl" :alt="photo.title" loading="lazy" />
+              </div>
+
+              <div class="photo-card__dots" v-if="getSlides(photo).length > 1">
+                <span
+                  v-for="(_, dIdx) in getSlides(photo)"
+                  :key="dIdx"
+                  class="photo-card__dot"
+                  :class="{ 'photo-card__dot--active': getActiveSlide(photo.id) === dIdx }"
+                ></span>
+              </div>
+
+              <div class="photo-card__overlay">
+                <div class="photo-card__overlay-inner">
+                  <svg class="photo-card__folder-svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M20 5h-8.59L9.59 3H4C2.9 3 2 3.9 2 5v14c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2z"/>
+                  </svg>
+                  <span class="photo-card__action">Open Folder</span>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="photo-card__caption">
+              <span class="photo-card__title">{{ photo.title }}</span>
+              <button class="photo-card__btn">View →</button>
             </div>
           </div>
         </div>
-        <div class="see-more" v-if="websiteStore.getPhotoGalleries.length > 5">
-          <router-link to="/photogallery" class="see-more-link">See More Folders</router-link>
+
+        <div class="ms-see-more" v-if="websiteStore.getPhotoGalleries.length > 5">
+          <router-link to="/photogallery" class="ms-btn ms-btn--coral">All Folders</router-link>
         </div>
       </div>
+    </div>
 
-      <h2 class="section-title">News & Events</h2>
-      <div v-if="websiteStore.isLoading" class="loading-state">
-        <div class="skeleton-card" v-for="n in 3" :key="'news'+n"></div>
-      </div>
-      <div v-else-if="latestNews.length === 0" class="empty-state">No news available.</div>
-      <div v-else>
-        <div class="news-card-grid">
+    <!-- ══════════════════════════════════════════════
+         NEWS & EVENTS
+    ══════════════════════════════════════════════ -->
+    <div class="ms-section news-section">
+      <div class="ms-section-inner">
+        <div class="ms-heading ms-heading--center">
+          <div class="ms-label-row ms-label-row--center">
+            <span class="ms-eyebrow-line ms-eyebrow-line--half"></span>
+            <span class="ms-eyebrow ms-eyebrow--amber">News</span>
+            <span class="ms-eyebrow-line ms-eyebrow-line--half"></span>
+          </div>
+          <h2 class="ms-title ms-title--center">News &amp; Events</h2>
+          <p class="ms-subtitle ms-subtitle--center">Stay informed. Stay connected. Stay ahead.</p>
+        </div>
+
+        <div v-if="websiteStore.isLoading" class="news-skeleton-row">
+          <div class="ms-skeleton ms-skeleton--news" v-for="n in 3" :key="'ns'+n"></div>
+        </div>
+
+        <div v-else-if="latestNews.length === 0" class="ms-empty">
+          <span class="ms-empty-icon">✦</span>
+          <p>No news available yet.</p>
+        </div>
+
+        <div v-else class="news-grid">
           <router-link
-            v-for="item in latestNews"
+            v-for="(item, idx) in latestNews"
             :key="item.id"
             :to="item.link || `/news/${item.id}`"
-            class="news-card-link"
+            class="news-card"
+            :class="{ 'news-card--hero': idx === 0 }"
           >
-            <div class="news-card">
-              <div v-if="item.image" class="news-card-image">
-                <img :src="item.image" alt="news" />
-              </div>
-              <div class="news-card-body">
-                <h3 class="news-card-title">{{ item.title }}</h3>
-                <p class="news-card-date">{{ item.date }}</p>
-                <div v-if="item.body" class="news-card-preview">
-                  {{ item.body.replace(/<[^>]+>/g, '').slice(0, 100) }}...
-                </div>
-              </div>
+            <div class="news-card__media" v-if="item.image">
+              <img :src="item.image" alt="news image" loading="lazy" />
+              <div class="news-card__media-overlay"></div>
+            </div>
+            <div class="news-card__no-img" v-else>
+              <span class="news-card__initial">{{ item.title?.charAt(0) }}</span>
+            </div>
+            <div class="news-card__body">
+              <time class="news-card__date">{{ item.date }}</time>
+              <h3 class="news-card__title">{{ item.title }}</h3>
+              <p v-if="item.body" class="news-card__preview">
+                {{ item.body.replace(/<[^>]+>/g, '').slice(0, 120) }}…
+              </p>
+              <span class="news-card__read-more">Read more →</span>
             </div>
           </router-link>
         </div>
-        <div class="see-more">
-          <router-link to="/news" class="see-more-link">Explore All</router-link>
+
+        <div class="ms-see-more">
+          <router-link to="/news" class="ms-btn ms-btn--amber">Explore All News</router-link>
         </div>
       </div>
-
     </div>
+
   </section>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from '@/plugins/axios'
 import { useWebsiteStore } from '@/stores/websiteStore'
-import { useGalleryImageUrl, useNoticeFileUrl, useVideoUrl, useNewsFileUrl } from '@/composables/useImageUrl'
+import {
+  useGalleryImageUrl,
+  useNoticeFileUrl,
+  useVideoUrl,
+  useNewsFileUrl
+} from '@/composables/useImageUrl'
 
 const websiteStore = useWebsiteStore()
 const router = useRouter()
-const activeVideo = ref(null)
-const newsItems = ref([])
-const newsLoadError = ref('')
 
-const slugify = (value) => String(value || '')
-  .toLowerCase()
-  .trim()
-  .replace(/\s+/g, '-')
-  .replace(/[^a-z0-9-]/g, '')
+const activeVideo = ref(null)
+
+const slugify = (value) =>
+  String(value || '').toLowerCase().trim()
+    .replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
 
 const getVideoRouteId = (video) => {
   if (!video) return ''
@@ -144,127 +256,36 @@ const getVideoRouteId = (video) => {
   return ''
 }
 
-const parseNewsResponse = (payload) => {
-  if (!payload) return []
-  if (Array.isArray(payload)) return payload
-  if (Array.isArray(payload.data)) return payload.data
-  if (Array.isArray(payload.news)) return payload.news
-  return []
-}
-
 const getVideoSource = (video) => {
   if (!video) return ''
-
   const resolveField = (field) => {
     if (Array.isArray(field)) return field.find(Boolean) || ''
     if (typeof field === 'string') return field.trim()
     if (field && typeof field === 'object') return field.url || field.video || field.path || ''
     return ''
   }
-
   return resolveField(video.contents)
     || resolveField(video.content)
     || video.video_url || video.embed_url || video.media_url || video.url || video.path || ''
 }
 
-const normalizeNewsItem = (item) => {
-  if (!item) return null
-  const dateValue = item.date || item.created_at || ''
-  const summaryValue = item.summary || (item.content ? item.content.replace(/<[^>]+>/g, '').slice(0, 180) : '')
-  return {
-    id: item.id,
-    title: item.title || item.name || 'Untitled News',
-    date: dateValue,
-    body: item.content || item.summary || '',
-    summary: summaryValue,
-    image: item.image ? useNewsFileUrl(item.image, item.institute_id) : '',
-    file_url: item.file ? useNewsFileUrl(item.file, item.institute_id) : '',
-    file_type: item.file_type || item.fileType || '',
-    link: `/news/${item.id}`
-  }
-}
-
-const loadLatestNews = async () => {
-  try {
-    const response = await axios.get('news')
-    const items = parseNewsResponse(response.data)
-    if (items.length === 0) {
-      throw new Error('Empty news response')
-    }
-    newsItems.value = items
-      .map(normalizeNewsItem)
-      .filter(Boolean)
-      .slice(0, 3)
-    newsLoadError.value = ''
-    return
-  } catch (error) {
-  }
-
-  try {
-    const fallbackResponse = await fetch('/indexdata.json')
-    if (!fallbackResponse.ok) {
-      throw new Error('Fallback news source unavailable')
-    }
-    const fallbackItems = parseNewsResponse(await fallbackResponse.json())
-    newsItems.value = fallbackItems
-      .map(normalizeNewsItem)
-      .filter(Boolean)
-      .slice(0, 3)
-    newsLoadError.value = ''
-  } catch (fallbackError) {
-    newsLoadError.value = fallbackError?.message || 'Could not load news'
-  }
-}
-
-onMounted(() => {
-  loadLatestNews()
-})
-
 const videos = computed(() =>
-  websiteStore.getVideoGalleries
-    .slice(0, 4)
-    .map(g => {
-      const source = getVideoSource(g)
-      return {
-        id: getVideoRouteId(g),
-        title: g.title,
-        url: useVideoUrl(source, g.institute_id),
-        contents: g.contents || g.content || [],
-        video_url: g.video_url,
-        embed_url: g.embed_url,
-        media_url: g.media_url,
-        institute_id: g.institute_id
-      }
-    })
-    .filter(video => video.id && video.url)
+  websiteStore.getVideoGalleries.slice(0, 4).map(g => {
+    const source = getVideoSource(g)
+    return {
+      id: getVideoRouteId(g),
+      title: g.title,
+      url: useVideoUrl(source, g.institute_id),
+      contents: g.contents || g.content || [],
+      video_url: g.video_url,
+      embed_url: g.embed_url,
+      media_url: g.media_url,
+      institute_id: g.institute_id
+    }
+  }).filter(v => v.id && v.url)
 )
 
-const photos = computed(() =>
-  websiteStore.getPhotoGalleries.slice(0, 5).map(g => ({
-    id: g.id,
-    title: g.title,
-    url: useGalleryImageUrl(g.album_folder, g.image || g.contents?.[0], g.institute_id)
-  }))
-)
-
-const goToVideo = (video) => {
-  if (!video) return
-  activeVideo.value = video
-}
-
-const goToFolder = (id) => {
-  if (!id) return
-  router.push(`/photogallery/${id}`)
-}
-
-const getNoticeImage = (notice) => {
-  if (!notice) return ''
-  if (notice.image) return useNoticeFileUrl(notice.image, notice.institute_id, notice.type)
-  if (notice.file && /\.(jpe?g|png|gif|webp|bmp|svg)$/i.test(notice.file)) {
-    return useNoticeFileUrl(notice.file, notice.institute_id, notice.type)
-  }
-  return ''
-}
+const goToVideo = (video) => { if (video) activeVideo.value = video }
 
 const activeVideoSource = computed(() => {
   if (!activeVideo.value) return ''
@@ -275,6 +296,117 @@ const isEmbedUrl = computed(() => {
   const url = activeVideoSource.value || ''
   return /embed|youtube|vimeo|\/video\//i.test(url)
 })
+
+const activeSlides = ref({})
+const slideTimers  = ref({})
+const autoTimers   = ref({})
+const SLIDE_INTERVAL = 1800
+const AUTO_DELAY     = 800
+
+const photos = computed(() =>
+  websiteStore.getPhotoGalleries.slice(0, 5).map(g => ({
+    id: g.id,
+    title: g.title,
+    album_folder: g.album_folder,
+    institute_id: g.institute_id,
+    allImages: Array.isArray(g.contents) ? g.contents.filter(Boolean) : (g.image ? [g.image] : []),
+    coverImage: g.image || (Array.isArray(g.contents) ? g.contents[0] : null)
+  }))
+)
+
+const getSlides = (photo) => {
+  const all = photo.allImages.length
+    ? photo.allImages
+    : (photo.coverImage ? [photo.coverImage] : [])
+  const urls = all.slice(0, 6).map(img =>
+    useGalleryImageUrl(photo.album_folder, img, photo.institute_id)
+  )
+  return [...new Map(urls.map(u => [u, u])).values()]
+}
+
+const getActiveSlide = (id) => activeSlides.value[id] ?? 0
+
+const startSlide = (id) => {
+  if (autoTimers.value[id]) return
+  autoTimers.value[id] = setTimeout(() => {
+    if (!slideTimers.value[id]) {
+      slideTimers.value[id] = setInterval(() => {
+        const photo = photos.value.find(p => p.id === id)
+        if (!photo) return
+        const total = getSlides(photo).length
+        if (total <= 1) return
+        activeSlides.value[id] = ((activeSlides.value[id] ?? 0) + 1) % total
+      }, SLIDE_INTERVAL)
+    }
+  }, AUTO_DELAY)
+}
+
+const stopSlide = (id) => {
+  clearTimeout(autoTimers.value[id])
+  clearInterval(slideTimers.value[id])
+  delete autoTimers.value[id]
+  delete slideTimers.value[id]
+  activeSlides.value[id] = 0
+}
+
+watch(photos, (newPhotos) => {
+  newPhotos.forEach(photo => startSlide(photo.id))
+}, { immediate: true })
+
+onUnmounted(() => {
+  photos.value.forEach(photo => stopSlide(photo.id))
+})
+
+const goToFolder = (id) => { if (id) router.push(`/photogallery/${id}`) }
+
+const newsItems     = ref([])
+const newsLoadError = ref('')
+
+const parseNewsResponse = (payload) => {
+  if (!payload) return []
+  if (Array.isArray(payload)) return payload
+  if (Array.isArray(payload.data)) return payload.data
+  if (Array.isArray(payload.news)) return payload.news
+  return []
+}
+
+const normalizeNewsItem = (item) => {
+  if (!item) return null
+  return {
+    id: item.id,
+    title: item.title || item.name || 'Untitled News',
+    date: item.date || item.created_at || '',
+    body: item.content || item.summary || '',
+    image: item.image ? useNewsFileUrl(item.image, item.institute_id) : '',
+    link: `/news/${item.id}`
+  }
+}
+
+const loadLatestNews = async () => {
+  try {
+    const response = await axios.get('news')
+    const items = parseNewsResponse(response.data)
+    if (items.length === 0) throw new Error('Empty')
+    newsItems.value = items.map(normalizeNewsItem).filter(Boolean).slice(0, 3)
+    return
+  } catch {}
+  try {
+    const fb = await fetch('/indexdata.json')
+    if (!fb.ok) throw new Error('Unavailable')
+    const items = parseNewsResponse(await fb.json())
+    newsItems.value = items.map(normalizeNewsItem).filter(Boolean).slice(0, 3)
+  } catch (e) {
+    newsLoadError.value = e?.message || 'Could not load news'
+  }
+}
+
+const getNoticeImage = (notice) => {
+  if (!notice) return ''
+  if (notice.image) return useNoticeFileUrl(notice.image, notice.institute_id, notice.type)
+  if (notice.file && /\.(jpe?g|png|gif|webp|bmp|svg)$/i.test(notice.file))
+    return useNoticeFileUrl(notice.file, notice.institute_id, notice.type)
+  return ''
+}
 
 const latestNews = computed(() => {
   if (newsItems.value.length > 0) return newsItems.value
@@ -288,279 +420,481 @@ const latestNews = computed(() => {
     link: `/notices/${n.id}`
   }))
 })
+
+onMounted(() => { loadLatestNews() })
+
+onUnmounted(() => {
+  Object.values(autoTimers.value).forEach(clearTimeout)
+  Object.values(slideTimers.value).forEach(clearInterval)
+})
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
 
-.media-section-wrapper {
-  font-family: 'Poppins', sans-serif;
+
+.media-wrapper {
+  --clr-blue:        #1a3cff;
+  --clr-blue-light:  #e8eeff;
+  --clr-coral:       #e8431e;
+  --clr-coral-light: #fff1ee;
+  --clr-amber:       #d97706;
+  --clr-amber-light: #fffbeb;
+  --clr-ink:         #0e0e1a;
+  --clr-ink-80:      #2d2d3a;
+  --clr-ink-50:      #7a7a8a;
+  --clr-ink-20:      #c8c8d0;
+  --clr-ink-05:      #f4f4f6;
+  --clr-white:       #ffffff;
+  --ff-display:      'DM Serif Display', Georgia, serif;
+  --ff-body:         'DM Sans', system-ui, sans-serif;
+  --radius-card:     20px;
+  --shadow-card:     0 2px 20px rgba(14,14,26,.07), 0 1px 4px rgba(14,14,26,.04);
+  --shadow-hover:    0 8px 40px rgba(14,14,26,.14), 0 2px 8px rgba(14,14,26,.07);
+  --ease:            cubic-bezier(.16,1,.3,1);
+  font-family: var(--ff-body);
 }
 
-.media-section-wrapper *,
-.media-section-wrapper *::before,
-.media-section-wrapper *::after {
-  box-sizing: border-box;
+.media-wrapper *,
+.media-wrapper *::before,
+.media-wrapper *::after {
+  box-sizing: border-box; margin: 0; padding: 0;
+}
+.media-wrapper a       { text-decoration: none; color: inherit; }
+.media-wrapper button  { cursor: pointer; font-family: var(--ff-body); }
+.media-wrapper img,
+.media-wrapper video,
+.media-wrapper iframe  { display: block; }
+
+
+.media-wrapper { width: 100%; background: var(--clr-ink-05); }
+
+.ms-section { width: 100%; padding: 80px 0; }
+.ms-section:nth-child(odd)  { background: var(--clr-white); }
+.ms-section:nth-child(even) { background: var(--clr-ink-05); }
+
+.ms-section-inner {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 32px;
 }
 
-.video-preview {
-  width: 100%;
-  aspect-ratio: 16/9;
-  border-radius: 10px;
-  object-fit: cover;
+
+.ms-heading           { margin-bottom: 52px; }
+.ms-heading--center   { text-align: center; }
+.ms-heading--right    { text-align: right; }
+
+.ms-label-row         { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+.ms-label-row--center { justify-content: center; }
+.ms-label-row--right  { justify-content: flex-end; }
+
+.ms-eyebrow {
+  font-size: 11px; font-weight: 600; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--clr-blue);
+  background: var(--clr-blue-light);
+  padding: 5px 14px; border-radius: 100px; flex-shrink: 0;
+}
+.ms-eyebrow--coral { color: var(--clr-coral); background: var(--clr-coral-light); }
+.ms-eyebrow--amber { color: var(--clr-amber); background: var(--clr-amber-light); }
+
+.ms-eyebrow-line       { flex: 1; height: 1px; background: var(--clr-ink-20); }
+.ms-eyebrow-line--half { flex: 0 0 60px; }
+
+.ms-title {
+  font-family: var(--ff-display);
+  font-size: clamp(32px, 4vw, 52px);
+  font-weight: 400; color: var(--clr-ink);
+  line-height: 1.1; margin-bottom: 14px;
+}
+.ms-title--center { text-align: center; }
+.ms-title--right  { text-align: right; }
+
+.ms-subtitle {
+  font-size: 16px; line-height: 1.6;
+  color: var(--clr-ink-50); font-weight: 300; max-width: 520px;
+}
+.ms-subtitle--center { margin: 0 auto; text-align: center; }
+.ms-subtitle--right  { margin-left: auto; text-align: right; }
+
+.ms-skeleton-grid {
+  display: grid; grid-template-columns: repeat(4,1fr);
+  gap: 20px; margin-bottom: 40px;
+}
+.ms-skeleton-grid--masonry { grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); }
+
+.ms-skeleton {
+  height: 240px; border-radius: var(--radius-card);
+  background: linear-gradient(90deg, #e8e8ed 25%, #f2f2f5 50%, #e8e8ed 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
+}
+.ms-skeleton--tall { height: 280px; }
+.ms-skeleton--news { height: 360px; }
+
+.news-skeleton-row {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 24px;
 }
 
-.media-section-wrapper {
-  width: 100%;
-  background-color: #ffffff;
-  padding: 40px 0;
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
-.media-section {
-  max-width: 1200px;
-  margin: auto;
-  padding: 0 20px;
+.ms-empty {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; padding: 80px 0; gap: 12px;
+  color: var(--clr-ink-50); font-size: 15px;
 }
+.ms-empty-icon { font-size: 28px; opacity: .35; }
 
-.section-title {
-  font-size: 28px;
-  font-weight: 700;
-  color: #0d6efd;
-  margin-bottom: 25px;
-  text-align: center;
+
+.ms-see-more { text-align: center; margin-top: 48px; }
+
+.ms-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 14px 36px; border-radius: 100px;
+  font-size: 14px; font-weight: 600; letter-spacing: .02em;
+  background: var(--clr-ink); color: var(--clr-white);
+  border: 2px solid var(--clr-ink);
+  transition: all .28s var(--ease);
+  text-decoration: none;
 }
+.ms-btn:hover {
+  background: var(--clr-white); color: var(--clr-ink);
+  transform: translateY(-2px); box-shadow: var(--shadow-hover);
+}
+.ms-btn--coral { background: var(--clr-coral); border-color: var(--clr-coral); color: #fff; }
+.ms-btn--coral:hover { background: var(--clr-white); color: var(--clr-coral); }
+.ms-btn--amber { background: var(--clr-amber); border-color: var(--clr-amber); color: #fff; }
+.ms-btn--amber:hover { background: var(--clr-white); color: var(--clr-amber); }
+
+
+.video-section { background: var(--clr-white); }
 
 .video-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(220px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 20px;
-  margin-bottom: 40px;
 }
 
-@media (max-width: 1100px) {
-  .video-grid {
-    grid-template-columns: repeat(2, minmax(220px, 1fr));
-  }
+.video-card {
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  background: var(--clr-white);
+  border: 1px solid var(--clr-ink-20);
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+  transition: transform .28s var(--ease), box-shadow .28s var(--ease), border-color .28s;
 }
-
-@media (max-width: 720px) {
-  .video-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-.video-item {
-  background: #fff;
-  padding: 10px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  transition: transform 0.3s;
-}
-
-.video-item:hover {
+.video-card:hover {
   transform: translateY(-6px);
+  box-shadow: var(--shadow-hover);
+  border-color: transparent;
+}
+.video-card--featured { grid-column: span 2; }
+
+.video-card__thumb { position: relative; overflow: hidden; }
+
+.video-card__media {
+  width: 100%; aspect-ratio: 16/9;
+  object-fit: cover; display: block;
+  background: var(--clr-ink);
+  transition: transform .28s var(--ease);
+}
+.video-card:hover .video-card__media { transform: scale(1.04); }
+
+.video-card__play-overlay {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(14,14,26,.35);
+  opacity: 0; transition: opacity .28s;
+}
+.video-card:hover .video-card__play-overlay { opacity: 1; }
+
+.video-card__play-btn {
+  width: 54px; height: 54px; border-radius: 50%;
+  background: var(--clr-white);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 24px rgba(0,0,0,.4);
+  transition: transform .28s var(--ease);
+}
+.video-card__play-btn svg {
+  width: 22px; height: 22px;
+  color: var(--clr-ink); margin-left: 3px;
+}
+.video-card:hover .video-card__play-btn { transform: scale(1.12); }
+
+.video-card__badge {
+  position: absolute; top: 12px; left: 12px;
+  font-size: 11px; font-weight: 600; letter-spacing: .08em;
+  text-transform: uppercase;
+  background: var(--clr-blue); color: var(--clr-white);
+  padding: 4px 12px; border-radius: 100px;
+}
+
+.video-card__info {
+  padding: 16px 18px 18px;
+  display: flex; align-items: flex-start;
+  justify-content: space-between; gap: 12px;
+}
+.video-card__title {
+  font-size: 14px; font-weight: 500;
+  color: var(--clr-ink); line-height: 1.45; flex: 1;
+}
+.video-card__cta {
+  font-size: 12px; font-weight: 600;
+  color: var(--clr-blue); white-space: nowrap; flex-shrink: 0;
 }
 
 .video-modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.92);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-  padding: 20px;
+  position: fixed; inset: 0;
+  background: rgba(10,10,20,.96);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 9999; padding: 24px;
+}
+.video-modal__box {
+  position: relative; width: 100%; max-width: 1100px;
+  background: #111118; border-radius: 24px; overflow: hidden;
+  border: 1px solid rgba(255,255,255,.08);
+}
+.video-modal__header {
+  padding: 20px 60px 20px 28px;
+  border-bottom: 1px solid rgba(255,255,255,.07);
+}
+.video-modal__header h3 {
+  font-family: var(--ff-display); font-size: 20px;
+  font-weight: 400; color: var(--clr-white);
+}
+.video-modal__close {
+  position: absolute; top: 16px; right: 16px;
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 1px solid rgba(255,255,255,.15);
+  background: rgba(255,255,255,.06);
+  color: rgba(255,255,255,.7);
+  display: flex; align-items: center; justify-content: center;
+  transition: background .2s; z-index: 1;
+}
+.video-modal__close:hover { background: rgba(255,255,255,.14); color: #fff; }
+.video-modal__close svg { width: 18px; height: 18px; }
+
+.video-modal__player { position: relative; padding-bottom: 56.25%; height: 0; }
+.video-modal__player iframe,
+.video-modal__player video {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%; border: 0; background: #000;
 }
 
-.video-modal-content {
-  width: 100%;
-  max-width: 1200px;
-  height: 100%;
-  max-height: 100%;
-  background: #111;
-  border-radius: 16px;
-  padding: 24px;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-}
+.modal-fade-enter-active, .modal-fade-leave-active { transition: opacity .22s ease; }
+.modal-fade-enter-from, .modal-fade-leave-to { opacity: 0; }
 
-.video-modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 18px;
-}
 
-.video-modal-header h2 {
-  color: #fff;
-  font-size: 1.4rem;
-  margin: 0;
-}
-
-.close-button {
-  position: absolute;
-  top: 18px;
-  right: 18px;
-  width: 42px;
-  height: 42px;
-  border: none;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.18);
-  color: #fff;
-  font-size: 1.8rem;
-  cursor: pointer;
-  display: grid;
-  place-items: center;
-}
-
-.video-frame {
-  flex: 1;
-  width: 100%;
-  height: 100%;
-  background: #000;
-  border-radius: 14px;
-  overflow: hidden;
-}
-
-.video-frame iframe,
-.video-frame video {
-  width: 100%;
-  height: 100%;
-  border: 0;
-}
-
-.video-title {
-  margin-top: 10px;
-  text-align: center;
-}
+.photo-section { background: var(--clr-ink-05); }
 
 .photo-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 300px;
   gap: 20px;
-  margin-bottom: 40px;
 }
+.photo-card--wide { grid-column: span 2; }
 
-.photo-item {
-  background: #fff;
-  border-radius: 12px;
+.photo-card {
+  border-radius: var(--radius-card);
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  transition: transform 0.3s;
-}
-
-.photo-item:hover {
-  transform: translateY(-6px);
-}
-
-.photo-item img {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
-}
-
-.photo-info {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 15px;
-  gap: 10px;
-}
-
-.photo-title {
-  text-align: center;
-  font-weight: 500;
-  font-size: 16px;
-  color: #333;
-}
-
-.view-folder-btn {
-  padding: 8px 16px;
-  border-radius: 6px;
-  background-color: #f0f4ff;
-  color: #0d6efd;
-  border: 1px solid #0d6efd;
-  font-weight: 500;
+  background: var(--clr-white);
+  border: 1px solid var(--clr-ink-20);
+  box-shadow: var(--shadow-card);
   cursor: pointer;
-  transition: all 0.2s;
+  display: flex; flex-direction: column;
+  transition: transform .28s var(--ease), box-shadow .28s var(--ease), border-color .28s;
+}
+.photo-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-hover);
+  border-color: transparent;
 }
 
-.view-folder-btn:hover {
-  background-color: #0d6efd;
-  color: #fff;
+.photo-card__slider {
+  position: relative; flex: 1; min-height: 0;
+  overflow: hidden; background: var(--clr-ink);
 }
 
-.news-card-grid {
+.photo-card__slide {
+  position: absolute; inset: 0;
+  opacity: 0;
+  transition: opacity .6s ease, transform .6s ease;
+  transform: scale(1.04);
+}
+.photo-card__slide--active {
+  opacity: 1; transform: scale(1); z-index: 1;
+}
+.photo-card__slide--active img {
+  animation: kenburns 4s ease forwards;
+}
+@keyframes kenburns {
+  0%   { transform: scale(1)    translate(0, 0); }
+  100% { transform: scale(1.08) translate(-1%, -1%); }
+}
+.photo-card__slide img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+
+.photo-card__overlay {
+  position: absolute; inset: 0;
+  background: rgba(14,14,26,.5);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity .28s; z-index: 3;
+}
+.photo-card:hover .photo-card__overlay { opacity: 1; }
+
+.photo-card__overlay-inner {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 10px;
+}
+.photo-card__folder-svg { width: 32px; height: 32px; color: #fff; opacity: .9; }
+.photo-card__action {
+  font-size: 13px; font-weight: 600;
+  color: #fff; letter-spacing: .04em;
+}
+
+.photo-card__dots {
+  position: absolute; bottom: 10px; left: 50%;
+  transform: translateX(-50%);
+  display: flex; gap: 5px; z-index: 4;
+}
+.photo-card__dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: rgba(255,255,255,.45);
+  transition: background .3s, transform .3s;
+}
+.photo-card__dot--active { background: #fff; transform: scale(1.3); }
+
+.photo-card__count {
+  position: absolute; top: 10px; right: 10px;
+  font-size: 11px; font-weight: 600; color: #fff;
+  background: rgba(14,14,26,.55);
+  padding: 3px 9px; border-radius: 100px; z-index: 4;
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+}
+
+.photo-card__caption {
+  padding: 14px 18px;
+  display: flex; align-items: center;
+  justify-content: space-between; gap: 10px;
+  background: var(--clr-white); flex-shrink: 0;
+}
+.photo-card__title {
+  font-size: 14px; font-weight: 500;
+  color: var(--clr-ink); line-height: 1.4; flex: 1;
+}
+.photo-card__btn {
+  font-size: 12px; font-weight: 600;
+  color: var(--clr-coral); background: var(--clr-coral-light);
+  border: none; padding: 6px 14px; border-radius: 100px;
+  transition: background .22s, color .22s; white-space: nowrap;
+}
+.photo-card:hover .photo-card__btn { background: var(--clr-coral); color: #fff; }
+
+
+.news-section { background: var(--clr-white); }
+
+.news-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 25px;
+  grid-template-columns: 1.6fr 1fr 1fr;
+  gap: 24px; align-items: stretch;
 }
 
 .news-card {
-  background: #fff;
-  border-radius: 14px;
-  overflow: hidden;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-  transition: transform 0.3s;
+  border-radius: var(--radius-card); overflow: hidden;
+  background: var(--clr-white);
+  border: 1px solid var(--clr-ink-20);
+  box-shadow: var(--shadow-card);
+  display: flex; flex-direction: column;
+  transition: transform .28s var(--ease), box-shadow .28s var(--ease), border-color .28s;
+  text-decoration: none; color: inherit;
 }
-
 .news-card:hover {
   transform: translateY(-6px);
+  box-shadow: var(--shadow-hover);
+  border-color: transparent;
 }
 
-.news-card-image img {
-  width: 100%;
-  height: 190px;
-  object-fit: cover;
+.news-card__media { position: relative; overflow: hidden; flex-shrink: 0; }
+.news-card--hero .news-card__media                 { height: 260px; }
+.news-card:not(.news-card--hero) .news-card__media { height: 180px; }
+
+.news-card__media img {
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform .28s var(--ease);
+}
+.news-card:hover .news-card__media img { transform: scale(1.05); }
+
+.news-card__media-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom, transparent 50%, rgba(14,14,26,.18));
 }
 
-.news-card-body {
-  padding: 15px;
+.news-card__no-img {
+  height: 140px; background: var(--clr-ink-05);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.news-card--hero .news-card__no-img { height: 220px; }
+
+.news-card__initial {
+  font-family: var(--ff-display); font-size: 72px;
+  font-weight: 400; color: var(--clr-ink-20);
+  line-height: 1; text-transform: uppercase;
 }
 
-.news-card-title {
-  color: #0d6efd;
-  font-size: 16px;
+.news-card__body {
+  padding: 22px 24px 26px;
+  display: flex; flex-direction: column; gap: 10px; flex: 1;
 }
 
-.see-more {
-  text-align: center;
-  margin: 25px 0;
+.news-card__date {
+  font-size: 11px; font-weight: 600; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--clr-amber); display: block;
+}
+.news-card--hero .news-card__date { color: var(--clr-blue); }
+
+.news-card__title {
+  font-family: var(--ff-display); font-weight: 400;
+  color: var(--clr-ink); line-height: 1.3;
+}
+.news-card--hero .news-card__title                 { font-size: 24px; }
+.news-card:not(.news-card--hero) .news-card__title { font-size: 17px; }
+
+.news-card__preview {
+  font-size: 14px; line-height: 1.7;
+  color: var(--clr-ink-50); flex: 1;
 }
 
-.see-more-link {
-  padding: 10px 28px;
-  border-radius: 50px;
-  color: #fff;
-  background: linear-gradient(135deg, #0d6efd, #6610f2);
-  text-decoration: none;
-  font-weight: 600;
+.news-card__read-more {
+  font-size: 13px; font-weight: 600; color: var(--clr-blue);
+  margin-top: auto; transition: letter-spacing .28s var(--ease);
+}
+.news-card:hover .news-card__read-more { letter-spacing: .03em; }
+
+@media (max-width: 1024px) {
+  .video-grid                { grid-template-columns: repeat(2, 1fr); }
+  .video-card--featured      { grid-column: span 2; }
+  .photo-grid                { grid-template-columns: repeat(2, 1fr); }
+  .photo-card--wide          { grid-column: span 2; }
+  .news-grid                 { grid-template-columns: 1fr 1fr; }
+  .news-card--hero           { grid-column: span 2; }
 }
 
-.loading-state {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 20px;
-  margin-bottom: 40px;
-}
-
-.skeleton-card {
-  height: 250px;
-  background: #f0f0f0;
-  border-radius: 12px;
-  animation: pulse 1.5s infinite;
-}
-
-.empty-state {
-  text-align: center;
-  color: #6c757d;
-  padding: 40px 0;
-}
-
-@keyframes pulse {
-  0% { opacity: 0.6; }
-  50% { opacity: 1; }
-  100% { opacity: 0.6; }
+@media (max-width: 720px) {
+  .ms-section                { padding: 56px 0; }
+  .ms-section-inner          { padding: 0 20px; }
+  .video-grid                { grid-template-columns: 1fr; }
+  .video-card--featured      { grid-column: span 1; }
+  .photo-grid                { grid-template-columns: 1fr; grid-auto-rows: auto; }
+  .photo-card                { height: 300px; }
+  .photo-card--wide          { grid-column: span 1; }
+  .news-grid                 { grid-template-columns: 1fr; }
+  .news-card--hero           { grid-column: span 1; }
+  .ms-skeleton-grid          { grid-template-columns: repeat(2, 1fr); }
+  .news-skeleton-row         { grid-template-columns: 1fr; }
 }
 </style>
