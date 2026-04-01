@@ -350,7 +350,8 @@ export const useWebsiteStore = defineStore('website', {
             } catch (e) {
                 console.warn('[websiteStore] Primary API failed. Fetching fallback indexdata.json.', e.message)
                 try {
-                    const fallbackRes = await fetch('/indexdata.json')
+                    const fallbackUrl = `${import.meta.env.BASE_URL}indexdata.json`
+                const fallbackRes = await fetch(fallbackUrl)
                     if (!fallbackRes.ok) throw new Error('Failed to fetch dummy data')
                     const fallbackData = await fallbackRes.json()
                     this.data = fallbackData

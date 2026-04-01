@@ -214,6 +214,7 @@
               <p v-if="item.body" class="news-card__preview">
                 {{ item.body.replace(/<[^>]+>/g, '').slice(0, 120) }}…
               </p>
+              <p v-if="item.comments" class="news-card__comments">{{ item.comments }}</p>
               <span class="news-card__read-more">Read more →</span>
             </div>
           </router-link>
@@ -372,11 +373,15 @@ const parseNewsResponse = (payload) => {
 
 const normalizeNewsItem = (item) => {
   if (!item) return null
+  const commentsValue = Array.isArray(item.comments)
+    ? item.comments.join(' ')
+    : item.comments || item.side_comments || item.note || item.notes || ''
   return {
     id: item.id,
     title: item.title || item.name || 'Untitled News',
     date: item.date || item.created_at || '',
     body: item.content || item.summary || '',
+    comments: commentsValue,
     image: item.image ? useNewsFileUrl(item.image, item.institute_id) : '',
     link: `/news/${item.id}`
   }
@@ -391,7 +396,8 @@ const loadLatestNews = async () => {
     return
   } catch {}
   try {
-    const fb = await fetch('/indexdata.json')
+    const fallbackUrl = `${import.meta.env.BASE_URL}indexdata.json`
+    const fb = await fetch(fallbackUrl)
     if (!fb.ok) throw new Error('Unavailable')
     const items = parseNewsResponse(await fb.json())
     newsItems.value = items.map(normalizeNewsItem).filter(Boolean).slice(0, 3)
@@ -867,6 +873,13 @@ onUnmounted(() => {
 .news-card__preview {
   font-size: 14px; line-height: 1.7;
   color: var(--clr-ink-50); flex: 1;
+}
+
+.news-card__comments {
+  margin-top: 10px;
+  font-size: 13px;
+  color: rgba(15, 23, 42, 0.75);
+  line-height: 1.6;
 }
 
 .news-card__read-more {
