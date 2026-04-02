@@ -113,10 +113,11 @@ watch([city, date], loadPrayerTimes)
 <style scoped>
 .prayer-widget {
   background: #fff;
-  border: 1px solid #dde8ef;
+  border: 1px solid #cce3f0;
   border-radius: 18px;
   overflow: hidden;
-  box-shadow: 0 4px 24px rgba(0, 55, 80, 0.08);
+  box-shadow: 0 8px 40px rgba(14, 90, 140, 0.13), 0 2px 8px rgba(14, 90, 140, 0.07);
+  --accent: #aecfe3;
 }
 
 .widget-header {
@@ -124,7 +125,7 @@ watch([city, date], loadPrayerTimes)
   align-items: center;
   gap: 10px;
   padding: 14px 16px 12px;
-  background: linear-gradient(135deg, #003f4f 0%, #05768e 100%);
+  background: linear-gradient(135deg, #0e5a8c 0%, #1a8dbf 60%, #38b6e0 100%);
 }
 
 .header-icon {
@@ -136,7 +137,7 @@ watch([city, date], loadPrayerTimes)
   margin: 0;
   font-size: 0.95rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--accent);
 }
 
 .widget-subtitle {
@@ -194,7 +195,7 @@ watch([city, date], loadPrayerTimes)
 
 .prayer-row--next {
   background: linear-gradient(135deg, #e8f7fb, #d0eef6);
-  border: 1px solid #a8d8e8;
+  border: 1px solid var(--accent);
 }
 
 .prayer-emoji {
@@ -208,13 +209,13 @@ watch([city, date], loadPrayerTimes)
   flex: 1;
   font-size: 0.82rem;
   font-weight: 600;
-  color: #1a3540;
+  color: #1a3a4a;
 }
 
 .prayer-time {
   font-size: 0.82rem;
   font-weight: 700;
-  color: #0a728a;
+  color: #1a8dbf;
   font-variant-numeric: tabular-nums;
 }
 

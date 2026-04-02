@@ -31,12 +31,13 @@ const links = computed(() => store.getWeb?.essential_links || [])
   border-radius: 18px;
   padding: 20px;
   box-shadow: 0 16px 38px rgba(15, 23, 42, 0.08);
+  --accent: #aecfe3;
 }
 
 .widget-card h3 {
   margin: 0 0 12px;
   font-size: 1rem;
-  color: #0f4d5f;
+  color: var(--accent);
 }
 
 .links-list {
@@ -50,14 +51,14 @@ const links = computed(() => store.getWeb?.essential_links || [])
   align-items: center;
   padding: 14px 16px;
   border-radius: 14px;
-  background: #f8fafc;
-  color: #0f4d5f;
+  background: #f0f9fd;
+  color: #0e5a8c;
   text-decoration: none;
   transition: background 0.2s ease;
 }
 
 .link-item:hover {
-  background: #eef6f7;
+  background: #e6f5fb;
 }
 
 .widget-empty {
