@@ -3,7 +3,6 @@
 
     <div class="page-hero">
       <div class="hero-inner">
-        <div class="hero-eyebrow"><span class="live-dot"></span> Live Updates</div>
         <h1 class="hero-title">All Notices</h1>
         <div class="search-wrap">
           <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor">
@@ -147,8 +146,6 @@ const ITEMS_PER_PAGE = 6
 
 const filters = [
   { value: 'all', label: 'All' },
-  { value: 'administrative', label: 'Administrative' },
-  { value: 'event', label: 'Events' },
 ]
 
 const CATEGORY_LABELS = {
