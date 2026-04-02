@@ -114,11 +114,12 @@ const fmtTime = (s) => {
 
 <style scoped>
 .song-widget {
-  background: linear-gradient(145deg, #0c1f2d 0%, #0a3d52 100%);
+  background: linear-gradient(145deg, #0e5a8c 0%, #1a8dbf 60%, #38b6e0 100%);
   border-radius: 18px;
   overflow: hidden;
-  box-shadow: 0 8px 32px rgba(10, 40, 65, 0.3);
+  box-shadow: 0 8px 32px rgba(14, 90, 140, 0.3);
   color: #fff;
+  --accent: #aecfe3;
 }
 
 .widget-header {
@@ -155,7 +156,7 @@ const fmtTime = (s) => {
 .music-bars span {
   width: 3px;
   border-radius: 2px;
-  background: #38bdf8;
+  background: var(--accent);
   height: 6px;
   transition: height 0.1s;
 }
@@ -193,7 +194,7 @@ const fmtTime = (s) => {
 }
 
 .wave-bar--active {
-  background: rgba(56,189,248,0.65);
+  background: rgba(56,182,224,0.65);
   animation: wave 1s ease-in-out infinite alternate;
 }
 
@@ -249,7 +250,7 @@ const fmtTime = (s) => {
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #38bdf8, #0ea5e9);
+  background: linear-gradient(90deg, #38b6e0, #1a8dbf);
   border-radius: 4px;
   transition: width 0.1s linear;
 }

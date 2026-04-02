@@ -125,13 +125,14 @@ watch([city, lat, lon], loadWeather)
 
 <style scoped>
 .weather-widget {
-  background: linear-gradient(145deg, #0c3547 0%, #0a6680 100%);
+  background: linear-gradient(145deg, #0e5a8c 0%, #1a8dbf 60%, #38b6e0 100%);
   border-radius: 18px;
   padding: 18px;
   box-shadow: 0 8px 32px rgba(10, 55, 80, 0.25);
   color: #fff;
   position: relative;
   overflow: hidden;
+  --accent: #38b6e0;
 }
 
 .weather-widget::before {
@@ -162,7 +163,7 @@ watch([city, lat, lon], loadWeather)
   justify-content: center;
   flex-shrink: 0;
 }
-.header-icon svg { width: 18px; height: 18px; color: #fcd34d; }
+.header-icon svg { width: 18px; height: 18px; color: var(--accent); }
 
 .widget-title {
   margin: 0;
