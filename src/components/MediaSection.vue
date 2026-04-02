@@ -1,9 +1,8 @@
 <template>
   <section class="media-wrapper">
 
-    <!-- ══════════════════════════════════════════════
-         VIDEO GALLERY
-    ══════════════════════════════════════════════ -->
+
+
     <div class="ms-section video-section">
       <div class="ms-section-inner">
         <div class="ms-heading">
@@ -12,7 +11,6 @@
             <span class="ms-eyebrow-line"></span>
           </div>
           <h2 class="ms-title">Video Gallery</h2>
-          <p class="ms-subtitle">Watch, explore, and relive our finest moments in motion.</p>
         </div>
 
         <div v-if="websiteStore.isLoading" class="ms-skeleton-grid">
@@ -44,6 +42,7 @@
               <iframe
                 v-else
                 :src="video.url"
+                loading="lazy"
                 frameborder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowfullscreen
@@ -85,6 +84,7 @@
             <iframe
               v-if="isEmbedUrl"
               :src="activeVideoSource"
+              loading="lazy"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowfullscreen
             ></iframe>
@@ -94,9 +94,8 @@
       </div>
     </transition>
 
-    <!-- ══════════════════════════════════════════════
-         PHOTO GALLERY
-    ══════════════════════════════════════════════ -->
+
+
     <div class="ms-section photo-section">
       <div class="ms-section-inner">
         <div class="ms-heading ms-heading--right">
@@ -105,7 +104,6 @@
             <span class="ms-eyebrow ms-eyebrow--coral">Photos</span>
           </div>
           <h2 class="ms-title ms-title--right">Photo Gallery</h2>
-          <p class="ms-subtitle ms-subtitle--right">Captured stories, curated collections, timeless memories.</p>
         </div>
 
         <div v-if="websiteStore.isLoading" class="ms-skeleton-grid ms-skeleton-grid--masonry">
@@ -169,9 +167,9 @@
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════════
-         NEWS & EVENTS
-    ══════════════════════════════════════════════ -->
+    
+
+
     <div class="ms-section news-section">
       <div class="ms-section-inner">
         <div class="ms-heading ms-heading--center">
@@ -181,7 +179,6 @@
             <span class="ms-eyebrow-line ms-eyebrow-line--half"></span>
           </div>
           <h2 class="ms-title ms-title--center">News &amp; Events</h2>
-          <p class="ms-subtitle ms-subtitle--center">Stay informed. Stay connected. Stay ahead.</p>
         </div>
 
         <div v-if="websiteStore.isLoading" class="news-skeleton-row">
@@ -509,7 +506,7 @@ onUnmounted(() => {
 .ms-title {
   font-family: var(--ff-display);
   font-size: clamp(32px, 4vw, 52px);
-  font-weight: 400; color: var(--clr-ink);
+  font-weight: 400; color: #0d6efd;
   line-height: 1.1; margin-bottom: 14px;
 }
 .ms-title--center { text-align: center; }
