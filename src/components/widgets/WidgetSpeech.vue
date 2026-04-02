@@ -109,6 +109,7 @@ onMounted(async () => {
   border: 1px solid #dde8ef;
   box-shadow: 0 4px 32px rgba(0, 55, 80, 0.08);
   overflow: hidden;
+  --accent: #aecfe3;
 }
 
 .widget-header {
@@ -116,7 +117,7 @@ onMounted(async () => {
   align-items: center;
   gap: 10px;
   padding: 14px 18px 12px;
-  background: linear-gradient(135deg, #003f4f 0%, #05768e 100%);
+  background: linear-gradient(135deg, #0e5a8c 0%, #1a8dbf 60%, #38b6e0 100%);
 }
 
 .header-icon { font-size: 1.25rem; }
@@ -190,7 +191,7 @@ onMounted(async () => {
   position: absolute;
   inset: -3px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #003f4f, #05768e);
+  background: linear-gradient(135deg, #0e5a8c, #38b6e0);
   z-index: 0;
 }
 
