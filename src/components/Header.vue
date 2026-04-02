@@ -262,7 +262,7 @@ header {
 }
 
 .top-bar {
-  background: linear-gradient(135deg, #002d3a 0%, #004d62 100%);
+  background: linear-gradient(160deg, #063d4d 0%, #0a728a 50%, #0d8aa6 100%);
   color: rgba(255,255,255,0.95);
   display: flex;
   justify-content: space-between;
