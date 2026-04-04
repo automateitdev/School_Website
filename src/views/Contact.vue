@@ -153,13 +153,15 @@ const form = reactive({
 const submitForm = async () => {
   try {
     const payload = { ...form }
-    const response = await axios.post('/contact-message', payload)
+    // const response = await axios.post('/contact-message', payload)
     
-    if (response.status === 200 || response.status === 201) {
-      alert('Message sent successfully!')
-    } else {
-      alert('Message sent! (Simulated response)')
-    }
+    // if (response.status === 200 || response.status === 201) {
+    //   alert('Message sent successfully!')
+    // } else {
+    //   alert('Message sent! (Simulated response)')
+    // }
+    
+    alert('Message sent! (Simulated response)')
     
     form.firstName = ''
     form.lastName = ''
