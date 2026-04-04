@@ -382,7 +382,7 @@ const normalizeNewsItem = (item) => {
     image: item.image ? useNewsFileUrl(item.image, item.institute_id) : '',
     link: `/news/${item.id}`
   }
-}
+} 
 
 const loadLatestNews = async () => {
   try {

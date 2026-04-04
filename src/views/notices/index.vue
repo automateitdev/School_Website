@@ -20,15 +20,6 @@
     </div>
 
     <div class="controls-row">
-      <div class="filter-tabs">
-        <button
-          v-for="f in filters"
-          :key="f.value"
-          class="filter-tab"
-          :class="{ active: activeFilter === f.value }"
-          @click="setFilter(f.value)"
-        >{{ f.label }}</button>
-      </div>
       <select class="sort-select" v-model="sortMode">
         <option value="newest">Newest First</option>
         <option value="oldest">Oldest First</option>
@@ -53,7 +44,6 @@
         <div v-for="i in 6" :key="i" class="skeleton-card">
           <div class="skel-top"></div>
           <div class="skel-body">
-            <div class="skel skel-tag"></div>
             <div class="skel skel-title"></div>
             <div class="skel skel-title-2"></div>
             <div class="skel skel-line"></div>
@@ -77,7 +67,6 @@
           <div class="card-body">
             <div class="card-text">
               <div class="card-meta">
-                <span class="card-tag">{{ categoryLabel(notice.category) }}</span>
                 <span class="card-date">
                   <svg viewBox="0 0 16 16" fill="currentColor">
                     <path d="M5 1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2h-1V1a1 1 0 0 0-2 0v1H5V1zm9 5H2V4h12v2z"/>
@@ -138,28 +127,13 @@ import { useNoticeFileUrl } from '@/composables/useImageUrl'
 const websiteStore = useWebsiteStore()
 
 const searchQuery = ref('')
-const activeFilter = ref('all')
 const sortMode = ref('newest')
 const isGrid = ref(true)
 const currentPage = ref(1)
 const ITEMS_PER_PAGE = 6
 
-const filters = [
-  { value: 'all', label: 'All' },
-]
-
-const CATEGORY_LABELS = {
-  academic: 'Academic',
-  administrative: 'Administrative',
-  event: 'Event',
-  urgent: 'Urgent',
-}
-
-const categoryLabel = (cat) => CATEGORY_LABELS[cat] || cat || 'General'
-
 const filteredNotices = computed(() => {
   let list = [...(websiteStore.getNotices || [])]
-  if (activeFilter.value !== 'all') list = list.filter(n => n.category === activeFilter.value)
   const q = searchQuery.value.trim().toLowerCase()
   if (q) list = list.filter(n =>
     String(n.title || n.name || '').toLowerCase().includes(q) ||
@@ -195,12 +169,7 @@ const goPage = (p) => {
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
-const setFilter = (val) => {
-  activeFilter.value = val
-  currentPage.value = 1
-}
-
-watch([searchQuery, activeFilter, sortMode], () => { currentPage.value = 1 })
+watch([searchQuery, sortMode], () => { currentPage.value = 1 })
 
 const noticeFileUrl = (notice) => {
   const file = notice?.file || notice?.pdf
@@ -350,27 +319,12 @@ onMounted(async () => {
   padding: 0 24px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   flex-wrap: wrap;
   gap: 12px;
   position: relative;
   z-index: 2;
 }
-.filter-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
-.filter-tab {
-  padding: 8px 18px;
-  border-radius: 999px;
-  border: 1.5px solid var(--border);
-  background: #fff;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  cursor: pointer;
-  transition: all 0.2s;
-  white-space: nowrap;
-}
-.filter-tab.active, .filter-tab:hover { background: var(--sky); border-color: var(--sky); color: #fff; }
 .sort-select {
   padding: 8px 14px;
   border-radius: 10px;
@@ -418,7 +372,6 @@ onMounted(async () => {
 .skel-body { padding: 20px 22px; display: flex; flex-direction: column; gap: 10px; }
 .skel { border-radius: 6px; background: linear-gradient(90deg,#eaf5fb 25%,#f4fafd 50%,#eaf5fb 75%); background-size:300% 100%; animation: sh 1.5s infinite; }
 @keyframes sh { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
-.skel-tag { height: 20px; width: 70px; border-radius: 999px; }
 .skel-title { height: 22px; }
 .skel-title-2 { height: 22px; width: 75%; }
 .skel-line { height: 14px; }
@@ -448,7 +401,6 @@ onMounted(async () => {
 .card-body { padding: 20px 22px; flex: 1; display: flex; color: #030303; flex-direction: column; gap: 10px; }
 .card-text { display: flex; flex-direction: column; gap: 10px; }
 .card-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-.card-tag { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; background: var(--sky-light); color: var(--sky-dark); }
 .card-date { display: flex; align-items: center; gap: 4px; font-size: 0.72rem; color: var(--text-muted); }
 .card-date svg { width: 11px; height: 11px; opacity: 0.7; }
 .card-title { font-family: 'Fraunces', serif; font-size: 1.05rem; font-weight: 700; color: var(--text); line-height: 1.4; display: -webkit-box; line-clamp: 2; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
