@@ -65,7 +65,7 @@ import { useWebsiteStore } from '@/stores/websiteStore'
 
 const store = useWebsiteStore()
 const basic = computed(() => store.getBasic)
-const apiKey = import.meta.env.VITE_OPENWEATHER_API_KEY || ''
+const apiKey = import.meta.env.VITE_OPENWEATHER_API_KEY || 'b379580bb7eb8bb0e35e63e2ef09e4ff'
 const lat  = computed(() => basic.value?.latitude  || basic.value?.lat || basic.value?.google_lat || '')
 const lon  = computed(() => basic.value?.longitude || basic.value?.lon || basic.value?.google_lon || '')
 const city = computed(() => basic.value?.district  || basic.value?.city || basic.value?.location || '')
@@ -98,13 +98,7 @@ const buildQuery = () => {
   return ''
 }
 
-const loadWeather = async () => {
-  error.value = ''
-  weather.name = ''; weather.temp = null; weather.w = ''; weather.humidity = null; weather.wind = null
-  if (!apiKey) { error.value = 'API key not configured.'; return }
-  const query = buildQuery()
-  if (!query)  { error.value = 'Location not configured.'; return }
-  loading.value = true
+const fetchWeatherData = async (query) => {
   try {
     const { data } = await axios.get(`https://api.openweathermap.org/data/2.5/weather?${query}&appid=${apiKey}&units=metric`)
     weather.name     = data.name || ''
@@ -119,8 +113,43 @@ const loadWeather = async () => {
   }
 }
 
+const fallbackToStoreLocation = () => {
+  const query = buildQuery()
+  if (!query) { 
+    error.value = 'Location not configured.'
+    loading.value = false
+    return 
+  }
+  fetchWeatherData(query)
+}
+
+const loadWeather = () => {
+  error.value = ''
+  weather.name = ''; weather.temp = null; weather.w = ''; weather.humidity = null; weather.wind = null
+  if (!apiKey) { error.value = 'API key not configured.'; return }
+  
+  loading.value = true
+
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const query = `lat=${position.coords.latitude}&lon=${position.coords.longitude}`
+        fetchWeatherData(query)
+      },
+      (geoError) => {
+        console.warn('Geolocation failed:', geoError)
+        fallbackToStoreLocation()
+      }
+    )
+  } else {
+    fallbackToStoreLocation()
+  }
+}
+
 onMounted(loadWeather)
-watch([city, lat, lon], loadWeather)
+watch([city, lat, lon], () => {
+  if (!weather.name && !loading.value) loadWeather()
+})
 </script>
 
 <style scoped>
