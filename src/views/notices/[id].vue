@@ -23,7 +23,7 @@
           >
             Download
           </a>
-          <router-link to="/notices" class="action-btn back-btn">Back to all notices</router-link>
+          <router-link to="/notices" replace class="action-btn back-btn">Back to all notices</router-link>
         </div>
       </div>
 

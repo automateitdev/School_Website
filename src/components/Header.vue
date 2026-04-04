@@ -152,8 +152,14 @@ const route = useRoute()
 const websiteStore = useWebsiteStore()
 
 const getBasic = computed(() => websiteStore.getBasic)
-const logoSrc = computed(() => getBasic.value?.logo ? useHeaderLogoUrl(getBasic.value.logo) : '')
-const schoolName = computed(() => getBasic.value?.name || 'Our School')
+const getHeader = computed(() => websiteStore.getHeader)
+const getUser = computed(() => websiteStore.getUser)
+
+const logoSrc = computed(() => {
+  const img = getHeader.value?.header_image || getBasic.value?.logo
+  return img ? useHeaderLogoUrl(img) : ''
+})
+const schoolName = computed(() => getUser.value?.institute_name || getBasic.value?.name || 'Our School')
 
 const menuWithSubItems = computed(() => websiteStore.getMenuWithSubItems || [])
 

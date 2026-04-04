@@ -110,11 +110,13 @@ const websiteStore = useWebsiteStore()
 
 const getBasic = computed(() => websiteStore.getBasic)
 const getUser = computed(() => websiteStore.getUser)
+const getHeader = computed(() => websiteStore.getHeader)
 const footerData = computed(() => websiteStore.getFooterData || {})
 
-const logo = computed(() =>
-  getBasic.value?.logo ? useHeaderLogoUrl(getBasic.value.logo) : ''
-)
+const logo = computed(() => {
+  const img = getHeader.value?.header_image || getBasic.value?.logo
+  return img ? useHeaderLogoUrl(img) : ''
+})
 
 const footerImage = computed(() =>
   footerData.value.footer_image ? useFooterImageUrl(footerData.value.footer_image) : ''
