@@ -67,6 +67,9 @@
 import { ref, computed, onMounted } from 'vue'
 import { useWebsiteStore } from '@/stores/websiteStore'
 import { useAboutImageUrl } from '@/composables/useImageUrl'
+import Map from '@/components/Map.vue'
+import WidgetWeather from '@/components/widgets/WidgetWeather.vue'
+import WidgetPrayer from '@/components/widgets/WidgetPrayer.vue'
 
 const websiteStore = useWebsiteStore()
 const visible = ref(false)
@@ -382,6 +385,49 @@ onMounted(() => {
 .overlay-content p {
     color: rgba(255, 255, 255, 0.9);
     font-size: 16px;
+}
+
+.about-widgets-section {
+    max-width: 1280px;
+    margin: 44px auto 0;
+    padding: 30px 24px 26px;
+    background: rgba(255,255,255,0.96);
+    border-radius: 28px;
+    box-shadow: 0 24px 64px rgba(15, 23, 42, 0.08);
+    border: 1px solid rgba(15, 23, 42, 0.05);
+}
+
+.widgets-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.widgets-heading h3 {
+    margin: 0;
+    font-size: 1.35rem;
+    color: #0f172a;
+}
+
+.widgets-heading p {
+    margin: 4px 0 0;
+    color: #475569;
+    font-size: 0.98rem;
+    max-width: 710px;
+}
+
+.about-widgets-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(260px, 1fr));
+    gap: 22px;
+    width: 100%;
+}
+
+.about-widgets-grid > * {
+    min-height: 260px;
 }
 
 @keyframes float {

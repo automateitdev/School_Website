@@ -148,6 +148,10 @@
             <div class="text-content" v-html="formattedText"></div>
           </div>
 
+          <div class="map-section">
+            <Map />
+          </div>
+
           <div class="cta-section">
             <div class="cta-card">
               <h3>Ready to Join Us?</h3>
@@ -171,6 +175,7 @@
 import { computed } from 'vue'
 import { useWebsiteStore } from '@/stores/websiteStore'
 import { useAboutImageUrl } from '@/composables/useImageUrl'
+import Map from '@/components/Map.vue'
 
 const websiteStore = useWebsiteStore()
 const getAbout = computed(() => websiteStore.getAbout)
@@ -431,6 +436,10 @@ const formattedText = computed(() =>
 
 .text-content :deep(p:last-child) {
   margin-bottom: 0;
+}
+
+.map-section {
+  margin-top: 24px;
 }
 
 .timeline-section {

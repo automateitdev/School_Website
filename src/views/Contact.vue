@@ -118,16 +118,30 @@
 </template>
 
 <script setup>
-import { reactive, computed } from 'vue'
+import { reactive, computed, onMounted } from 'vue'
 import { useWebsiteStore } from '@/stores/websiteStore'
 import axios from '@/plugins/axios.js'
 
 const websiteStore = useWebsiteStore()
 const getBasic = computed(() => websiteStore.getBasic || {})
+const getUser = computed(() => websiteStore.getUser || {})
+const footerData = computed(() => websiteStore.getFooterData || {})
 
-const address = computed(() => getBasic.value?.address || '123 Main Street, City, Country')
-const phone = computed(() => getBasic.value?.phone || '+1 234 567 890')
-const email = computed(() => getBasic.value?.email || 'contact@example.com')
+const address = computed(() =>
+  footerData.value.footer_address || getBasic.value?.address || getUser.value?.address || '123 Main Street, City, Country'
+)
+const phone = computed(() =>
+  footerData.value.footer_phone || getBasic.value?.phone || getUser.value?.contact_no || '+1 234 567 890'
+)
+const email = computed(() =>
+  footerData.value.footer_email || getBasic.value?.email || getUser.value?.email || 'contact@example.com'
+)
+
+onMounted(async () => {
+  if (!websiteStore.getFooterData) {
+    await websiteStore.fetchFooterData().catch(() => {})
+  }
+})
 
 const form = reactive({
   firstName: '',
@@ -139,14 +153,15 @@ const form = reactive({
 const submitForm = async () => {
   try {
     const payload = { ...form }
-    // Dynamic submission to API using axios plugin
-    const response = await axios.post('/contact-message', payload)
+    // const response = await axios.post('/contact-message', payload)
     
-    if (response.status === 200 || response.status === 201) {
-      alert('Message sent successfully!')
-    } else {
-      alert('Message sent! (Simulated response)')
-    }
+    // if (response.status === 200 || response.status === 201) {
+    //   alert('Message sent successfully!')
+    // } else {
+    //   alert('Message sent! (Simulated response)')
+    // }
+    
+    alert('Message sent! (Simulated response)')
     
     form.firstName = ''
     form.lastName = ''

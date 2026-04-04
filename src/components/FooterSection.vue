@@ -29,7 +29,6 @@
 
       <div class="footer-cols-group">
 
-  
         <div class="footer-col footer-col--contact" :class="{ open: openSection === 'contact' }">
           <h4 @click="toggleSection('contact')">
             <span>Contact</span>
@@ -72,6 +71,22 @@
           </div>
         </div>
 
+        <div v-if="hasFooterLinks" class="footer-col footer-col--links" :class="{ open: openSection === 'links' }">
+          <h4 @click="toggleSection('links')">
+            <span>Essential Links</span>
+            <i class="fas fa-chevron-down accordion-icon"></i>
+          </h4>
+          <div class="accordion-body footer-links-container">
+            <ul class="footer-links">
+              <li v-for="link in normalizedFooterLinks" :key="link.url">
+                <a :href="link.url" :target="link.external ? '_blank' : '_self'" rel="noopener noreferrer">
+                  {{ link.label }}
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -95,11 +110,13 @@ const websiteStore = useWebsiteStore()
 
 const getBasic = computed(() => websiteStore.getBasic)
 const getUser = computed(() => websiteStore.getUser)
+const getHeader = computed(() => websiteStore.getHeader)
 const footerData = computed(() => websiteStore.getFooterData || {})
 
-const logo = computed(() =>
-  getBasic.value?.logo ? useHeaderLogoUrl(getBasic.value.logo) : ''
-)
+const logo = computed(() => {
+  const img = getHeader.value?.header_image || getBasic.value?.logo
+  return img ? useHeaderLogoUrl(img) : ''
+})
 
 const footerImage = computed(() =>
   footerData.value.footer_image ? useFooterImageUrl(footerData.value.footer_image) : ''
@@ -122,16 +139,20 @@ const footerLinks = computed(() =>
   Array.isArray(footerData.value.footer_links) ? footerData.value.footer_links : []
 )
 
+const webLinks = computed(() =>
+  Array.isArray(websiteStore.getWeb?.essential_links) ? websiteStore.getWeb.essential_links : []
+)
+
+const footerLinkSource = computed(() =>
+  footerLinks.value.length ? footerLinks.value : webLinks.value
+)
+
 const normalizedFooterLinks = computed(() =>
-  footerLinks.value.map(link => {
+  footerLinkSource.value.map(link => {
     const url = link.link || link.url || link.href || ''
     const label = link.title || link.name || link.label || link.text || 'Link'
     const external = link.external || /^https?:\/\//i.test(url)
-    return {
-      label,
-      url,
-      external
-    }
+    return { label, url, external }
   })
 )
 
@@ -145,13 +166,13 @@ const currentYear = new Date().getFullYear()
 const schoolName = computed(() => getBasic.value?.name || getUser.value?.institute_name || 'Our School')
 
 const openSection = ref(null)
-const footerOpenSection = ref(null)
 
 onMounted(async () => {
   if (!websiteStore.getFooterData) {
     await websiteStore.fetchFooterData().catch(() => {})
   }
 })
+
 function toggleSection(name) {
   openSection.value = openSection.value === name ? null : name
 }
@@ -159,16 +180,25 @@ function toggleSection(name) {
 function scrollToTop() {
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
+
 const navMenus = computed(() => websiteStore.getNavMenus)
 </script>
 
 <style scoped>
+
 .footer {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+
   background: linear-gradient(160deg, #063d4d 0%, #0a728a 50%, #0d8aa6 100%);
   color: #e8f4f7;
   font-family: 'Poppins', sans-serif;
   padding: 36px 48px 0;
-  position: relative;
+  box-sizing: border-box;
   overflow: hidden;
 }
 
@@ -269,6 +299,10 @@ const navMenus = computed(() => websiteStore.getNavMenus)
   flex: 0 0 auto;
 }
 
+.footer-col--links {
+  max-width: 360px;
+}
+
 .footer-col h4 {
   font-size: 11px;
   font-weight: 700;
@@ -279,6 +313,29 @@ const navMenus = computed(() => websiteStore.getNavMenus)
   padding-bottom: 6px;
   border-bottom: 1px solid rgba(255,255,255,0.15);
   white-space: nowrap;
+}
+
+.footer-links-container {
+  padding-top: 10px;
+}
+
+.footer-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.footer-links li a {
+  color: rgba(255,255,255,0.78);
+  text-decoration: none;
+  font-size: 13px;
+  transition: color 0.2s ease;
+}
+
+.footer-links li a:hover {
+  color: #ffdd57;
 }
 
 .accordion-icon { display: none; }
@@ -337,8 +394,12 @@ const navMenus = computed(() => websiteStore.getNavMenus)
 
 .footer-bottom {
   border-top: 1px solid rgba(255,255,255,0.12);
-  padding: 10px 0;
   text-align: center;
+  background: rgba(0, 0, 0, 0.25);
+
+  margin: 0 -48px;
+  padding: 10px 48px;
+  box-sizing: border-box;
 }
 
 .footer-bottom p {
@@ -456,7 +517,8 @@ const navMenus = computed(() => websiteStore.getNavMenus)
   }
 
   .footer-bottom {
-    padding: 8px 0;
+    margin: 0 -14px;
+    padding: 8px 14px;
     margin-top: 2px;
   }
 

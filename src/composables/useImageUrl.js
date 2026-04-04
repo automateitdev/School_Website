@@ -3,14 +3,9 @@ import { useWebsiteStore } from '@/stores/websiteStore'
 export const STORAGE_HOST = 'https://web.academyims.com'
 export const STORAGE_BASE = `${STORAGE_HOST}/storage/`
 
-/**
- * Resolves the institute_id from the Pinia store.
- * Checks multiple fields to handle API variations (id, institute_id).
- */
 const getInstId = () => {
     try {
         const store = useWebsiteStore()
-        // basics[0].institute_id is the authoritative field from the real API
         if (store.getBasic?.institute_id) return store.getBasic.institute_id
         if (store.data?.aboutinstitutes?.institute_id) return store.data.aboutinstitutes.institute_id
         if (store.data?.sliders?.[0]?.institute_id) return store.data.sliders[0].institute_id

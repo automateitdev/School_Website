@@ -31,7 +31,6 @@
       </div>
     </div>
 
-    <!-- Lightbox Modal -->
     <div v-if="selectedPhotoIndex !== null" class="modal" @click.self="closePhoto">
       <img class="modal-img" :src="getImageUrl(album.contents[selectedPhotoIndex], album.album_folder)" :alt="`Photo ${selectedPhotoIndex + 1}`" />
 
@@ -194,7 +193,6 @@ watch(selectedPhotoIndex, (newVal) => {
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
-/* Modal Styles */
 .modal {
   position: fixed;
   top: 0;

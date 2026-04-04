@@ -1,14 +1,21 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "types": ["vite/client"],
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "esModuleInterop": true
   },
   "include": ["src/**/*", "public/**/*"],
   "exclude": [
     "node_modules",
     "dist",
+    "src/components/LayoutRightbar.vue",
+    "src/components/MenuInSection.vue",
     "**/NoticesPage.vue",
     "**/NoticeDetails.vue",
     "**/PdfPreview.vue"

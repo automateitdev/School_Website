@@ -23,6 +23,7 @@
           <h2>{{ item.title }}</h2>
           <p class="news-date">{{ formatDate(item.date) }}</p>
           <p class="news-summary">{{ item.summary }}</p>
+          <p v-if="item.comments" class="news-comments">{{ item.comments }}</p>
         </div>
 
         <div class="news-card-actions">
@@ -55,11 +56,16 @@ const error = ref('')
 const normalizeNews = (item) => {
   const dateValue = item.date || item.created_at || ''
   const summaryValue = item.summary || (item.content ? item.content.replace(/<[^>]+>/g, '').slice(0, 220) : '')
+  const commentsValue = Array.isArray(item.comments)
+    ? item.comments.join(' ')
+    : item.comments || item.side_comments || item.note || item.notes || ''
+
   return {
     id: item.id,
     slug: item.slug || '',
     title: item.title || 'Untitled News',
     summary: summaryValue,
+    comments: commentsValue,
     content: item.content || '',
     date: dateValue,
     file: item.file || '',
@@ -99,11 +105,11 @@ const fetchNews = async () => {
     newsItems.value = data.map(normalizeNews)
     return
   } catch (err) {
-    // Fallback to indexdata if /news is unavailable or empty.
   }
 
   try {
-    const fallbackResponse = await fetch('/indexdata.json')
+    const fallbackUrl = `${import.meta.env.BASE_URL}indexdata.json`
+    const fallbackResponse = await fetch(fallbackUrl)
     if (!fallbackResponse.ok) {
       throw new Error('Fallback news source unavailable')
     }
@@ -215,6 +221,14 @@ onMounted(fetchNews)
 .news-summary {
   color: #495057;
   line-height: 1.7;
+}
+
+.news-comments {
+  margin-top: 12px;
+  color: #6c757d;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  opacity: 0.9;
 }
 
 .news-card-actions {

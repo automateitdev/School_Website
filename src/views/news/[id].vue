@@ -27,6 +27,11 @@
 
       <div v-if="newsItem.content" class="news-content" v-html="newsItem.content"></div>
 
+      <div v-if="newsItem.comments" class="news-comments-block">
+        <strong>Side comments</strong>
+        <p>{{ newsItem.comments }}</p>
+      </div>
+
       <div class="detail-actions">
         <a
           v-if="newsItem.file_url && isPdfFile"
@@ -57,11 +62,16 @@ const error = ref('')
 
 const normalizeNewsItem = (item) => {
   const dateValue = item.date || item.created_at || ''
+  const commentsValue = Array.isArray(item.comments)
+    ? item.comments.join(' ')
+    : item.comments || item.side_comments || item.note || item.notes || ''
+
   return {
     id: item.id,
     slug: item.slug || '',
     title: item.title || 'Untitled News',
     date: dateValue,
+    comments: commentsValue,
     content: item.content || item.summary || '',
     file: item.file || '',
     file_type: item.file_type || '',
@@ -103,11 +113,11 @@ const loadNewsItem = async (identifier) => {
     newsItem.value = normalizeNewsItem(item)
     return
   } catch (err) {
-    // Fallback to indexdata if /news/{id} fails
   }
 
   try {
-    const fallbackResponse = await fetch('/indexdata.json')
+    const fallbackUrl = `${import.meta.env.BASE_URL}indexdata.json`
+    const fallbackResponse = await fetch(fallbackUrl)
     if (!fallbackResponse.ok) {
       throw new Error('Fallback news source unavailable')
     }
@@ -229,6 +239,22 @@ onMounted(() => {
 .news-content {
   color: #343a40;
   line-height: 1.8;
+}
+
+.news-comments-block {
+  margin-top: 24px;
+  padding: 18px 20px;
+  background: #f8f9fc;
+  border: 1px solid #dee2e6;
+  border-radius: 14px;
+  color: #495057;
+  line-height: 1.7;
+}
+
+.news-comments-block strong {
+  display: block;
+  margin-bottom: 10px;
+  color: #0d6efd;
 }
 
 .detail-actions {

@@ -2,9 +2,11 @@
   <PageLoader />
   <Header />
   <div class="page-wrapper">
-    <router-view />
-    <FooterSection />
+    <main class="page-main">
+      <router-view />
+    </main>
   </div>
+  <FooterSection />
 </template>
 
 <script setup>
@@ -43,3 +45,32 @@ watchEffect(() => {
   }
 })
 </script>
+
+<style scoped>
+.page-wrapper {
+  display: flex;
+  gap: 0;
+  align-items: flex-start;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+.page-main {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 980px) {
+  .page-wrapper {
+    flex-direction: column;
+    padding: 0;
+  }
+  .page-main {
+    width: 100%;
+  }
+}
+</style>
