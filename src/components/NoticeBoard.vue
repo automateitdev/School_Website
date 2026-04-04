@@ -16,32 +16,41 @@
       <div class="skeleton-item" v-for="n in 6" :key="n"></div>
     </div>
 
-    <ul v-else-if="visibleNotices.length > 0" class="notice-list" ref="listEl">
-      <li
-        v-for="(n, idx) in visibleNotices"
-        :key="n.id"
-        class="notice-item"
-        :style="{ animationDelay: `${idx * 0.04}s` }"
-      >
-        <router-link :to="`/notices/${n.id}`" class="notice-link">
-          <span class="notice-index">{{ String(idx + 1).padStart(2, '0') }}</span>
-          <span class="notice-body">
-            <span class="notice-title">{{ n.name || n.title }}</span>
-            <span class="notice-date">
-              <svg viewBox="0 0 16 16" fill="currentColor" class="date-icon">
-                <path d="M5 1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2h-1V1a1 1 0 0 0-2 0v1H5V1zm9 5H2V4h12v2z"/>
-              </svg>
-              {{ formatDate(n.created_at || n.date) }}
+    <marquee
+      v-else-if="visibleNotices.length > 0"
+      direction="up"
+      scrollamount="4"
+      onmouseover="this.stop();"
+      onmouseout="this.start();"
+      class="notice-marquee"
+    >
+      <ul class="notice-list" ref="listEl">
+        <li
+          v-for="(n, idx) in visibleNotices"
+          :key="n.id"
+          class="notice-item"
+          :style="{ animationDelay: `${idx * 0.04}s` }"
+        >
+          <router-link :to="`/notices/${n.id}`" class="notice-link">
+            <span class="notice-index">{{ String(idx + 1).padStart(2, '0') }}</span>
+            <span class="notice-body">
+              <span class="notice-title">{{ n.name || n.title }}</span>
+              <span class="notice-date">
+                <svg viewBox="0 0 16 16" fill="currentColor" class="date-icon">
+                  <path d="M5 1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2h-1V1a1 1 0 0 0-2 0v1H5V1zm9 5H2V4h12v2z"/>
+                </svg>
+                {{ formatDate(n.created_at || n.date) }}
+              </span>
             </span>
-          </span>
-          <span class="notice-chevron">
-            <svg viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
-            </svg>
-          </span>
-        </router-link>
-      </li>
-    </ul>
+            <span class="notice-chevron">
+              <svg viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+              </svg>
+            </span>
+          </router-link>
+        </li>
+      </ul>
+    </marquee>
 
     <div v-else class="empty-state">
       <div class="empty-icon">📋</div>
@@ -214,6 +223,11 @@ const formatDate = (date) => {
 @keyframes shimmer {
   0%   { background-position: 200% 0; }
   100% { background-position: -200% 0; }
+}
+
+.notice-marquee {
+  flex: 1;
+  overflow: hidden;
 }
 
 .notice-list {
