@@ -170,6 +170,8 @@
     
 
 
+    <!-- News content has been commented out pending API availability -->
+    <!--
     <div class="ms-section news-section">
       <div class="ms-section-inner">
         <div class="ms-heading ms-heading--center">
@@ -222,6 +224,7 @@
         </div>
       </div>
     </div>
+    -->
 
   </section>
 </template>
@@ -357,6 +360,7 @@ onUnmounted(() => {
 
 const goToFolder = (id) => { if (id) router.push(`/photogallery/${id}`) }
 
+/* News section logic commented out due to no API
 const newsItems     = ref([])
 const newsLoadError = ref('')
 
@@ -424,7 +428,8 @@ const latestNews = computed(() => {
   }))
 })
 
-onMounted(() => { loadLatestNews() })
+// onMounted(() => { loadLatestNews() })
+*/
 
 onUnmounted(() => {
   Object.values(autoTimers.value).forEach(clearTimeout)
