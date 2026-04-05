@@ -322,7 +322,7 @@ header {
 .main-logo-img {
   display: block;
   max-width: 100%;
-  max-height: 65px;
+  max-height: 80px;
   height: auto;
   object-fit: contain;
   object-position: left center;
