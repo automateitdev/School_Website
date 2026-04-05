@@ -45,7 +45,7 @@
         </div>
         <div class="stat-divider"></div>
         <div class="stat">
-          <svg viewBox="0 0 20 20" fill="currentColor" class="stat-icon"><path d="M10 2a8 8 0 100 16A8 8 0 0010 2zm3.5 9.5A1.5 1.5 0 1012 13l-2.5-2.5A1.5 1.5 0 0110 8a1.5 1.5 0 011.5 1.5c0 .4-.16.76-.41 1.03L13.5 13a1.5 1.5 0 010 0z"/></svg>
+          <svg viewBox="0 0 20 20" fill="currentColor" class="stat-icon"><path d="M10 2a8 8 0 100 16A8 8 0 0010 2zm3.5 9.5A1.5 1.5 0 1112 13l-2.5-2.5A1.5 1.5 0 0110 8a1.5 1.5 0 011.5 1.5c0 .4-.16.76-.41 1.03L13.5 13a1.5 1.5 0 010 0z"/></svg>
           <span class="stat-label">Wind</span>
           <span class="stat-value">{{ weather.wind }} m/s</span>
         </div>
@@ -100,9 +100,11 @@ const buildQuery = () => {
 
 const fetchWeatherData = async (query) => {
   try {
-    const { data } = await axios.get(`https://api.openweathermap.org/data/2.5/weather?${query}&appid=${apiKey}&units=metric`)
+    const { data } = await axios.get(
+      `https://api.openweathermap.org/data/2.5/weather?${query}&appid=${apiKey}&units=metric`
+    )
     weather.name     = data.name || ''
-    weather.temp     = data.main?.temp   != null ? Math.round(data.main.temp) : null
+    weather.temp     = data.main?.temp != null ? Math.round(data.main.temp) : null
     weather.w        = data.weather?.[0]?.main || ''
     weather.humidity = data.main?.humidity ?? null
     weather.wind     = data.wind?.speed ?? null
@@ -113,36 +115,56 @@ const fetchWeatherData = async (query) => {
   }
 }
 
+/** Fallback 3: use store lat/lon or city */
 const fallbackToStoreLocation = () => {
   const query = buildQuery()
-  if (!query) { 
-    error.value = 'Location not configured.'
+  if (!query) {
+    error.value = 'Location not available.'
     loading.value = false
-    return 
+    return
   }
   fetchWeatherData(query)
 }
 
+/** Fallback 2: IP-based geolocation (free, no key required) */
+const fallbackToIpLocation = async () => {
+  try {
+    const { data } = await axios.get('https://ipapi.co/json/', { timeout: 6000 })
+    if (data?.latitude && data?.longitude) {
+      const query = `lat=${data.latitude}&lon=${data.longitude}`
+      await fetchWeatherData(query)
+      return
+    }
+  } catch {
+    // IP lookup failed — fall through to store location
+  }
+  fallbackToStoreLocation()
+}
+
+/** Primary: browser Geolocation API → IP fallback → store data */
 const loadWeather = () => {
   error.value = ''
   weather.name = ''; weather.temp = null; weather.w = ''; weather.humidity = null; weather.wind = null
   if (!apiKey) { error.value = 'API key not configured.'; return }
-  
+
   loading.value = true
 
   if (navigator.geolocation) {
+    const geoOptions = { timeout: 10000, maximumAge: 300000 }
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const query = `lat=${position.coords.latitude}&lon=${position.coords.longitude}`
         fetchWeatherData(query)
       },
-      (geoError) => {
-        console.warn('Geolocation failed:', geoError)
-        fallbackToStoreLocation()
-      }
+      async (geoError) => {
+        console.warn('Geolocation denied/failed:', geoError.message)
+        await fallbackToIpLocation()
+      },
+      geoOptions
     )
   } else {
-    fallbackToStoreLocation()
+    // Browser does not support geolocation — go straight to IP fallback
+    fallbackToIpLocation()
   }
 }
 

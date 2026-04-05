@@ -1,10 +1,16 @@
 <template>
   <section class="institution-about-section">
     <div class="breadcrumb-container">
-      <div class="breadcrumb">
-        <router-link to="/">Home</router-link>
-        <span class="separator">/</span>
-        <span class="current">About Us</span>
+      <div class="breadcrumb-row">
+        <router-link to="/" class="back-home-btn">
+          <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          Back to Home
+        </router-link>
+        <div class="breadcrumb">
+          <router-link to="/">Home</router-link>
+          <span class="separator">/</span>
+          <span class="current">About Us</span>
+        </div>
       </div>
     </div>
 
@@ -584,6 +590,36 @@ const formattedText = computed(() =>
 .cta-btn.secondary:hover {
   background: rgba(255, 255, 255, 0.3);
   transform: translateY(-2px);
+}
+
+.breadcrumb-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.back-home-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #3b82f6;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 20px;
+  padding: 8px 18px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: background 0.2s, transform 0.2s;
+}
+.back-home-btn:hover {
+  background: #2563eb;
+  transform: translateX(-2px);
+}
+.back-home-btn svg {
+  width: 16px;
+  height: 16px;
 }
 
 @media (max-width: 1024px) {

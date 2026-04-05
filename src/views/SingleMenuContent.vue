@@ -5,6 +5,11 @@
 
     <div class="smp__container">
 
+      <button class="smp__back-btn" @click="goBack">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+        Back
+      </button>
+
       <div v-if="loading" class="smp__status">
         <span class="smp__spinner"></span>
         <span>Loading...</span>
@@ -41,16 +46,25 @@
 
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useWebsiteStore } from '@/stores/websiteStore'
 
 const props = defineProps({ id: String })
 const route = useRoute()
+const router = useRouter()
 const store = useWebsiteStore()
 const loading = ref(false)
 
 const pageId = computed(() => props.id || route.params.id)
 const menuItem = computed(() => store.getSingleNavContentId(pageId.value))
+
+const menuTitle = computed(() =>
+  menuItem.value?.menuassign?.menu_title_bangla ||
+  menuItem.value?.menuassign?.menu_title ||
+  'Page'
+)
+
+const goBack = () => router.back()
 
 const init = async () => {
   if (!store.data) {
@@ -187,5 +201,30 @@ watch(pageId, init)
 @media (max-width: 600px) {
   .smp__container { padding: 36px 16px 60px; }
   .smp__prose { padding: 22px 18px; }
+}
+
+.smp__back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(10,114,138,0.08);
+  color: #0a728a;
+  border: 1px solid rgba(10,114,138,0.2);
+  border-radius: 20px;
+  padding: 7px 16px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 28px;
+  transition: background 0.2s, color 0.2s, transform 0.2s;
+}
+.smp__back-btn:hover {
+  background: #0a728a;
+  color: #fff;
+  transform: translateX(-2px);
+}
+.smp__back-btn svg {
+  width: 16px;
+  height: 16px;
 }
 </style>

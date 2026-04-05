@@ -187,13 +187,8 @@ const navMenus = computed(() => websiteStore.getNavMenus)
 <style scoped>
 
 .footer {
-  width: 100vw;
+  width: 100%;
   position: relative;
-  left: 50%;
-  right: 50%;
-  margin-left: -50vw;
-  margin-right: -50vw;
-
   background: linear-gradient(160deg, #063d4d 0%, #0a728a 50%, #0d8aa6 100%);
   color: #e8f4f7;
   font-family: 'Poppins', sans-serif;
@@ -396,10 +391,10 @@ const navMenus = computed(() => websiteStore.getNavMenus)
   border-top: 1px solid rgba(255,255,255,0.12);
   text-align: center;
   background: rgba(0, 0, 0, 0.25);
-
   margin: 0 -48px;
   padding: 10px 48px;
   box-sizing: border-box;
+  width: calc(100% + 96px);
 }
 
 .footer-bottom p {
@@ -520,6 +515,7 @@ const navMenus = computed(() => websiteStore.getNavMenus)
     margin: 0 -14px;
     padding: 8px 14px;
     margin-top: 2px;
+    width: calc(100% + 28px);
   }
 
   .footer-bottom p { font-size: 10px; }

@@ -3,6 +3,10 @@
 
     <div class="page-hero">
       <div class="hero-inner">
+        <button class="hero-back-btn" @click="goBack">
+          <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          Back
+        </button>
         <h1 class="hero-title">All Notices</h1>
         <div class="search-wrap">
           <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor">
@@ -123,8 +127,12 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import { useWebsiteStore } from '@/stores/websiteStore'
 import { useNoticeFileUrl } from '@/composables/useImageUrl'
+import { useRouter } from 'vue-router'
 
 const websiteStore = useWebsiteStore()
+const router = useRouter()
+
+const goBack = () => router.back()
 
 const searchQuery = ref('')
 const sortMode = ref('newest')
@@ -441,5 +449,30 @@ onMounted(async () => {
   .cards-grid.list-view .card-body { flex-direction: column; align-items: flex-start; }
   .cards-grid.list-view .card-footer { border-left: none; border-top: 1px solid #f0f6fb; width: 100%; flex-direction: row; }
   .controls-row { flex-direction: column; align-items: flex-start; }
+}
+
+.hero-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 20px;
+  padding: 7px 16px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 16px;
+  backdrop-filter: blur(6px);
+  transition: background 0.2s, transform 0.2s;
+}
+.hero-back-btn:hover {
+  background: rgba(255,255,255,0.28);
+  transform: translateX(-2px);
+}
+.hero-back-btn svg {
+  width: 15px;
+  height: 15px;
 }
 </style>

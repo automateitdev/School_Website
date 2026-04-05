@@ -46,6 +46,14 @@ watchEffect(() => {
 })
 </script>
 
+<style>
+/* Global: prevent horizontal overflow on all screens */
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+</style>
+
 <style scoped>
 .page-wrapper {
   display: flex;
