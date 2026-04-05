@@ -306,17 +306,21 @@ header {
 }
 
 .main-header-left {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   flex-shrink: 0;
+  width: fit-content;
 }
 
 .main-logo-area {
-  display: block;
+  display: inline-flex;
+  align-items: center;
   text-decoration: none;
+  line-height: 0;
 }
 
 .main-logo-img {
+  display: block;
   max-width: 100%;
   max-height: 65px;
   height: auto;
@@ -470,7 +474,7 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 5px 20px 5px 0;
+  padding: 0 20px 0 0;
   background: white;
   border-bottom: 1px solid #ddd;
 }
@@ -680,7 +684,7 @@ header {
     padding: 12px 18px;
   }
 
-  .main-header { padding: 5px 14px; }
+  .main-header { padding: 0 14px 0 0; }
 
   .main-logo-img { max-height: 55px; }
 
