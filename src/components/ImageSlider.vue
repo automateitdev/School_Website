@@ -111,9 +111,10 @@ onUnmounted(() => { clearInterval(autoTimer); clearInterval(progressTimer) })
 .slider {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 16 / 10;
+  min-height: 100%;
   overflow: hidden;
-  border-radius: 20px;
+  border-radius: 0;
   background: #0d1f2d;
   box-shadow: 0 8px 40px rgba(0, 0, 0, 0.25);
 }
@@ -292,7 +293,7 @@ onUnmounted(() => { clearInterval(autoTimer); clearInterval(progressTimer) })
 }
 
 @media (max-width: 768px) {
-  .slider { aspect-ratio: 4 / 3; border-radius: 14px; }
+  .slider { aspect-ratio: 4 / 3; border-radius: 0; }
   .slide-caption { font-size: 0.88rem; }
   .arrow { width: 36px; height: 36px; }
 }

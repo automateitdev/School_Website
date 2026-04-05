@@ -48,25 +48,34 @@ import WidgetSong    from './widgets/WidgetSong.vue'
 
 .row-top {
   display: grid;
-  grid-template-columns: minmax(0, 2.4fr) minmax(0, 1fr);
-  gap: 16px;
+  grid-template-columns: minmax(0, 2.75fr) minmax(320px, 1.15fr);
+  gap: 0;
   align-items: stretch;
 }
 
 .slider-col {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .notice-col {
   display: flex;
   flex-direction: column;
   min-height: 0;
+  min-width: 0;
+}
+
+.slider-col > :deep(.slider) {
+  height: 100%;
+  min-height: 100%;
+  border-radius: 0;
 }
 
 .notice-col > :deep(.notice-board) {
   flex: 1;
   height: 100%;
+  border-radius: 0;
 }
 
 .row-widgets {

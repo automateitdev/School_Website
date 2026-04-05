@@ -28,11 +28,28 @@ onMounted(async () => {
 })
 
 const getBasic = computed(() => websiteStore.getBasic)
+const getUser = computed(() => websiteStore.getUser)
+const schoolName = computed(() =>
+  getUser.value?.institute_name ||
+  getBasic.value?.name ||
+  'School Website'
+)
+const schoolDescription = computed(() => {
+  const name = schoolName.value
+  return name ? `${name} - Excellence in Education` : 'School Website - Excellence in Education'
+})
 
 watchEffect(() => {
-  if (getBasic.value?.name) {
-    document.title = getBasic.value.name
+  document.title = schoolName.value
+
+  let descriptionTag = document.querySelector('meta[name="description"]')
+  if (!descriptionTag) {
+    descriptionTag = document.createElement('meta')
+    descriptionTag.setAttribute('name', 'description')
+    document.head.appendChild(descriptionTag)
   }
+  descriptionTag.setAttribute('content', schoolDescription.value)
+
   if (getBasic.value?.logo) {
     const faviconSrc = useHeaderLogoUrl(getBasic.value.logo)
     let link = document.querySelector("link[rel~='icon']")

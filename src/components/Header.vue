@@ -1,16 +1,21 @@
 <template>
   <header ref="headerRef">
 
-    <div class="top-bar top-bar--brand">
-      <div class="left left--brand">
-        <router-link to="/" class="top-logo-area" @click="closeMobileMenu">
-          <img v-if="logoSrc" :src="logoSrc" alt="School Logo" />
-          <div class="title-wrap">
-            <h1>{{ schoolName }}</h1>
-          </div>
-        </router-link>
+    <div class="top-bar">
+      <div class="top-bar-left">
+        <div class="contact-info" v-if="email">
+          <span class="email-icon">✉</span>
+          <a :href="'mailto:' + email">{{ email }}</a>
+        </div>
       </div>
-      <div class="right right--top">
+      <div class="top-bar-right">
+        <div class="social-icons">
+          <a href="#" class="social-link" title="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg></a>
+          <a href="#" class="social-link" title="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>
+          <a href="#" class="social-link" title="Twitter"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg></a>
+          <a href="#" class="social-link" title="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
+        </div>
+        <div class="top-bar-divider"></div>
         <div class="login-dropdown" @mouseenter="isDesktop && (loginOpen = true)" @mouseleave="isDesktop && (loginOpen = false)">
           <span class="login-btn" @click="!isDesktop && (loginOpen = !loginOpen)">
             <span class="login-icon">👤</span>
@@ -30,14 +35,18 @@
             </li>
           </ul>
         </div>
-        <div class="datetime-box">
-          <span class="datetime-icon">🕐</span>
-          <span>{{ currentDateTime }}</span>
-        </div>
+        <a href="https://pay.academyims.com/" target="_blank" class="payment-btn">
+          💳 Payment Portal
+        </a>
       </div>
     </div>
 
     <div class="main-header">
+      <div class="main-header-left">
+        <router-link to="/" class="main-logo-area" @click="closeMobileMenu">
+          <img v-if="logoSrc" :src="logoSrc" alt="School Logo" class="main-logo-img" />
+        </router-link>
+      </div>
 
       <div class="hamburger" @click="toggleMobileMenu">
         <span :class="{ open: mobileMenuOpen }"></span>
@@ -62,12 +71,14 @@
               v-if="hasSubItems(item)"
               class="menu-link menu-link--text"
             >
+              <!--
               <img
                 v-if="item.menu.menuassign?.menu_icon"
                 :src="menuIconUrl(item.menu.menuassign.menu_icon)"
                 alt=""
                 class="menu-icon"
               />
+              -->
               {{ getMenuLabel(item.menu) }}
             </span>
 
@@ -77,12 +88,14 @@
               class="menu-link"
               @click="!isDesktop && closeMobileMenu()"
             >
+              <!--
               <img
                 v-if="item.menu.menuassign?.menu_icon"
                 :src="menuIconUrl(item.menu.menuassign.menu_icon)"
                 alt=""
                 class="menu-icon"
               />
+              -->
               {{ getMenuLabel(item.menu) }}
             </router-link>
             <button
@@ -154,6 +167,11 @@ const websiteStore = useWebsiteStore()
 const getBasic = computed(() => websiteStore.getBasic)
 const getHeader = computed(() => websiteStore.getHeader)
 const getUser = computed(() => websiteStore.getUser)
+const getFooterData = computed(() => websiteStore.getFooterData || {})
+
+const email = computed(() =>
+  getFooterData.value?.footer_email || getBasic.value?.email || getUser.value?.email || ''
+)
 
 const logoSrc = computed(() => {
   const img = getHeader.value?.header_image || getBasic.value?.logo
@@ -273,67 +291,83 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 18px 30px;
+  padding: 8px 30px;
   gap: 16px;
-  font-size: 15px;
+  font-size: 14px;
   letter-spacing: 0.2px;
 }
 
-.top-bar .left,
-.top-bar .right {
+.top-bar-left,
+.top-bar-right {
   display: flex;
   align-items: center;
   gap: 14px;
+  flex-wrap: wrap;
 }
 
-.left--brand {
-  gap: 18px;
-}
-
-.top-logo-area {
+.main-header-left {
   display: flex;
   align-items: center;
-  gap: 14px;
+  flex-shrink: 0;
+}
+
+.main-logo-area {
+  display: block;
   text-decoration: none;
-  color: inherit;
 }
 
-.top-logo-area img {
-  width: 60px;
+.main-logo-img {
+  max-width: 100%;
+  max-height: 65px;
   height: auto;
-  border-radius: 12px;
-  box-shadow: 0 4px 18px rgba(0,0,0,0.18);
+  object-fit: contain;
+  object-position: left center;
 }
 
-.title-wrap h1 {
-  font-size: clamp(18px, 2.4vw, 28px);
-  margin: 0;
-  font-weight: 700;
-  line-height: 1.15;
-  color: #ffffff;
+.contact-info {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 500;
 }
 
-.datetime-box {
+.contact-info a {
+  color: inherit;
+  text-decoration: none;
+}
+.contact-info a:hover {
+  text-decoration: underline;
+}
+
+.social-icons {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  opacity: 0.92;
 }
-
-.datetime-icon {
-  font-size: 16px;
-}
-
-.datetime-icon {
-  font-size: 14px;
-}
-
-.top-bar .right {
+.social-link {
+  color: #ffffff;
   display: flex;
   align-items: center;
-  gap: 14px;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  transition: all 0.2s;
+}
+.social-link:hover {
+  background: rgba(255,255,255,0.25);
+}
+.social-link svg {
+  width: 14px;
+  height: 14px;
+}
+
+.top-bar-divider {
+  width: 1px;
+  height: 14px;
+  background: rgba(255,255,255,0.2);
 }
 
 .login-dropdown {
@@ -342,7 +376,7 @@ header {
   margin-bottom: -10px;
 }
 
-.login-btn {
+.login-btn, .payment-btn {
   display: flex;
   align-items: center;
   gap: 5px;
@@ -355,9 +389,11 @@ header {
   border: 1px solid rgba(255,255,255,0.2);
   transition: all 0.2s;
   white-space: nowrap;
+  color: #fff;
+  text-decoration: none;
 }
 
-.login-btn:hover {
+.login-btn:hover, .payment-btn:hover {
   background: rgba(255,255,255,0.22);
 }
 
@@ -434,7 +470,7 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 5px 20px;
+  padding: 5px 20px 5px 0;
   background: white;
   border-bottom: 1px solid #ddd;
 }
@@ -492,10 +528,10 @@ header {
 .menu > a,
 .dropbtn,
 .menu-toggle {
-  padding: 5px 7px;
+  padding: 5px 5px;
   border-radius: 5px;
   font-weight: 600;
-  font-size: 13px;
+  font-size: 12px;
   color: #333;
   text-decoration: none;
   display: inline-flex;
@@ -617,14 +653,8 @@ header {
     text-align: center;
   }
 
-  .top-bar .left {
-    justify-content: center;
-    font-size: 11px;
-    width: 100%;
-    text-align: center;
-  }
-
-  .top-bar .right {
+  .top-bar-left,
+  .top-bar-right {
     justify-content: center;
     width: 100%;
     gap: 12px;
@@ -652,8 +682,7 @@ header {
 
   .main-header { padding: 5px 14px; }
 
-  .logo-area img { width: 65px; margin-bottom: -32px; }
-  .logo-area h1  { font-size: clamp(13px, 3.8vw, 20px); }
+  .main-logo-img { max-height: 55px; }
 
   .menu {
     display: none;
@@ -713,8 +742,7 @@ header {
 }
 
 @media (max-width: 420px) {
-  .top-bar .left { font-size: 10px; }
-  .logo-area img { width: 50px; margin-bottom: -25px; }
-  .logo-area h1  { font-size: 13px; }
+  .top-bar-left { font-size: 11px; }
+  .main-logo-img { max-height: 48px; }
 }
 </style>

@@ -92,8 +92,9 @@ const formatDate = (date) => {
 
 .notice-board {
   background: #ffffff;
-  border-radius: 16px;
+  border-radius: 0;
   border: 1px solid #cce3f0;
+  border-top: none;
   box-shadow: 0 8px 40px rgba(14, 90, 140, 0.13), 0 2px 8px rgba(14, 90, 140, 0.07);
   overflow: hidden;
   font-family: 'DM Sans', sans-serif;
@@ -105,7 +106,7 @@ const formatDate = (date) => {
 
 .board-header {
   background: linear-gradient(135deg, #0e5a8c 0%, #1a8dbf 60%, #38b6e0 100%);
-  padding: 22px 24px 20px;
+  padding: 18px 16px 16px;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -260,7 +261,7 @@ const formatDate = (date) => {
   grid-template-columns: 34px 1fr 18px;
   align-items: center;
   gap: 10px;
-  padding: 12px 18px;
+  padding: 10px 12px;
   text-decoration: none;
   color: inherit;
   transition: background 0.15s;
@@ -363,7 +364,7 @@ const formatDate = (date) => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 22px;
+  padding: 12px 16px;
   background: linear-gradient(135deg, #0e5a8c, #1a8dbf);
   color: #fff;
   text-decoration: none;

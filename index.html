@@ -8,8 +8,80 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&family=Playfair+Display:wght@700;900&family=Inter:wght@400;500;600;700;800&family=Hind+Siliguri:wght@300;400;500;600&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Cantonment English School & College - Excellence in Education">
+  <meta name="description" content="School Website - Excellence in Education">
   <title>School Website</title>
+  <script>
+    (function () {
+      var defaultName = 'School Website';
+      var defaultDescription = defaultName + ' - Excellence in Education';
+
+      function extractSchoolName(payload) {
+        var data = payload && payload.data ? payload.data : payload;
+        return (
+          (data && data.users && data.users.institute_name) ||
+          (data && data.user && data.user.institute_name) ||
+          (data && data.basics && data.basics[0] && data.basics[0].name) ||
+          ''
+        );
+      }
+
+      function applySchoolName(name) {
+        var schoolName = name || defaultName;
+        document.title = schoolName;
+
+        var descriptionTag = document.querySelector('meta[name="description"]');
+        if (descriptionTag) {
+          descriptionTag.setAttribute('content', schoolName + ' - Excellence in Education');
+        }
+      }
+
+      function loadFromStorage() {
+        var keys = ['website', 'pinia-website'];
+        for (var i = 0; i < keys.length; i += 1) {
+          try {
+            var raw = localStorage.getItem(keys[i]);
+            if (!raw) continue;
+            var parsed = JSON.parse(raw);
+            var schoolName = extractSchoolName(parsed);
+            if (schoolName) return schoolName;
+          } catch (error) {
+          }
+        }
+        return '';
+      }
+
+      applySchoolName(defaultName);
+
+      var storedSchoolName = loadFromStorage();
+      if (storedSchoolName) {
+        applySchoolName(storedSchoolName);
+      }
+
+      window.__schoolHeadReady = (async function () {
+        var sources = [
+          'https://web.academyims.com/api/indexdata',
+          '/indexdata.json'
+        ];
+
+        for (var i = 0; i < sources.length; i += 1) {
+          try {
+            var response = await fetch(sources[i]);
+            if (!response.ok) continue;
+            var payload = await response.json();
+            var schoolName = extractSchoolName(payload);
+            if (schoolName) {
+              applySchoolName(schoolName);
+              return schoolName;
+            }
+          } catch (error) {
+          }
+        }
+
+        applySchoolName(storedSchoolName || defaultName);
+        return storedSchoolName || defaultName;
+      })();
+    })();
+  </script>
 </head>
 
 <body>
