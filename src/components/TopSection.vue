@@ -1,6 +1,5 @@
 <template>
   <section class="top-section">
-
     <div class="row-top">
       <div class="slider-col">
         <ImageSlider />
@@ -9,22 +8,6 @@
         <NoticeBoard />
       </div>
     </div>
-
-    <div class="row-widgets">
-      <!-- <div class="widget-cell">
-        <WidgetSpeech />
-      </div>
-      <div class="widget-cell">
-        <WidgetWeather />
-      </div>
-      <div class="widget-cell">
-        <WidgetPrayer />
-      </div>
-      <div class="widget-cell">
-        <WidgetSong />
-      </div> -->
-    </div>
-
   </section>
 </template>
 
@@ -41,9 +24,11 @@ import NoticeBoard   from './NoticeBoard.vue'
 .top-section {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 0;
   width: 100%;
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 .row-top {
@@ -78,30 +63,8 @@ import NoticeBoard   from './NoticeBoard.vue'
   border-radius: 0;
 }
 
-.row-widgets {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 16px;
-  align-items: start;
-}
-
-.widget-cell {
-  display: flex;
-  flex-direction: column;
-}
-
 @media (max-width: 1024px) {
   .row-top {
-    grid-template-columns: 1fr;
-  }
-
-  .row-widgets {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 640px) {
-  .row-widgets {
     grid-template-columns: 1fr;
   }
 }
