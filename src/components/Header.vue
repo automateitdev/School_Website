@@ -529,17 +529,17 @@ header {
   justify-content: center;
   align-items: center;
   flex-wrap: nowrap;
-  gap: 6px;
+  gap: 2px;
   min-width: 0;
 }
 
 .menu > a,
 .dropbtn,
 .menu-toggle {
-  padding: 4px 6px;
+  padding: 4px 5px;
   border-radius: 5px;
   font-weight: 600;
-  font-size: 12px;
+  font-size: 13px;
   color: #333;
   text-decoration: none;
   display: inline-flex;
@@ -556,7 +556,7 @@ header {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 4px 5px;
+  padding: 0;
   cursor: pointer;
   flex-shrink: 0;
 }
