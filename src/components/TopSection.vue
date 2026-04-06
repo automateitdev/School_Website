@@ -11,7 +11,7 @@
     </div>
 
     <div class="row-widgets">
-      <div class="widget-cell">
+      <!-- <div class="widget-cell">
         <WidgetSpeech />
       </div>
       <div class="widget-cell">
@@ -22,7 +22,7 @@
       </div>
       <div class="widget-cell">
         <WidgetSong />
-      </div>
+      </div> -->
     </div>
 
   </section>
@@ -31,10 +31,10 @@
 <script setup>
 import ImageSlider   from './ImageSlider.vue'
 import NoticeBoard   from './NoticeBoard.vue'
-import WidgetSpeech  from './widgets/WidgetSpeech.vue'
-import WidgetWeather from './widgets/WidgetWeather.vue'
-import WidgetPrayer  from './widgets/WidgetPrayer.vue'
-import WidgetSong    from './widgets/WidgetSong.vue'
+// import WidgetSpeech  from './widgets/WidgetSpeech.vue'
+// import WidgetWeather from './widgets/WidgetWeather.vue'
+// import WidgetPrayer  from './widgets/WidgetPrayer.vue'
+// import WidgetSong    from './widgets/WidgetSong.vue'
 </script>
 
 <style scoped>

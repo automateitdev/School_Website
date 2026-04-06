@@ -474,6 +474,7 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 20px;
   padding: 0 20px 0 0;
   background: white;
   border-bottom: 1px solid #ddd;
@@ -524,15 +525,18 @@ header {
 
 .menu {
   display: flex;
-  gap: 1px;
+  flex: 1;
+  justify-content: center;
   align-items: center;
   flex-wrap: nowrap;
+  gap: 6px;
+  min-width: 0;
 }
 
 .menu > a,
 .dropbtn,
 .menu-toggle {
-  padding: 5px 5px;
+  padding: 4px 6px;
   border-radius: 5px;
   font-weight: 600;
   font-size: 12px;
@@ -552,15 +556,16 @@ header {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 6px 8px;
+  padding: 4px 5px;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 .menu-link,
 .menu-link--text {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
   text-decoration: none;
   color: inherit;
   cursor: pointer;
@@ -584,11 +589,14 @@ header {
 
 .dropdown {
   position: relative;
+  display: inline-flex;
+  align-items: center;
 }
 
 .arrow {
-  margin-left: 4px;
-  font-size: 12px;
+  margin-left: 0;
+  font-size: 9px;
+  line-height: 1;
   display: inline-block;
   transition: transform 0.3s;
 }
@@ -704,6 +712,7 @@ header {
     box-shadow: 0 8px 24px rgba(0,0,0,0.12);
     max-height: calc(100vh - 140px);
     overflow-y: auto;
+    flex: none;
   }
 
   .menu.mobile-open {
