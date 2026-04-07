@@ -379,6 +379,11 @@ watch(albumIdentifier, () => {
 }
 
 @media (max-width: 768px) {
+  .nav-button,
+  .photo-modal .nav-button {
+    display: none;
+  }
+
   .photo-album__grid {
     display: flex;
     flex-wrap: nowrap;
