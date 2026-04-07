@@ -9,7 +9,7 @@ import { computed } from 'vue'
 import { useWebsiteStore } from '@/stores/websiteStore'
 
 const websiteStore = useWebsiteStore()
-const isLoading = computed(() => websiteStore.isLoading)
+const isLoading = computed(() => websiteStore.showPageLoader)
 </script>
 
 <style scoped>
