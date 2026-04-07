@@ -85,6 +85,7 @@ export const useWebsiteStore = defineStore('website', {
     state: () => ({
         data: null,
         isLoading: false,
+        pageTransitionLoading: false,
         error: null,
         menuSubmenus: [],
         videoGalleries: [],
@@ -177,6 +178,8 @@ export const useWebsiteStore = defineStore('website', {
             })
             return items
         },
+
+        showPageLoader: (state) => state.isLoading || state.pageTransitionLoading,
 
         getMenuBySlugOrId: (state) => (identifier) => {
             if (!identifier) return null
@@ -301,6 +304,14 @@ export const useWebsiteStore = defineStore('website', {
     persist: true,
 
     actions: {
+        startPageTransition() {
+            this.pageTransitionLoading = true
+        },
+
+        stopPageTransition() {
+            this.pageTransitionLoading = false
+        },
+
         async fetchAllData() {
             this.isLoading = true
             this.error = null

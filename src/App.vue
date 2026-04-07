@@ -20,6 +20,7 @@ import { useHeaderLogoUrl } from '@/composables/useImageUrl'
 const websiteStore = useWebsiteStore()
 
 onMounted(async () => {
+  websiteStore.stopPageTransition()
   await websiteStore.fetchAllData()
   if (!websiteStore.getMenuSubmenus.length) {
     await websiteStore.fetchMenuSubmenus().catch(() => {})

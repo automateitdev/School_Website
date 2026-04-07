@@ -51,26 +51,28 @@
         <div v-if="isLoading" class="status-message">Loading student list...</div>
         <div v-else-if="studentList.length === 0" class="status-message">No student records loaded yet.</div>
 
-        <table v-if="studentList.length > 0" class="data-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Name</th>
-              <th>Roll</th>
-              <th>Class</th>
-              <th>Section</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(student, index) in studentList" :key="student.id || index">
-              <td>{{ index + 1 }}</td>
-              <td>{{ student.name || student.full_name || student.student_name || '-' }}</td>
-              <td>{{ student.roll || student.roll_no || student.student_roll || '-' }}</td>
-              <td>{{ student.class_name || student.class || student.class_id || '-' }}</td>
-              <td>{{ student.section || student.section_name || '-' }}</td>
-            </tr>
-          </tbody>
-        </table>
+        <div v-if="studentList.length > 0" class="table-scroll">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Roll</th>
+                <th>Class</th>
+                <th>Section</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(student, index) in studentList" :key="student.id || index">
+                <td>{{ index + 1 }}</td>
+                <td>{{ student.name || student.full_name || student.student_name || '-' }}</td>
+                <td>{{ student.roll || student.roll_no || student.student_roll || '-' }}</td>
+                <td>{{ student.class_name || student.class || student.class_id || '-' }}</td>
+                <td>{{ student.section || student.section_name || '-' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
@@ -225,8 +227,15 @@ onMounted(() => {
 
 .data-table {
   width: 100%;
+  min-width: 680px;
   border-collapse: collapse;
   margin-top: 18px;
+}
+
+.table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .data-table th,
@@ -244,5 +253,40 @@ onMounted(() => {
 .status-message {
   padding: 18px 0;
   color: #475569;
+}
+
+@media (max-width: 640px) {
+  .page-header {
+    padding: 44px 16px;
+  }
+
+  .page-header h1 {
+    font-size: 2.2rem;
+  }
+
+  .page-body {
+    margin-top: -28px;
+    padding: 0 14px 28px;
+    gap: 18px;
+  }
+
+  .panel {
+    padding: 18px;
+    border-radius: 16px;
+  }
+
+  .button-row {
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 12px 14px;
+    font-size: 0.92rem;
+  }
 }
 </style>

@@ -383,4 +383,47 @@ const formatDate = (date) => {
   height: 16px;
   transition: transform 0.2s;
 }
+
+@media (max-width: 640px) {
+  .board-header {
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+    padding: 16px 14px 14px;
+  }
+
+  .header-all-link {
+    margin-top: 0;
+    white-space: normal;
+  }
+
+  .board-title {
+    font-size: 1.35rem;
+  }
+
+  .notice-link {
+    grid-template-columns: 28px 1fr;
+    gap: 8px;
+    padding: 10px 10px 10px 12px;
+  }
+
+  .notice-chevron {
+    display: none;
+  }
+
+  .notice-title {
+    font-size: 0.8rem;
+  }
+
+  .notice-date {
+    font-size: 0.68rem;
+    flex-wrap: wrap;
+  }
+
+  .see-all-btn {
+    padding: 12px 14px;
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+  }
+}
 </style>

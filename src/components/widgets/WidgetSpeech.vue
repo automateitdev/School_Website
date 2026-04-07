@@ -360,4 +360,94 @@ onMounted(async () => {
   from { opacity: 0; transform: scale(0.95); }
   to   { opacity: 1; transform: scale(1); }
 }
+
+@media (max-width: 640px) {
+  .widget-header {
+    padding: 12px 14px;
+  }
+
+  .speech-grid {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .speech-card {
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .speech-avatar {
+    width: 58px;
+    height: 58px;
+  }
+
+  .speech-name,
+  .speech-role {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+  }
+
+  .read-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .modal-backdrop {
+    padding: 12px;
+  }
+
+  .modal-panel {
+    max-height: calc(100vh - 24px);
+    border-radius: 18px;
+  }
+
+  .modal-header {
+    flex-wrap: wrap;
+    align-items: flex-start;
+    padding: 16px 16px 12px;
+    gap: 12px;
+  }
+
+  .modal-avatar {
+    width: 48px;
+    height: 48px;
+  }
+
+  .modal-meta {
+    width: calc(100% - 60px);
+  }
+
+  .modal-name {
+    font-size: 0.95rem;
+  }
+
+  .modal-role {
+    line-height: 1.5;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+  }
+
+  .modal-body {
+    padding: 16px;
+  }
+
+  .modal-message {
+    font-size: 0.9rem;
+    line-height: 1.7;
+  }
+
+  .modal-footer {
+    padding: 12px 16px 16px;
+  }
+
+  .close-btn {
+    width: 100%;
+  }
+}
 </style>

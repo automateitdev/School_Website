@@ -19,26 +19,28 @@
         <div v-if="isLoading" class="status-message">Loading teachers...</div>
         <div v-else-if="teacherList.length === 0" class="status-message">No teachers loaded yet.</div>
 
-        <table v-if="teacherList.length > 0" class="data-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Name</th>
-              <th>Designation</th>
-              <th>Email</th>
-              <th>Phone</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(teacher, index) in teacherList" :key="teacher.id || index">
-              <td>{{ index + 1 }}</td>
-              <td>{{ teacher.name || teacher.full_name || teacher.teacher_name || '-' }}</td>
-              <td>{{ teacher.designation || teacher.role || '-' }}</td>
-              <td>{{ teacher.email || teacher.email_address || '-' }}</td>
-              <td>{{ teacher.phone || teacher.mobile || '-' }}</td>
-            </tr>
-          </tbody>
-        </table>
+        <div v-if="teacherList.length > 0" class="table-scroll">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Designation</th>
+                <th>Email</th>
+                <th>Phone</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(teacher, index) in teacherList" :key="teacher.id || index">
+                <td>{{ index + 1 }}</td>
+                <td>{{ teacher.name || teacher.full_name || teacher.teacher_name || '-' }}</td>
+                <td>{{ teacher.designation || teacher.role || '-' }}</td>
+                <td>{{ teacher.email || teacher.email_address || '-' }}</td>
+                <td>{{ teacher.phone || teacher.mobile || '-' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
         <div v-if="error" class="alert error">{{ error }}</div>
       </div>
@@ -138,8 +140,15 @@ onMounted(() => {
 
 .data-table {
   width: 100%;
+  min-width: 680px;
   border-collapse: collapse;
   margin-top: 20px;
+}
+
+.table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .data-table th,
@@ -165,5 +174,40 @@ onMounted(() => {
   background: #fee2e2;
   padding: 14px 18px;
   border-radius: 12px;
+}
+
+@media (max-width: 640px) {
+  .page-header {
+    padding: 44px 16px;
+  }
+
+  .page-header h1 {
+    font-size: 2.2rem;
+  }
+
+  .page-body {
+    margin-top: -28px;
+    padding: 0 14px 28px;
+  }
+
+  .panel {
+    padding: 18px;
+    border-radius: 16px;
+  }
+
+  .panel-header {
+    align-items: stretch;
+  }
+
+  .refresh-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 12px 14px;
+    font-size: 0.92rem;
+  }
 }
 </style>

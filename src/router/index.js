@@ -14,9 +14,7 @@ import PhotoGallery from '../views/PhotoGallery.vue'
 import Speeches from '../views/Speeches.vue'
 import SubMenuContent from '../views/SubMenuContent.vue'
 import SingleMenuContent from '../views/SingleMenuContent.vue'
-import { ref } from 'vue'
-
-const isLoading = ref(false)
+import { useWebsiteStore } from '@/stores/websiteStore'
 
 const makeBanner = (title = '', subtitle = '') => ({ title, subtitle })
 
@@ -52,7 +50,8 @@ const router = createRouter({
   scrollBehavior(to, from, savedPosition) {
     return new Promise(resolve => {
       const waitForLoad = () => {
-        if (!isLoading.value) resolve(savedPosition || { top: 0 })
+        const websiteStore = useWebsiteStore()
+        if (!websiteStore.pageTransitionLoading) resolve(savedPosition || { top: 0 })
         else setTimeout(waitForLoad, 50)
       }
       waitForLoad()
@@ -60,7 +59,24 @@ const router = createRouter({
   }
 })
 
-router.beforeEach((to, from, next) => { isLoading.value = true; next() })
-router.afterEach(() => { setTimeout(() => { isLoading.value = false }, 400) })
+router.beforeEach((to, from, next) => {
+  const websiteStore = useWebsiteStore()
+  if (to.fullPath !== from.fullPath) {
+    websiteStore.startPageTransition()
+  }
+  next()
+})
+
+router.afterEach(() => {
+  const websiteStore = useWebsiteStore()
+  setTimeout(() => {
+    websiteStore.stopPageTransition()
+  }, 400)
+})
+
+router.onError(() => {
+  const websiteStore = useWebsiteStore()
+  websiteStore.stopPageTransition()
+})
 
 export default router
