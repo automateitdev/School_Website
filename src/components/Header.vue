@@ -1,42 +1,70 @@
 <template>
   <header ref="headerRef">
-
     <div class="top-bar">
-      <div class="top-bar-left">
-        <div class="contact-info" v-if="email">
-          <span class="email-icon">✉</span>
-          <a :href="'mailto:' + email">{{ email }}</a>
-        </div>
-      </div>
       <div class="top-bar-right">
-        <div class="social-icons">
-          <a href="#" class="social-link" title="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg></a>
-          <a href="#" class="social-link" title="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>
-          <a href="#" class="social-link" title="Twitter"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg></a>
-          <a href="#" class="social-link" title="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
+        <a v-if="email" :href="'mailto:' + email" class="top-bar-email">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M4 6h16v12H4z"></path>
+            <path d="m4 7 8 6 8-6"></path>
+          </svg>
+          <span>{{ email }}</span>
+        </a>
+
+        <div class="social-icons" aria-label="Social links">
+          <a href="#" class="social-link" title="Facebook">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+          </a>
+          <a href="#" class="social-link" title="Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+          </a>
+          <a href="#" class="social-link" title="Twitter">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg>
+          </a>
+          <a href="#" class="social-link" title="LinkedIn">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+          </a>
         </div>
+
         <div class="top-bar-divider"></div>
-        <div class="login-dropdown" @mouseenter="isDesktop && (loginOpen = true)" @mouseleave="isDesktop && (loginOpen = false)">
+
+        <div
+          class="login-dropdown"
+          @mouseenter="isDesktop && (loginOpen = true)"
+          @mouseleave="isDesktop && (loginOpen = false)"
+        >
           <span class="login-btn" @click="!isDesktop && (loginOpen = !loginOpen)">
-            <span class="login-icon">👤</span>
-            Login
-            <span class="arrow-small">▾</span>
+            <span class="btn-icon btn-icon--login" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21a8 8 0 0 0-16 0"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </span>
+            <span>Login</span>
+            <span class="arrow-small">&#9662;</span>
           </span>
+
           <ul class="login-menu" v-show="loginOpen">
             <li>
               <a href="https://live.academyims.com/Student_Portal" target="_blank" @click="loginOpen = false">
-                🎓 Student Portal
+                Student Portal
               </a>
             </li>
             <li>
               <a href="https://live.academyims.com/" target="_blank" @click="loginOpen = false">
-                🏫 Academic Portal
+                Academic Portal
               </a>
             </li>
           </ul>
         </div>
+
         <a href="https://pay.academyims.com/" target="_blank" class="payment-btn">
-          💳 Payment Portal
+          <span class="btn-icon btn-icon--payment" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2.5" y="5" width="19" height="14" rx="2"></rect>
+              <path d="M2.5 9.5h19"></path>
+            </svg>
+          </span>
+          <span>Payment Portal</span>
         </a>
       </div>
     </div>
@@ -55,30 +83,20 @@
       </div>
 
       <nav class="menu" :class="{ 'mobile-open': mobileMenuOpen }">
-
         <div
-          v-for="(item, idx) in menuWithSubItems"
+          v-for="(item, idx) in orderedMenuWithSubItems"
           :key="item.menu.menu_id"
           class="dropdown"
-          @mouseenter="isDesktop && openDropdown(item.menu.menu_id)"
-          @mouseleave="isDesktop && closeDropdown(item.menu.menu_id)"
         >
           <div
             class="dropbtn"
             :class="{ active: openMenus[item.menu.menu_id] || isMenuActive(item) }"
+            @click="handleMenuRowClick(item)"
           >
             <span
               v-if="hasSubItems(item)"
               class="menu-link menu-link--text"
             >
-              <!--
-              <img
-                v-if="item.menu.menuassign?.menu_icon"
-                :src="menuIconUrl(item.menu.menuassign.menu_icon)"
-                alt=""
-                class="menu-icon"
-              />
-              -->
               {{ getMenuLabel(item.menu) }}
             </span>
 
@@ -88,23 +106,17 @@
               class="menu-link"
               @click="!isDesktop && closeMobileMenu()"
             >
-              <!--
-              <img
-                v-if="item.menu.menuassign?.menu_icon"
-                :src="menuIconUrl(item.menu.menuassign.menu_icon)"
-                alt=""
-                class="menu-icon"
-              />
-              -->
               {{ getMenuLabel(item.menu) }}
             </router-link>
+
             <button
               v-if="hasSubItems(item)"
               type="button"
               class="menu-toggle"
+              :aria-expanded="openMenus[item.menu.menu_id] ? 'true' : 'false'"
               @click.stop="toggleMobileDropdown(item.menu.menu_id)"
             >
-              <span class="arrow" :class="{ rotated: openMenus[item.menu.menu_id] }">▼</span>
+              <span class="arrow" :class="{ rotated: openMenus[item.menu.menu_id] }">&#9660;</span>
             </button>
           </div>
 
@@ -123,7 +135,7 @@
               >
                 {{ sub.mm.submenuassign?.submenu_title_bangla
                   || sub.mm.submenuassign?.submenu_title
-                  || '—' }}
+                  || '-' }}
               </router-link>
             </li>
 
@@ -148,10 +160,8 @@
             </li>
           </ul>
         </div>
-
       </nav>
     </div>
-
   </header>
 </template>
 
@@ -159,7 +169,7 @@
 import { reactive, ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useWebsiteStore } from '@/stores/websiteStore'
-import { useHeaderLogoUrl, useMenuIconUrl } from '@/composables/useImageUrl'
+import { useHeaderLogoUrl } from '@/composables/useImageUrl'
 
 const route = useRoute()
 const websiteStore = useWebsiteStore()
@@ -177,9 +187,23 @@ const logoSrc = computed(() => {
   const img = getHeader.value?.header_image || getBasic.value?.logo
   return img ? useHeaderLogoUrl(img) : ''
 })
-const schoolName = computed(() => getUser.value?.institute_name || getBasic.value?.name || 'Our School')
 
 const menuWithSubItems = computed(() => websiteStore.getMenuWithSubItems || [])
+
+const orderedMenuWithSubItems = computed(() => {
+  const items = [...menuWithSubItems.value]
+  const isHomeMenu = (item) => {
+    const label = String(getMenuLabel(item?.menu) || '').trim().toLowerCase()
+    return label === 'home' || label === '???' || label === '??? ???'
+  }
+  items.sort((a, b) => {
+    const aIsHome = isHomeMenu(a)
+    const bIsHome = isHomeMenu(b)
+    if (aIsHome === bIsHome) return 0
+    return aIsHome ? -1 : 1
+  })
+  return items
+})
 
 const getMenuLabel = (menu) =>
   menu?.menuassign?.menu_title_bangla ||
@@ -192,28 +216,28 @@ const menuDirectLink = (item) => {
   const menu = item.menu
   if (menu.menu_content) return `/menus/single/${menu.id}`
   const title = (menu.menuassign?.menu_title || '').toLowerCase()
-  if (title === 'home' || title === 'হোম' || title === 'হোম পেজ') return '/'
+  if (title === 'home' || title === '???' || title === '??? ???') return '/'
   return '/'
 }
 
-const menuIconUrl = (icon) => icon ? useMenuIconUrl(icon) : ''
-
 const openMenus = reactive({})
 
-watch(menuWithSubItems, (items) => {
+watch(orderedMenuWithSubItems, (items) => {
   items.forEach(item => {
     const key = item.menu.menu_id
     if (!(key in openMenus)) openMenus[key] = false
   })
 }, { immediate: true })
 
-const openDropdown  = (id) => { openMenus[id] = true }
-const closeDropdown = (id) => { openMenus[id] = false }
-
 const toggleMobileDropdown = (id) => {
   Object.keys(openMenus).forEach(k => {
     openMenus[k] = String(k) === String(id) ? !openMenus[k] : false
   })
+}
+
+const handleMenuRowClick = (item) => {
+  if (!hasSubItems(item)) return
+  toggleMobileDropdown(item.menu.menu_id)
 }
 
 const mobileMenuOpen = ref(false)
@@ -236,37 +260,36 @@ const isMenuActive = (item) => {
     || isActive('/teacherlist') && item.menu.menuassign?.menu_title === 'Management Info'
 }
 
-const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024)
-const updateWidth = () => (windowWidth.value = window.innerWidth)
-onMounted(() => window.addEventListener('resize', updateWidth))
-onUnmounted(() => window.removeEventListener('resize', updateWidth))
-const isDesktop = computed(() => windowWidth.value > 768)
-
-watch(() => route.path, () => { closeMobileMenu(); loginOpen.value = false })
-watch(isDesktop, val => { if (val) closeMobileMenu() })
-
-const currentDateTime = ref('')
-let timer = null
-const updateDateTime = () => {
-  const now = new Date()
-  currentDateTime.value = now.toLocaleString('en-US', {
-    weekday: 'long', year: 'numeric', month: 'long',
-    day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit'
-  })
+const handleDocumentClick = (e) => {
+  if (headerRef.value && !headerRef.value.contains(e.target)) {
+    Object.keys(openMenus).forEach(k => { openMenus[k] = false })
+    loginOpen.value = false
+  }
 }
 
+const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024)
+const updateWidth = () => { windowWidth.value = window.innerWidth }
+
 onMounted(() => {
-  updateDateTime()
-  timer = setInterval(updateDateTime, 1000)
-  const setHeaderPad = () => {
-    if (headerRef.value) document.body.style.paddingTop = headerRef.value.offsetHeight + 'px'
-  }
-  setHeaderPad()
-  const ro = new ResizeObserver(setHeaderPad)
-  if (headerRef.value) ro.observe(headerRef.value)
+  window.addEventListener('resize', updateWidth)
+  document.addEventListener('click', handleDocumentClick)
 })
 
-onUnmounted(() => clearInterval(timer))
+onUnmounted(() => {
+  window.removeEventListener('resize', updateWidth)
+  document.removeEventListener('click', handleDocumentClick)
+})
+
+const isDesktop = computed(() => windowWidth.value > 768)
+
+watch(() => route.path, () => {
+  closeMobileMenu()
+  loginOpen.value = false
+})
+
+watch(isDesktop, val => {
+  if (val) closeMobileMenu()
+})
 </script>
 
 <style scoped>
@@ -277,27 +300,29 @@ onUnmounted(() => clearInterval(timer))
 }
 
 header {
-  position: fixed;
+  position: sticky;
   top: 0;
   left: 0;
   width: 100%;
   z-index: 3000;
-  box-shadow: 0 2px 20px rgba(0,0,0,0.15);
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.15);
+  background: white;
 }
 
 .top-bar {
-  background: linear-gradient(160deg, #063d4d 0%, #0a728a 50%, #0d8aa6 100%);
-  color: rgba(255,255,255,0.95);
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.16), transparent 32%),
+    linear-gradient(135deg, #063d4d 0%, #0a728a 55%, #11a1bd 100%);
+  color: rgba(255, 255, 255, 0.96);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 30px;
-  gap: 16px;
+  padding: 10px 30px;
+  gap: 18px;
   font-size: 14px;
   letter-spacing: 0.2px;
 }
 
-.top-bar-left,
 .top-bar-right {
   display: flex;
   align-items: center;
@@ -305,11 +330,37 @@ header {
   flex-wrap: wrap;
 }
 
+.top-bar-right {
+  justify-content: space-between;
+  width: 100%;
+  column-gap: 8px;
+}
+
+.top-bar-email {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.top-bar-email:hover {
+  text-decoration: underline;
+}
+
+.top-bar-email span {
+  overflow-wrap: anywhere;
+}
+
 .main-header-left {
   display: inline-flex;
   align-items: center;
-  flex-shrink: 0;
+  flex-shrink: 1;
   width: fit-content;
+  max-width: 300px;
 }
 
 .main-logo-area {
@@ -317,6 +368,7 @@ header {
   align-items: center;
   text-decoration: none;
   line-height: 0;
+  width: 100%;
 }
 
 .main-logo-img {
@@ -328,20 +380,12 @@ header {
   object-position: left center;
 }
 
-.contact-info {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 13px;
-  font-weight: 500;
-}
-
-.contact-info a {
-  color: inherit;
-  text-decoration: none;
-}
-.contact-info a:hover {
-  text-decoration: underline;
+.login-btn svg,
+.payment-btn svg,
+.top-bar-email svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
 }
 
 .social-icons {
@@ -349,20 +393,25 @@ header {
   align-items: center;
   gap: 8px;
 }
+
 .social-link {
   color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   transition: all 0.2s;
 }
+
 .social-link:hover {
-  background: rgba(255,255,255,0.25);
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
 }
+
 .social-link svg {
   width: 14px;
   height: 14px;
@@ -370,58 +419,108 @@ header {
 
 .top-bar-divider {
   width: 1px;
-  height: 14px;
-  background: rgba(255,255,255,0.2);
+  align-self: stretch;
+  background: rgba(255, 255, 255, 0.18);
+  margin: 0 2px;
 }
 
 .login-dropdown {
   position: relative;
   padding-bottom: 10px;
   margin-bottom: -10px;
+  margin-right: -2px;
 }
 
-.login-btn, .payment-btn {
-  display: flex;
+.login-btn,
+.payment-btn {
+  display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   cursor: pointer;
-  font-weight: 600;
-  font-size: 13px;
-  padding: 5px 12px;
-  border-radius: 20px;
-  background: rgba(255,255,255,0.12);
-  border: 1px solid rgba(255,255,255,0.2);
+  font-weight: 700;
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(65, 167, 191, 0.92), rgba(36, 138, 164, 0.98));
+  border: 1px solid rgba(255, 255, 255, 0.2);
   transition: all 0.2s;
   white-space: nowrap;
   color: #fff;
   text-decoration: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
 }
 
-.login-btn:hover, .payment-btn:hover {
-  background: rgba(255,255,255,0.22);
+.login-btn:hover,
+.payment-btn:hover {
+  background: linear-gradient(180deg, rgba(79, 183, 206, 0.95), rgba(46, 151, 177, 1));
 }
 
 .arrow-small {
-  font-size: 12px;
+  font-size: 8px;
+  line-height: 1;
+  opacity: 0.95;
+  transform: translateY(1px);
+}
+
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+}
+
+.btn-icon svg {
+  width: 13px;
+  height: 13px;
+}
+
+.btn-icon--login {
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: rgba(51, 67, 72, 0.9);
+  color: #f8f6e7;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.btn-icon--login svg {
+  width: 10px;
+  height: 10px;
+}
+
+.btn-icon--payment {
+  width: 14px;
+  height: 11px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #f4c546, #df9c14);
+  color: #ffffff;
+  box-shadow: inset 0 0 0 1px rgba(86, 59, 0, 0.28);
+}
+
+.btn-icon--payment svg {
+  width: 12px;
+  height: 9px;
 }
 
 .login-menu {
   position: absolute;
   right: 0;
-  top: 100%;
+  top: calc(100% + 8px);
   background: white;
   list-style: none;
-  border-radius: 10px;
+  border-radius: 14px;
   overflow: hidden;
-  min-width: 180px;
+  min-width: 190px;
   z-index: 4000;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.18);
-  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .login-menu li a {
   display: block;
-  padding: 11px 16px;
+  padding: 12px 16px;
   color: #1a2e35;
   text-decoration: none;
   font-size: 14px;
@@ -441,35 +540,6 @@ header {
   padding-left: 20px;
 }
 
-.social-links {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.social-btn {
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  color: white;
-  text-decoration: none;
-  font-size: 12px;
-  transition: transform 0.2s, opacity 0.2s;
-  opacity: 0.85;
-}
-
-.social-btn:hover {
-  transform: scale(1.18);
-  opacity: 1;
-}
-
-.social-btn.facebook { background: #1877f2; }
-.social-btn.youtube  { background: #ff0000; }
-.social-btn.linkedin { background: #0a66c2; }
-
 .main-header {
   display: flex;
   justify-content: space-between;
@@ -478,28 +548,6 @@ header {
   padding: 0 20px 0 0;
   background: white;
   border-bottom: 1px solid #ddd;
-}
-
-.skeleton-logo {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: #f0f0f0;
-  animation: pulse 1.5s infinite;
-}
-
-.skeleton-title {
-  width: 200px;
-  height: 24px;
-  background: #f0f0f0;
-  border-radius: 4px;
-  animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-  0% { opacity: 0.6; }
-  50% { opacity: 1; }
-  100% { opacity: 0.6; }
 }
 
 .hamburger {
@@ -571,14 +619,6 @@ header {
   cursor: pointer;
 }
 
-.menu-icon,
-.submenu-icon {
-  width: 18px;
-  height: 18px;
-  object-fit: contain;
-  margin-right: 8px;
-}
-
 .menu > a:hover,
 .dropbtn:hover,
 .menu > a.active,
@@ -626,7 +666,7 @@ header {
   border: 1px solid #ddd;
   min-width: 160px;
   z-index: 1000;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
   border-radius: 6px;
   overflow: hidden;
 }
@@ -653,66 +693,133 @@ header {
 }
 
 @media (max-width: 768px) {
-  .hamburger { display: flex; }
+  .hamburger {
+    display: inline-flex;
+    align-self: flex-start;
+    margin: 10px 16px 12px;
+    border: 1px solid #d7e3e8;
+    border-radius: 10px;
+    padding: 10px 11px;
+    background: #fff;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  }
 
   .top-bar {
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 10px 16px;
-    gap: 8px;
-    font-size: 12px;
-    text-align: center;
+    align-items: stretch;
+    padding: 8px 12px;
+    gap: 6px;
+    font-size: 11px;
   }
 
-  .top-bar-left,
   .top-bar-right {
-    justify-content: center;
     width: 100%;
-    gap: 12px;
+    justify-content: center;
+  }
+
+  .top-bar-right {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 8px;
+    row-gap: 5px;
+  }
+
+  .top-bar-email {
+    grid-column: 1;
+    justify-content: flex-start;
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .social-icons {
+    justify-content: flex-end;
+    gap: 6px;
+    grid-column: 2;
+  }
+
+  .social-link {
+    width: 26px;
+    height: 26px;
+  }
+
+  .top-bar-divider {
+    display: none;
+  }
+
+  .login-dropdown,
+  .payment-btn {
+    width: 100%;
+    margin: 0;
+    padding-bottom: 0;
+    grid-column: auto;
   }
 
   .login-dropdown {
-    position: relative;
+    justify-self: end;
+  }
+
+  .payment-btn {
+    justify-self: start;
+  }
+
+  .login-btn,
+  .payment-btn {
+    width: 100%;
+    justify-content: center;
+    min-height: 34px;
+    padding: 7px 9px;
+    border-radius: 12px;
+    white-space: nowrap;
+    text-align: center;
+    font-size: 12px;
   }
 
   .login-menu {
-    position: absolute;
-    right: auto;
-    left: 50%;
-    transform: translateX(-50%);
-    top: 100%;
-    min-width: 180px;
-    border-radius: 10px;
-    z-index: 5000;
+    right: 0;
+    left: 0;
+    top: calc(100% + 8px);
+    transform: none;
+    min-width: 0;
   }
 
   .login-menu li a {
     font-size: 14px;
-    padding: 12px 18px;
+    padding: 12px 16px;
+    text-align: center;
   }
 
-  .main-header { padding: 0 14px 0 0; }
+  .main-header {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0;
+  }
 
-  .main-logo-img { max-height: 55px; }
+  .main-header-left {
+    justify-content: center;
+    width: 100%;
+    max-width: 100%;
+    padding: 12px 0 8px;
+    border-bottom: 3px solid #f1f1f1;
+  }
+
+  .main-logo-img {
+    max-height: 55px;
+  }
 
   .menu {
     display: none;
     flex-direction: column;
     align-items: stretch;
-    position: absolute;
-    right: 0;
-    top: 100%;
+    position: static;
     background: white;
-    width: min(280px, 92vw);
-    border: 1px solid #ddd;
-    border-top: none;
-    z-index: 1000;
+    width: 100%;
+    border-top: 1px solid #ddd;
     gap: 0;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-    max-height: calc(100vh - 140px);
-    overflow-y: auto;
     flex: none;
+    padding: 8px 15px 15px;
   }
 
   .menu.mobile-open {
@@ -720,42 +827,117 @@ header {
     animation: slideDown 0.3s ease;
   }
 
+  .dropdown {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-bottom: 8px;
+  }
+
   .menu > a,
   .dropbtn {
-    border-radius: 0;
-    padding: 13px 16px;
+    border-radius: 14px;
+    padding: 13px 14px;
     font-size: 15px;
-    border-bottom: 1px solid #eee;
     width: 100%;
     justify-content: space-between;
   }
 
-  .dropdown-bridge { display: none; }
+  .dropbtn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    cursor: pointer;
+    border: 1px solid #e4edf2;
+    background: #ffffff;
+  }
+
+  .dropbtn.active {
+    background: linear-gradient(135deg, #eef9fc, #f7fdff);
+    color: #0a4f61;
+    border-color: #bfe2ee;
+  }
+
+  .menu-link,
+  .menu-link--text {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .menu-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: rgba(10, 114, 138, 0.08);
+    border: none;
+    cursor: pointer;
+    flex-shrink: 0;
+    padding: 0;
+  }
+
+  .dropbtn.active .menu-toggle {
+    background: rgba(10, 114, 138, 0.12);
+  }
+
+  .dropbtn.active .arrow {
+    color: #0a728a;
+  }
+
+  .dropdown-bridge {
+    display: none;
+  }
 
   .dropdown-content {
     position: relative;
     top: 0;
     left: 0;
-    border: none;
-    border-radius: 0;
+    border: 1px solid #d7e8ef;
+    border-radius: 14px;
     box-shadow: none;
-    background: #f9f9f9;
+    background: #f5fbfd;
+    padding: 6px 0;
+    margin: 6px 8px 0 14px;
+    overflow: hidden;
+    animation: fadeIn 0.2s ease;
   }
 
   .dropdown-content li a {
-    padding: 10px 28px;
+    padding: 11px 16px 11px 18px;
     border-bottom: 1px solid #eee;
     font-size: 14px;
+    white-space: normal;
+  }
+
+  .dropdown-content li:last-child a {
+    border-bottom: none;
   }
 
   @keyframes slideDown {
     from { opacity: 0; transform: translateY(-10px); }
-    to   { opacity: 1; transform: translateY(0); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 }
 
 @media (max-width: 420px) {
-  .top-bar-left { font-size: 11px; }
-  .main-logo-img { max-height: 48px; }
+  .top-bar {
+    padding: 8px 10px;
+  }
+
+  .social-icons {
+    justify-content: center;
+  }
+
+  .main-logo-img {
+    max-height: 48px;
+  }
 }
 </style>
