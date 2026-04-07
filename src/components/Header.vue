@@ -553,23 +553,23 @@ header {
 .hamburger {
   display: none;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
   cursor: pointer;
   z-index: 1500;
   flex-shrink: 0;
 }
 
 .hamburger span {
-  width: 25px;
-  height: 3px;
+  width: 20px;
+  height: 2px;
   background: #333;
   display: block;
   transition: 0.3s;
 }
 
-.hamburger span.open:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+.hamburger span.open:nth-child(1) { transform: rotate(45deg) translate(4px, 4px); }
 .hamburger span.open:nth-child(2) { opacity: 0; }
-.hamburger span.open:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+.hamburger span.open:nth-child(3) { transform: rotate(-45deg) translate(2.5px, -3.5px); }
 
 .menu {
   display: flex;
@@ -696,12 +696,12 @@ header {
   .hamburger {
     display: inline-flex;
     align-self: flex-start;
-    margin: 10px 16px 12px;
+    margin: 4px 12px 8px;
     border: 1px solid #d7e3e8;
-    border-radius: 10px;
-    padding: 10px 11px;
+    border-radius: 6px;
+    padding: 6px 8px;
     background: #fff;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   }
 
   .top-bar {
@@ -801,12 +801,17 @@ header {
     justify-content: center;
     width: 100%;
     max-width: 100%;
-    padding: 12px 0 8px;
+    padding: 0;
     border-bottom: 3px solid #f1f1f1;
   }
 
   .main-logo-img {
-    max-height: 55px;
+    width: 100%;
+    height: auto;
+    max-height: 90px;
+    object-fit: contain;
+    object-position: center;
+    display: block;
   }
 
   .menu {
@@ -819,7 +824,7 @@ header {
     border-top: 1px solid #ddd;
     gap: 0;
     flex: none;
-    padding: 8px 15px 15px;
+    padding: 6px 12px 12px;
   }
 
   .menu.mobile-open {
@@ -831,14 +836,14 @@ header {
     display: flex;
     flex-direction: column;
     width: 100%;
-    margin-bottom: 8px;
+    margin-bottom: 5px;
   }
 
   .menu > a,
   .dropbtn {
-    border-radius: 14px;
-    padding: 13px 14px;
-    font-size: 15px;
+    border-radius: 9px;
+    padding: 10px 12px;
+    font-size: 14px;
     width: 100%;
     justify-content: space-between;
   }
@@ -869,9 +874,9 @@ header {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 34px;
-    height: 34px;
-    border-radius: 10px;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
     background: rgba(10, 114, 138, 0.08);
     border: none;
     cursor: pointer;
@@ -896,19 +901,19 @@ header {
     top: 0;
     left: 0;
     border: 1px solid #d7e8ef;
-    border-radius: 14px;
+    border-radius: 9px;
     box-shadow: none;
     background: #f5fbfd;
-    padding: 6px 0;
-    margin: 6px 8px 0 14px;
+    padding: 4px 0;
+    margin: 4px 6px 0 12px;
     overflow: hidden;
     animation: fadeIn 0.2s ease;
   }
 
   .dropdown-content li a {
-    padding: 11px 16px 11px 18px;
+    padding: 9px 14px 9px 15px;
     border-bottom: 1px solid #eee;
-    font-size: 14px;
+    font-size: 13px;
     white-space: normal;
   }
 
