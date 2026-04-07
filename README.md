@@ -83,3 +83,40 @@ Inside the `package.json`, you will find standard `npm` commands:
 - **Environment Properties:** Uses typical Vite `.env` management mechanisms if overriding variables locally.
 
 
+### Prerequisites
+
+You need Node.js and npm (or `yarn` / `pnpm`) installed on your machine.
+- Node.js >= 20.19.0 or >= 22.12.0
+
+### Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone <your-repository-url>
+   cd School_Website
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Run the development server:**
+   ```bash
+   npm run dev
+   ```
+
+   The application will be accessible at `http://localhost:5173/` by default.
+
+## 📄 Scripts
+
+Inside the `package.json`, you will find standard `npm` commands:
+- `npm run dev`: Starts the Vite development server with Hot-Module-Replacement.
+- `npm run build`: Bundles the application for production setup.
+- `npm run preview`: Previews the generated production build locally.
+
+## ⚙️ Configuration & Theming
+
+- **API Base URLs:** The website utilizes endpoints (such as `https://web.academyims.com/api/indexdata`) to load school details directly within `index.html` at load time before instantiating the Vue app for faster SEO mapping and configuration styling.
+- **Component Specific Data Handling:** Pages such as Contact, Notice, and specific custom pages map data asynchronously fetched through `websiteStore.js` and component setups via `useWebsiteStore()`.
+- **Environment Properties:** Uses typical Vite `.env` management mechanisms if overriding variables locally.
