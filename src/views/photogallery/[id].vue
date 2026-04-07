@@ -29,7 +29,7 @@
         </div>
       </div>
 
-      <div v-if="activeIndex !== null" class="photo-modal" @click.self="closeZoom">
+      <div v-if="activeIndex !== null" class="photo-modal" @click.self="closeZoom" @touchstart="onTouchStart" @touchend="onTouchEnd">
         <div class="photo-modal__content">
           <button class="close-button" @click="closeZoom">✕</button>
           <button class="nav-button prev" @click="previousPhoto" aria-label="Previous photo">←</button>
@@ -106,6 +106,28 @@ const onKeydown = (event) => {
   if (event.key === 'ArrowRight') nextPhoto()
   if (event.key === 'ArrowLeft') previousPhoto()
   if (event.key === 'Escape') closeZoom()
+}
+
+let touchStartX = 0
+let touchEndX = 0
+
+const onTouchStart = (e) => {
+  touchStartX = e.changedTouches[0].screenX
+}
+
+const onTouchEnd = (e) => {
+  touchEndX = e.changedTouches[0].screenX
+  handleSwipe()
+}
+
+const handleSwipe = () => {
+  if (activeIndex.value === null) return
+  const swipeThreshold = 50
+  if (touchStartX - touchEndX > swipeThreshold) {
+    nextPhoto()
+  } else if (touchEndX - touchStartX > swipeThreshold) {
+    previousPhoto()
+  }
 }
 
 const loadAlbum = async () => {
@@ -358,7 +380,23 @@ watch(albumIdentifier, () => {
 
 @media (max-width: 768px) {
   .photo-album__grid {
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 16px;
+    padding-bottom: 20px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  
+  .photo-album__grid::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .photo-card {
+    flex: 0 0 85%;
+    scroll-snap-align: center;
   }
 }
 </style>
