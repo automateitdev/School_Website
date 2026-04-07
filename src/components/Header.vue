@@ -87,6 +87,8 @@
           v-for="(item, idx) in orderedMenuWithSubItems"
           :key="item.menu.menu_id"
           class="dropdown"
+          @mouseenter="isDesktop && (openMenus[item.menu.menu_id] = true)"
+          @mouseleave="isDesktop && (openMenus[item.menu.menu_id] = false)"
         >
           <div
             class="dropbtn"
