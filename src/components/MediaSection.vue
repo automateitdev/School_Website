@@ -475,11 +475,17 @@ onUnmounted(() => {
 .media-wrapper iframe  { display: block; }
 
 
-.media-wrapper { width: 100%; background: var(--clr-ink-05); }
+.media-wrapper {
+  width: 100%;
+  background:
+    radial-gradient(circle at top left, rgba(96, 165, 250, 0.18), transparent 28%),
+    radial-gradient(circle at bottom right, rgba(34, 211, 238, 0.14), transparent 30%),
+    linear-gradient(180deg, #0a2e4d 0%, #083153 48%, #062844 100%);
+}
 
 .ms-section { width: 100%; padding: 80px 0; }
-.ms-section:nth-child(odd)  { background: var(--clr-white); }
-.ms-section:nth-child(even) { background: var(--clr-ink-05); }
+.ms-section:nth-child(odd)  { background: transparent; }
+.ms-section:nth-child(even) { background: rgba(255, 255, 255, 0.03); }
 
 .ms-section-inner {
   max-width: 1240px;
@@ -498,20 +504,20 @@ onUnmounted(() => {
 
 .ms-eyebrow {
   font-size: 11px; font-weight: 600; letter-spacing: .14em;
-  text-transform: uppercase; color: var(--clr-blue);
-  background: var(--clr-blue-light);
+  text-transform: uppercase; color: #d7efff;
+  background: rgba(148, 210, 255, 0.16);
   padding: 5px 14px; border-radius: 100px; flex-shrink: 0;
 }
 .ms-eyebrow--coral { color: var(--clr-coral); background: var(--clr-coral-light); }
 .ms-eyebrow--amber { color: var(--clr-amber); background: var(--clr-amber-light); }
 
-.ms-eyebrow-line       { flex: 1; height: 1px; background: var(--clr-ink-20); }
+.ms-eyebrow-line       { flex: 1; height: 1px; background: rgba(255, 255, 255, 0.22); }
 .ms-eyebrow-line--half { flex: 0 0 60px; }
 
 .ms-title {
   font-family: var(--ff-display);
   font-size: clamp(32px, 4vw, 52px);
-  font-weight: 400; color: #0d6efd;
+  font-weight: 400; color: #f7fbff;
   line-height: 1.1; margin-bottom: 14px;
 }
 .ms-title--center { text-align: center; }
@@ -519,7 +525,7 @@ onUnmounted(() => {
 
 .ms-subtitle {
   font-size: 16px; line-height: 1.6;
-  color: var(--clr-ink-50); font-weight: 300; max-width: 520px;
+  color: rgba(235, 245, 255, 0.82); font-weight: 300; max-width: 520px;
 }
 .ms-subtitle--center { margin: 0 auto; text-align: center; }
 .ms-subtitle--right  { margin-left: auto; text-align: right; }
@@ -551,7 +557,7 @@ onUnmounted(() => {
 .ms-empty {
   display: flex; flex-direction: column; align-items: center;
   justify-content: center; padding: 80px 0; gap: 12px;
-  color: var(--clr-ink-50); font-size: 15px;
+  color: rgba(235, 245, 255, 0.82); font-size: 15px;
 }
 .ms-empty-icon { font-size: 28px; opacity: .35; }
 

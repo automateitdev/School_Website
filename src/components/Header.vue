@@ -576,6 +576,7 @@ header {
   padding: 0 20px 0 0;
   background: white;
   border-bottom: 1px solid #ddd;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
 }
 
 .hamburger {
