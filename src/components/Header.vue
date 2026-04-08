@@ -113,6 +113,7 @@
               v-else
               :to="menuDirectLink(item)"
               class="menu-link"
+              :class="{ active: isMenuActive(item) }"
               @click="!isDesktop && closeMobileMenu()"
             >
               {{ getMenuLabel(item.menu) }}
@@ -244,6 +245,17 @@ const toggleMobileDropdown = (id) => {
   })
 }
 
+const syncActiveMobileMenu = () => {
+  let activeMenuId = null
+  orderedMenuWithSubItems.value.forEach(item => {
+    if (isMenuActive(item)) activeMenuId = item.menu.menu_id
+  })
+
+  Object.keys(openMenus).forEach(k => {
+    openMenus[k] = activeMenuId !== null && String(k) === String(activeMenuId)
+  })
+}
+
 const handleMenuRowClick = (item) => {
   if (!hasSubItems(item)) return
   toggleMobileDropdown(item.menu.menu_id)
@@ -253,7 +265,12 @@ const mobileMenuOpen = ref(false)
 const loginOpen = ref(false)
 const headerRef = ref(null)
 
-const toggleMobileMenu = () => (mobileMenuOpen.value = !mobileMenuOpen.value)
+const toggleMobileMenu = () => {
+  mobileMenuOpen.value = !mobileMenuOpen.value
+  if (mobileMenuOpen.value && !isDesktop.value) {
+    syncActiveMobileMenu()
+  }
+}
 const openLoginMenu = () => { loginOpen.value = true }
 const closeLoginMenu = () => { loginOpen.value = false }
 const toggleLoginMenu = () => { loginOpen.value = !loginOpen.value }
@@ -307,6 +324,12 @@ watch(() => route.path, () => {
 
 watch(isDesktop, val => {
   if (val) closeMobileMenu()
+})
+
+watch(orderedMenuWithSubItems, () => {
+  if (mobileMenuOpen.value && !isDesktop.value) {
+    syncActiveMobileMenu()
+  }
 })
 </script>
 
@@ -653,6 +676,15 @@ header {
   white-space: normal;
   overflow-wrap: anywhere;
   width: 100%;
+  padding: 0;
+  background: transparent;
+}
+
+.menu-link:hover,
+.menu-link:focus-visible,
+.menu-link--text:hover,
+.menu-link--text:focus-visible {
+  background: transparent;
 }
 
 .menu > a:hover,
@@ -753,9 +785,10 @@ header {
     margin: 0;
     border: 1px solid #d7e3e8;
     border-radius: 0;
-    padding: 10px 12px;
+    padding: 7px 12px;
     background: #fff;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    line-height: 1;
   }
 
   .top-bar {
@@ -902,14 +935,14 @@ header {
     display: flex;
     flex-direction: column;
     width: 100%;
-    margin-bottom: 5px;
+    margin-bottom: 0;
   }
 
   .menu > a,
   .dropbtn {
     border-radius: 0;
-    padding: 12px;
-    font-size: 14px;
+    padding: 10px 12px;
+    font-size: 13px;
     width: 100%;
     justify-content: space-between;
   }
@@ -926,9 +959,17 @@ header {
   }
 
   .dropbtn.active {
-    background: linear-gradient(135deg, #eef9fc, #f7fdff);
-    color: #0a4f61;
-    border-color: #bfe2ee;
+    background: #0a728a;
+    color: #ffffff;
+    border-color: #0a728a;
+  }
+
+  .menu-link.active,
+  .menu-link--text.active,
+  .dropbtn.active .menu-link,
+  .dropbtn.active .menu-link--text {
+    color: #ffffff;
+    font-weight: 700;
   }
 
   .menu-link,
@@ -952,11 +993,11 @@ header {
   }
 
   .dropbtn.active .menu-toggle {
-    background: rgba(10, 114, 138, 0.12);
+    background: rgba(255, 255, 255, 0.16);
   }
 
   .dropbtn.active .arrow {
-    color: #0a728a;
+    color: #ffffff;
   }
 
   .dropdown-bridge {
@@ -973,16 +1014,16 @@ header {
     border-radius: 0;
     box-shadow: none;
     background: #f5fbfd;
-    padding: 4px 0;
+    padding: 2px 0;
     margin: 0;
     overflow: hidden;
     animation: fadeIn 0.2s ease;
   }
 
   .dropdown-content li a {
-    padding: 9px 14px 9px 15px;
+    padding: 8px 12px 8px 14px;
     border-bottom: 1px solid #eee;
-    font-size: 13px;
+    font-size: 12px;
     white-space: normal;
   }
 
