@@ -29,10 +29,17 @@
 
         <div
           class="login-dropdown"
-          @mouseenter="isDesktop && (loginOpen = true)"
-          @mouseleave="isDesktop && (loginOpen = false)"
+          @mouseenter="isDesktop && openLoginMenu()"
+          @mouseleave="isDesktop && closeLoginMenu()"
+          @focusin="openLoginMenu"
+          @focusout="handleLoginFocusOut"
         >
-          <span class="login-btn" @click="!isDesktop && (loginOpen = !loginOpen)">
+          <button
+            type="button"
+            class="login-btn"
+            :aria-expanded="loginOpen ? 'true' : 'false'"
+            @click.stop="toggleLoginMenu"
+          >
             <span class="btn-icon btn-icon--login" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M20 21a8 8 0 0 0-16 0"></path>
@@ -41,7 +48,7 @@
             </span>
             <span>Login</span>
             <span class="arrow-small">&#9662;</span>
-          </span>
+          </button>
 
           <ul class="login-menu" v-show="loginOpen">
             <li>
@@ -247,6 +254,9 @@ const loginOpen = ref(false)
 const headerRef = ref(null)
 
 const toggleMobileMenu = () => (mobileMenuOpen.value = !mobileMenuOpen.value)
+const openLoginMenu = () => { loginOpen.value = true }
+const closeLoginMenu = () => { loginOpen.value = false }
+const toggleLoginMenu = () => { loginOpen.value = !loginOpen.value }
 const closeMobileMenu = () => {
   mobileMenuOpen.value = false
   Object.keys(openMenus).forEach(k => (openMenus[k] = false))
@@ -265,7 +275,13 @@ const isMenuActive = (item) => {
 const handleDocumentClick = (e) => {
   if (headerRef.value && !headerRef.value.contains(e.target)) {
     Object.keys(openMenus).forEach(k => { openMenus[k] = false })
-    loginOpen.value = false
+    closeLoginMenu()
+  }
+}
+
+const handleLoginFocusOut = (e) => {
+  if (!e.currentTarget?.contains(e.relatedTarget)) {
+    closeLoginMenu()
   }
 }
 
@@ -428,8 +444,8 @@ header {
 
 .login-dropdown {
   position: relative;
-  padding-bottom: 10px;
-  margin-bottom: -10px;
+  padding-bottom: 12px;
+  margin-bottom: -12px;
   margin-right: -2px;
 }
 
@@ -452,9 +468,19 @@ header {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
 }
 
+.login-btn {
+  border-width: 1px;
+}
+
 .login-btn:hover,
+.login-btn:focus-visible,
 .payment-btn:hover {
   background: linear-gradient(180deg, rgba(79, 183, 206, 0.95), rgba(46, 151, 177, 1));
+}
+
+.login-btn:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.8);
+  outline-offset: 2px;
 }
 
 .arrow-small {
@@ -509,7 +535,7 @@ header {
 .login-menu {
   position: absolute;
   right: 0;
-  top: calc(100% + 8px);
+  top: calc(100% + 2px);
   background: white;
   list-style: none;
   border-radius: 14px;
@@ -782,7 +808,7 @@ header {
   .login-menu {
     right: 0;
     left: 0;
-    top: calc(100% + 8px);
+    top: calc(100% + 4px);
     transform: none;
     min-width: 0;
   }
