@@ -18,8 +18,8 @@ import MediaSection from '@/components/MediaSection.vue'
 .home-page {
   display: flex;
   flex-direction: column;
-  gap: 28px;
-  padding: 0 0 48px;
+  gap: 0;
+  padding: 0;
   box-sizing: border-box;
   width: 100%;
   overflow-x: hidden;
@@ -27,15 +27,15 @@ import MediaSection from '@/components/MediaSection.vue'
 
 @media (max-width: 980px) {
   .home-page {
-    padding: 0 0 32px;
-    gap: 20px;
+    padding: 0;
+    gap: 0;
   }
 }
 
 @media (max-width: 640px) {
   .home-page {
-    padding: 0 0 28px;
-    gap: 16px;
+    padding: 0;
+    gap: 0;
   }
 }
 </style>

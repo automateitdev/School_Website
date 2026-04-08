@@ -96,7 +96,10 @@
     </div>
 
     <button class="back-to-top" @click="scrollToTop" aria-label="Back to top">
-      <i class="fas fa-chevron-up"></i>
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 18V7"></path>
+        <path d="M7 12l5-5 5 5"></path>
+      </svg>
     </button>
   </footer>
 </template>
@@ -415,14 +418,27 @@ const navMenus = computed(() => websiteStore.getNavMenus)
   color: #fff;
   border: none;
   cursor: pointer;
-  font-size: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0;
+  line-height: 1;
   box-shadow: 0 4px 14px rgba(0,0,0,0.3);
   transition: background 0.25s, transform 0.25s;
   z-index: 999;
 }
+
+.back-to-top svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 .back-to-top:hover {
   background: #ffdd57;
   color: #063d4d;
@@ -521,7 +537,11 @@ const navMenus = computed(() => websiteStore.getNavMenus)
     right: 12px;
     width: 34px;
     height: 34px;
-    font-size: 12px;
+  }
+
+  .back-to-top svg {
+    width: 16px;
+    height: 16px;
   }
 }
 </style>
