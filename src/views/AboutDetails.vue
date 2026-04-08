@@ -38,7 +38,7 @@
           <div class="header-badge">Our Story</div>
         <h1 class="main-title">{{ schoolName }}</h1>
         <div class="title-decoration"></div>
-        <p class="subtitle">Building excellence in education since {{ establishedYear }}</p>
+        <!-- <p class="subtitle">Building excellence in education since {{ establishedYear }}</p> -->
       </div>
 
       <div class="content-grid">
@@ -56,6 +56,7 @@
           </div>
 
           <div class="info-cards">
+            <!--
             <div class="info-card">
               <div class="info-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -70,6 +71,7 @@
                 <div class="info-value">{{ establishedYear || '—' }}</div>
               </div>
             </div>
+            -->
 
             <div class="info-card">
               <div class="info-icon">
@@ -189,10 +191,10 @@ const getBasic = computed(() => websiteStore.getBasic)
 const getUser = computed(() => websiteStore.getUser)
 const aboutImageSrc = computed(() => useAboutImageUrl(getAbout.value) || '')
 
-const schoolName = computed(() => getBasic.value?.name || getUser.value?.institute_name || 'Our School')
+const schoolName = computed(() => getBasic.value?.name || getUser.value?.institute_name || '')
 const establishedYear = computed(() => getAbout.value?.established || '')
-const affiliation = computed(() => getAbout.value?.affiliation || 'Education Board')
-const boardName = computed(() => getUser.value?.edu_board || getAbout.value?.board || getAbout.value?.affiliation || 'National Education Board')
+const affiliation = computed(() => getAbout.value?.affiliation || '')
+const boardName = computed(() => getUser.value?.edu_board || getAbout.value?.board || getAbout.value?.affiliation || '')
 const eiinNumber = computed(() => getUser.value?.EIIN_number || getUser.value?.eiin_number || '—')
 const instituteType = computed(() => getUser.value?.institute_type || getUser.value?.type || '—')
 const eduBoard = computed(() => getUser.value?.edu_board || getUser.value?.education_board || '—')
@@ -201,7 +203,7 @@ const excellenceValue = computed(() => {
   const raw = getAbout.value?.excellence ?? getAbout.value?.rating ?? '100%'
   return typeof raw === 'number' ? `${raw}%` : String(raw)
 })
-const level = computed(() => getAbout.value?.level || 'HSC')
+const level = computed(() => getAbout.value?.level || '')
 
 const fullText = computed(() => getAbout.value?.description || '')
 const formattedText = computed(() =>

@@ -30,10 +30,12 @@
         </div>
 
         <div class="stats-row">
+          <!--
           <div class="stat-item">
             <div class="stat-number">{{ establishedYear }}</div>
             <div class="stat-label">Established</div>
           </div>
+          -->
           <div class="stat-item">
             <div class="stat-number">{{ eiinNumber }}</div>
             <div class="stat-label">EIIN</div>
@@ -51,7 +53,7 @@
           <div class="image-overlay">
             <div class="overlay-content">
               <h3>Building Future Leaders</h3>
-              <p>Since {{ establishedYear }}</p>
+              <!-- <p>Since {{ establishedYear }}</p> -->
             </div>
           </div>
         </div>
