@@ -58,15 +58,15 @@
           <div class="accordion-body">
             <div class="contact-item">
               <i class="fas fa-building"></i>
-              <span>{{ supportCompany }}</span>
+              <span>Automate IT Limited</span>
             </div>
             <div class="contact-item">
               <i class="fas fa-phone-alt"></i>
-              <span>{{ supportPhone }}</span>
+              <span>09678-221323</span>
             </div>
             <div class="contact-item">
               <i class="fas fa-globe"></i>
-              <a :href="supportWebsite" target="_blank" rel="noopener">{{ supportWebsite }}</a>
+              <a href="https://automate.com.bd" target="_blank" rel="noopener">automate.com.bd</a>
             </div>
           </div>
         </div>
@@ -157,10 +157,6 @@ const normalizedFooterLinks = computed(() =>
 )
 
 const hasFooterLinks = computed(() => normalizedFooterLinks.value.length > 0)
-
-const supportCompany = computed(() => footerData.value.support_company || 'Automate IT Ltd.')
-const supportPhone = computed(() => footerData.value.support_phone || '+880 1234 567 890')
-const supportWebsite = computed(() => footerData.value.support_website || 'https://automateit.com')
 
 const currentYear = new Date().getFullYear()
 const schoolName = computed(() => getBasic.value?.name || getUser.value?.institute_name || 'Our School')
