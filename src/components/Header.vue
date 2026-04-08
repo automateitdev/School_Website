@@ -722,13 +722,18 @@ header {
 }
 
 @media (max-width: 768px) {
+  header {
+    width: 100%;
+    min-height: auto;
+  }
+
   .hamburger {
     display: inline-flex;
     align-self: flex-start;
-    margin: 4px 12px 8px;
+    margin: 0;
     border: 1px solid #d7e3e8;
-    border-radius: 6px;
-    padding: 6px 8px;
+    border-radius: 0;
+    padding: 10px 12px;
     background: #fff;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   }
@@ -736,7 +741,7 @@ header {
   .top-bar {
     flex-direction: column;
     align-items: stretch;
-    padding: 8px 12px;
+    padding: 8px 0;
     gap: 6px;
     font-size: 11px;
   }
@@ -824,6 +829,7 @@ header {
     flex-direction: column;
     align-items: stretch;
     padding: 0;
+    min-height: auto;
   }
 
   .main-header-left {
@@ -831,14 +837,23 @@ header {
     width: 100%;
     max-width: 100%;
     padding: 0;
+    margin: 0;
     border-bottom: 3px solid #f1f1f1;
+  }
+
+  .main-logo-area {
+    display: block;
+    width: 100%;
+    margin: 0;
+    padding: 0;
   }
 
   .main-logo-img {
     width: 100%;
+    max-width: none;
     height: auto;
-    max-height: 90px;
-    object-fit: contain;
+    max-height: none;
+    object-fit: cover;
     object-position: center;
     display: block;
   }
@@ -853,7 +868,9 @@ header {
     border-top: 1px solid #ddd;
     gap: 0;
     flex: none;
-    padding: 6px 12px 12px;
+    min-height: 0;
+    padding: 0;
+    overflow-y: visible;
   }
 
   .menu.mobile-open {
@@ -870,8 +887,8 @@ header {
 
   .menu > a,
   .dropbtn {
-    border-radius: 9px;
-    padding: 10px 12px;
+    border-radius: 0;
+    padding: 12px;
     font-size: 14px;
     width: 100%;
     justify-content: space-between;
@@ -883,7 +900,8 @@ header {
     justify-content: space-between;
     gap: 10px;
     cursor: pointer;
-    border: 1px solid #e4edf2;
+    border: none;
+    border-bottom: 1px solid #e4edf2;
     background: #ffffff;
   }
 
@@ -929,12 +947,14 @@ header {
     position: relative;
     top: 0;
     left: 0;
-    border: 1px solid #d7e8ef;
-    border-radius: 9px;
+    border: none;
+    border-top: 1px solid #d7e8ef;
+    border-bottom: 1px solid #d7e8ef;
+    border-radius: 0;
     box-shadow: none;
     background: #f5fbfd;
     padding: 4px 0;
-    margin: 4px 6px 0 12px;
+    margin: 0;
     overflow: hidden;
     animation: fadeIn 0.2s ease;
   }
@@ -963,7 +983,7 @@ header {
 
 @media (max-width: 420px) {
   .top-bar {
-    padding: 8px 10px;
+    padding: 8px 0;
   }
 
   .social-icons {
@@ -971,7 +991,7 @@ header {
   }
 
   .main-logo-img {
-    max-height: 48px;
+    max-height: none;
   }
 }
 </style>
