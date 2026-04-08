@@ -378,7 +378,7 @@ header {
   align-items: center;
   flex-shrink: 1;
   width: fit-content;
-  max-width: 300px;
+  max-width: 420px;
 }
 
 .main-logo-area {
@@ -392,7 +392,7 @@ header {
 .main-logo-img {
   display: block;
   max-width: 100%;
-  max-height: 80px;
+  max-height: 110px;
   height: auto;
   object-fit: contain;
   object-position: left center;
@@ -573,7 +573,8 @@ header {
   justify-content: space-between;
   align-items: center;
   gap: 20px;
-  padding: 0 20px 0 0;
+  min-height: unset;
+  padding: 0 18px 0 0;
   background: white;
   border-bottom: 1px solid #ddd;
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
@@ -606,14 +607,14 @@ header {
   justify-content: center;
   align-items: center;
   flex-wrap: nowrap;
-  gap: 2px;
+  gap: 4px;
   min-width: 0;
 }
 
 .menu > a,
 .dropbtn,
 .menu-toggle {
-  padding: 4px 5px;
+  padding: 8px 6px;
   border-radius: 5px;
   font-weight: 600;
   font-size: 13px;
@@ -624,7 +625,7 @@ header {
   justify-content: center;
   transition: background 0.3s, color 0.3s;
   cursor: pointer;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .menu-toggle {
@@ -642,10 +643,16 @@ header {
 .menu-link--text {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 4px;
   text-decoration: none;
   color: inherit;
   cursor: pointer;
+  text-align: center;
+  line-height: 1.2;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  width: 100%;
 }
 
 .menu > a:hover,
@@ -656,10 +663,23 @@ header {
   color: white;
 }
 
+.dropbtn.active .menu-link,
+.dropbtn.active .menu-link--text,
+.menu > a.active .menu-link,
+.menu > a.active .menu-link--text {
+  color: #ffffff;
+}
+
 .dropdown {
   position: relative;
   display: inline-flex;
-  align-items: center;
+  align-items: stretch;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.dropbtn {
+  width: 100%;
 }
 
 .arrow {
