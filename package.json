@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^7.1.0",
-    "axios": "^1.13.6",
+    "axios": "^1.15.0",
     "pdfjs-dist": "^5.4.530",
     "pinia": "^3.0.4",
     "pinia-plugin-persistedstate": "^4.7.1",
