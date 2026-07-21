@@ -53,11 +53,11 @@
           <ul class="login-menu" v-show="loginOpen">
             <li>
               <a href="https://live.academyims.com/Student_Portal" target="_blank" @click="loginOpen = false">
-                Student Portal
+                Web Portal
               </a>
             </li>
             <li>
-              <a href="https://live.academyims.com/" target="_blank" @click="loginOpen = false">
+              <a href="https://web.academyims.com/login" target="_blank" @click="loginOpen = false">
                 Academic Portal
               </a>
             </li>
