@@ -143,9 +143,7 @@
                 :class="{ active: isActive(`/menus/${sub.mm.id}`) }"
                 @click="!isDesktop && closeMobileMenu()"
               >
-                {{ sub.mm.submenuassign?.submenu_title_bangla
-                  || sub.mm.submenuassign?.submenu_title
-                  || '-' }}
+                {{ sub.mm.submenuassign?.submenu_title || '-' }}
               </router-link>
             </li>
 
@@ -204,7 +202,7 @@ const orderedMenuWithSubItems = computed(() => {
   const items = [...menuWithSubItems.value]
   const isHomeMenu = (item) => {
     const label = String(getMenuLabel(item?.menu) || '').trim().toLowerCase()
-    return label === 'home' || label === '???' || label === '??? ???'
+    return label === 'home'
   }
   items.sort((a, b) => {
     const aIsHome = isHomeMenu(a)
@@ -216,7 +214,6 @@ const orderedMenuWithSubItems = computed(() => {
 })
 
 const getMenuLabel = (menu) =>
-  menu?.menuassign?.menu_title_bangla ||
   menu?.menuassign?.menu_title ||
   ''
 
@@ -226,7 +223,7 @@ const menuDirectLink = (item) => {
   const menu = item.menu
   if (menu.menu_content) return `/menus/single/${menu.id}`
   const title = (menu.menuassign?.menu_title || '').toLowerCase()
-  if (title === 'home' || title === '???' || title === '??? ???') return '/'
+  if (title === 'home') return '/'
   return '/'
 }
 

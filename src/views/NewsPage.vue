@@ -83,7 +83,7 @@ const newsItems = computed(() => {
   return notices.map(n => ({
     id: n.id,
     title: n.title,
-    date: n.created_at ? new Date(n.created_at).toLocaleDateString() : '',
+    date: n.created_at ? new Date(n.created_at).toLocaleDateString('en-US') : '',
     body: n.content || n.description || '',
     image: getNoticeImage(n),
     pdf: getNoticePdf(n)

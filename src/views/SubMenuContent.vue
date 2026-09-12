@@ -24,9 +24,7 @@
         <header class="smc__header">
           <span class="smc__eyebrow">Menu Information</span>
           <h1 class="smc__title">
-            {{ content["subItems"][0]["mm"].submenuassign?.submenu_title_bangla
-              || content["subItems"][0]["mm"].submenuassign?.submenu_title
-              || 'Details' }}
+            {{ content["subItems"][0]["mm"].submenuassign?.submenu_title || 'Details' }}
           </h1>
           <div class="smc__divider"></div>
         </header>
@@ -93,13 +91,13 @@ watch(pageId, init)
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600&family=DM+Sans:wght@300;400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;600&display=swap');
 
 .submenu-content-page {
   position: relative;
   min-height: 70vh;
   background: #f8fafb;
-  font-family: 'Hind Siliguri', 'DM Sans', sans-serif;
+  font-family: 'DM Sans', sans-serif;
   overflow-x: hidden;
 }
 

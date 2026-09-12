@@ -421,7 +421,7 @@ const latestNews = computed(() => {
   return notices.slice(0, 3).map(n => ({
     id: n.id,
     title: n.title,
-    date: n.created_at ? new Date(n.created_at).toLocaleDateString() : '',
+    date: n.created_at ? new Date(n.created_at).toLocaleDateString('en-US') : '',
     body: n.content || n.description || '',
     image: getNoticeImage(n),
     link: `/notices/${n.id}`

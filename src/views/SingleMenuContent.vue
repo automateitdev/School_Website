@@ -59,7 +59,6 @@ const pageId = computed(() => props.id || route.params.id)
 const menuItem = computed(() => store.getSingleNavContentId(pageId.value))
 
 const menuTitle = computed(() =>
-  menuItem.value?.menuassign?.menu_title_bangla ||
   menuItem.value?.menuassign?.menu_title ||
   'Page'
 )
@@ -78,13 +77,13 @@ watch(pageId, init)
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600&family=DM+Sans:wght@300;400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;600&display=swap');
 
 .single-menu-page {
   position: relative;
   min-height: 70vh;
   background: #f8fafb;
-  font-family: 'Hind Siliguri', 'DM Sans', sans-serif;
+  font-family: 'DM Sans', sans-serif;
   overflow-x: hidden;
 }
 

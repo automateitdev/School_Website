@@ -25,30 +25,19 @@ const slugify = (value) => String(value || '')
     .replace(/[^a-z0-9-]/g, '')
 
 const resolveMenuLabel = (menu) => {
-    return menu?.menuassign?.menu_title_bangla ||
-        menu?.menuassign?.menu_title ||
-        menu?.menu_title_bangla ||
+    return menu?.menuassign?.menu_title ||
         menu?.menu_title ||
-        menu?.menu_name_bangla ||
         menu?.menu_name ||
-        menu?.name_bn ||
-        menu?.title_bn ||
         menu?.name ||
         menu?.title ||
         ''
 }
 
 const resolveSubmenuLabel = (sub) => {
-    return sub?.mm?.submenuassign?.submenu_title_bangla ||
-        sub?.mm?.submenuassign?.submenu_title ||
-        sub?.submenuassign?.submenu_title_bangla ||
+    return sub?.mm?.submenuassign?.submenu_title ||
         sub?.submenuassign?.submenu_title ||
-        sub?.submenu_title_bangla ||
         sub?.submenu_title ||
-        sub?.submenu_name_bangla ||
         sub?.submenu_name ||
-        sub?.name_bn ||
-        sub?.title_bn ||
         sub?.name ||
         sub?.title ||
         ''
@@ -392,13 +381,10 @@ export const useWebsiteStore = defineStore('website', {
                         link: m.link,
                         menuassign: {
                             menu_icon: m.menu_icon || '',
-                            menu_title: m.menu_title || '',
-                            menu_title_bangla: m.menu_title_bangla || ''
+                            menu_title: m.menu_title || ''
                         },
                         menu_title: m.menu_title || '',
-                        menu_title_bangla: m.menu_title_bangla || '',
                         menu_name: m.menu_name || '',
-                        menu_name_bangla: m.menu_name_bangla || '',
                         name: m.name || '',
                         submenus: (maps[m.menu_id] ?? []).map(sub => ({
                             id: sub.id,
@@ -407,15 +393,11 @@ export const useWebsiteStore = defineStore('website', {
                             link: sub.link,
                             submenuassign: {
                                 submenu_icon: sub.submenu_icon || '',
-                                submenu_title: sub.submenu_title || '',
-                                submenu_title_bangla: sub.submenu_title_bangla || ''
+                                submenu_title: sub.submenu_title || ''
                             },
                             submenu_title: sub.submenu_title || '',
-                            submenu_title_bangla: sub.submenu_title_bangla || '',
                             submenu_name: sub.submenu_name || '',
-                            submenu_name_bangla: sub.submenu_name_bangla || '',
                             name: sub.name || '',
-                            title_bn: sub.title_bn || '',
                             description: sub.description || sub.content || '',
                             external: sub.external || false
                         }))
